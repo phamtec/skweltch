@@ -1,0 +1,42 @@
+
+project zmq
+    : requirements 
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+
+exe start : start.cpp runner.cpp zmq
+	: <include>../../cppzmq-master
+	: 
+	;
+
+exe stop : stop.cpp runner.cpp zmq 
+	: <include>../../cppzmq-master
+	: 
+	;
+
+exe run : run.cpp runner.cpp zmq 
+	: <include>../../cppzmq-master
+	: 
+	;
+
+exe taskvent : taskvent.cpp zmq 
+	: <include>../../cppzmq-master
+	: 
+	;
+
+exe taskwork : taskwork.cpp zmq 
+	: <include>../../cppzmq-master
+	: 
+	;
+
+exe tasksink : tasksink.cpp zmq 
+	: <include>../../cppzmq-master
+	: 
+	;
+
