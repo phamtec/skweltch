@@ -8,7 +8,7 @@
 void startBackground(std::ofstream *pidfile, int n, const std::string &exe);
 void startBackground(std::ofstream *pidfile, const std::string &exe);
 void stopBackground(const std::string &pidfilename);
-int runExe(const std::string &cmd);
+int runExe(const std::string &exe);
 void readConfig(const std::string &jsonfilename, boost::property_tree::ptree *pt);
 
 #endif // __RUNNER_HPP_INCLUDED__
