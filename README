@@ -1,0 +1,11 @@
+
+Get boost boost_1_53_0 and install.
+
+get and unzip zeromq-3.2.3.tar.gz
+$ ./configure
+$ make
+$ sudo make install
+
+In here:
+
+get and unzip turtle-1.2.2.zip to make folder turtle-1.2.2
