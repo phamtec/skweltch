@@ -16,11 +16,10 @@ int main (int argc, char *argv[])
 	stringstream outfn;
 	outfn << "task" << argv[1] << ".out";
 	ofstream outfile(outfn.str().c_str());
-	outfile << argv[2] << endl;
 	
  	string pullfrom, pushto;
  	{
- 		stringstream ss(argv[1]);
+ 		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
  		JsonNode r;
  		json.read(&r);

@@ -24,8 +24,8 @@
 	// this is what is used to feed he machine.
 	"run": "taskvent",
 	"config" : {
-		"pushTo": "tcp://*:5557"
-		"syncTo": "tcp://*:5558"
+		"pushTo": "tcp://*:5557",
+		"syncTo": "tcp://localhost:5558"
 	}
 	
 }
