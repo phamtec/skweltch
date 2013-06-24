@@ -15,6 +15,8 @@ private:
 	boost::property_tree::ptree::iterator i;
 	std::auto_ptr<JsonNode> cur;
 	
+	void setCurrent();
+
 public:
 
 	/*

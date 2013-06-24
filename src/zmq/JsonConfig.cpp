@@ -17,10 +17,14 @@ void JsonNode::getChild(const std::string &key, JsonNode *child) {
 	child->pt = pt.get_child(key);
 }
 
-void JsonNode::start() {
-	i = pt.begin();
+void JsonNode::setCurrent() {
 	cur.reset(new JsonNode());
 	cur->pt = i->second;
+}
+
+void JsonNode::start() {
+	i = pt.begin();
+	setCurrent();
 }
 
 bool JsonNode::hasMore() {
@@ -29,9 +33,8 @@ bool JsonNode::hasMore() {
 
 void JsonNode::next() {
 	i++;
-	if (i != pt.end()) {
-		cur.reset(new JsonNode());
-		cur->pt = i->second;
+	if (hasMore()) {
+		setCurrent();
 	}
 }
 
