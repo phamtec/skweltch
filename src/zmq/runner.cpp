@@ -2,7 +2,7 @@
 #include "runner.hpp"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/property_tree/json_parser.hpp>
+//#include <boost/property_tree/json_parser.hpp>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -86,11 +86,3 @@ void stopBackground(const std::string &pidfilename) {
     	remove(pidfilename.c_str());
 	}
 }
-
-void readConfig(const std::string &jsonfilename, property_tree::ptree *pt) {
-
-	ifstream jsonfile(jsonfilename.c_str());
-  	property_tree::read_json(jsonfile, *pt);
-
-}
-

@@ -1,15 +1,23 @@
 
 #include "runner.hpp"
+#include "jsonConfig.hpp"
 
 using namespace boost;
 using namespace std;
 
 int main (int argc, char *argv[])
 {
-	property_tree::ptree pt;
-	readConfig(argv[1], &pt);
+	if (argc != 2) {
+		cerr << "usage: " << argv[0] << " jsonConfig" << endl;
+		return 1;
+	}
+	
+	ifstream jsonfile(argv[1]);
+	JsonConfig c(&jsonfile);
+	JsonNode r;
+	c.read(&r);
 
-	stopBackground(pt.get<string>("pidFile"));
+	stopBackground(r.getString("pidFile"));
 
 	return 0;
 	

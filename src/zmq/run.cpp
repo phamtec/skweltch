@@ -1,18 +1,25 @@
 #include "runner.hpp"
+#include "jsonConfig.hpp"
 
 using namespace boost;
 using namespace std;
 
 int main (int argc, char *argv[])
 {
+	if (argc != 2) {
+		cerr << "usage: " << argv[0] << " jsonConfig" << endl;
+		return 1;
+	}
+	
+	ifstream jsonfile(argv[1]);
+	JsonConfig c(&jsonfile);
+	JsonNode r;
+	c.read(&r);
 
-	property_tree::ptree pt;
-	readConfig(argv[1], &pt);
-
-   	string exePath = pt.get<string>("exePath");
+   	string exePath = r.getString("exePath");
 
 	stringstream exe;
-	exe << exePath << "/" << pt.get<string>("run");
+	exe << exePath << "/" << r.getString("run");
 	
 	runExe(exe.str().c_str());
 
