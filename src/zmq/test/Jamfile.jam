@@ -21,8 +21,10 @@ explicit unit_test_framework ;
 lib zmq : : <name>zmq ;
 
 unit-test smoke.test
-	: smoke.cpp ../JsonConfig.cpp ../Runner.cpp
+	: smoke.cpp ../JsonConfig.cpp ../Runner.cpp ../Vent.cpp
+		zmq
 		/boost/test
-	: <include>../../../turtle-1.2.2/include
+	:   <include>../../../turtle-1.2.2/include 
+		<include>../../../cppzmq-master
 	:
 	;

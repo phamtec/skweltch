@@ -1,56 +1,37 @@
+#include "Sink.hpp"
+#include "Messager.hpp"
 #include "JsonConfig.hpp"
-#include <zmq.hpp>
-#include <time.h>
-#include <sys/time.h>
 #include <iostream>
 #include <fstream>
+#include <sys/time.h>
 
 using namespace std;
+using namespace boost;
 
-int main (int argc, char *argv[])
-{
+void Sink::service(JsonNode *root) {
 
- 	if (argc != 2) {
-		cerr << "usage: " << argv[0] << " config" << endl;
-		return 1;
-	}
-	
-	ofstream outfile("sink.out");
-
- 	string pullfrom;
- 	{
- 		stringstream ss(argv[1]);
- 		JsonConfig json(&ss);
- 		JsonNode r;
- 		json.read(&r);
- 		pullfrom = r.getString("pullFrom");
- 	}
-	
-    //  Prepare our context and socket
-    zmq::context_t context(1);
-    zmq::socket_t receiver(context,ZMQ_PULL);
-    receiver.bind(pullfrom.c_str());
+ 	int expect = root->getInt("expect", 100);
 
     //  Wait for start of batch
     zmq::message_t message;
-    receiver.recv(&message);
+    msg->receive(&message);
 
     //  Start our clock now
     struct timeval tstart;
     gettimeofday (&tstart, NULL);
 
-
-    //  Process 100 confirmations
+    //  Process expected confirmations
     int task_nbr;
     int total_msec = 0;     //  Total calculated cost in msecs
-    for (task_nbr = 0; task_nbr < 100; task_nbr++) {
+    for (task_nbr = 0; task_nbr < expect; task_nbr++) {
 
-        receiver.recv(&message);
+        msg->receive(&message);
         if ((task_nbr / 10) * 10 == task_nbr)
-            outfile << ":" << std::flush;
+            *outfile << ":" << std::flush;
         else
-            outfile << "." << std::flush;
+            *outfile << "." << std::flush;
     }
+    
     //  Calculate and report duration of batch
     struct timeval tend, tdiff;
     gettimeofday (&tend, NULL);
@@ -64,6 +45,6 @@ int main (int argc, char *argv[])
         tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
     }
     total_msec = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
-    outfile << "\nTotal elapsed time: " << total_msec << " msec\n" << std::endl;
-    return 0;
+    *outfile << "\nTotal elapsed time: " << total_msec << " msec\n" << std::endl;
+    
 }

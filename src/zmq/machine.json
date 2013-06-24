@@ -6,26 +6,30 @@
 	"background": [
 		{
 			"count": 10, // need 10 of these. first arg to the program is the id.
-			"exe": "taskwork",
+			"exe": "WorkSleep",
 			"config" : {
 				"pullFrom": "tcp://localhost:5557",
 				"pushTo": "tcp://localhost:5558"
 			}
 		},
 		{
-			// only 1 of these.
-			"exe": "tasksink",
+			// only 1 of these, we sample 100 messages that can come through.
+			"exe": "SinkElapsed",
 			"config" : {
-				"pullFrom": "tcp://*:5558"
+				"pullFrom": "tcp://*:5558",
+				"expect": 100
 			}
 		}
 	],
 	
-	// this is what is used to feed he machine.
-	"run": "taskvent",
+	// this is what is used to feed the machine. 100 at a time.
+	"run": "VentRandomNum",
 	"config" : {
 		"pushTo": "tcp://*:5557",
-		"syncTo": "tcp://localhost:5558"
+		"syncTo": "tcp://localhost:5558",
+		"count": 100,
+		"low": 1,
+		"high": 50
 	}
 	
 }

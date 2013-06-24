@@ -67,12 +67,10 @@ void Runner::start1Background(ostream *pidfile, const std::string &exe, const st
 }
 
 void Runner::startBackground(ostream *pidfile, const std::string &exe, const std::string &config) {
-	cout << "starting..." << endl;
 	start1Background(pidfile, exe, config);
 }
 
 void Runner::startBackground(ostream *pidfile, int n, const std::string &exe, const std::string &config) {
-	cout << "starting (" << n << ")..." << endl;
 	for (int i=0; i<n; i++) {
 		stringstream cmd;
 		cmd << exe << " " << i;
@@ -82,7 +80,6 @@ void Runner::startBackground(ostream *pidfile, int n, const std::string &exe, co
 
 void Runner::stopBackground(istream *pidfile) {
 	string line;
-	cout << "stopping..." << endl;
 	while (getline(*pidfile, line)) {
 		pid_t pid = lexical_cast<int>(line);
 		runner->kill(pid);

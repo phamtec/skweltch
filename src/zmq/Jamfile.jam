@@ -12,32 +12,38 @@ build-project test ;
 
 lib zmq : : <name>zmq ;
 
-exe start : start.cpp Runner.cpp JsonConfig.cpp zmq
+exe start : start.cpp Runner.cpp JsonConfig.cpp 
+		zmq
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe stop : stop.cpp Runner.cpp JsonConfig.cpp zmq 
+exe stop : stop.cpp Runner.cpp JsonConfig.cpp 
+		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe run : run.cpp Runner.cpp JsonConfig.cpp zmq 
+exe run : run.cpp Runner.cpp JsonConfig.cpp 
+	zmq 
+		: <include>../../cppzmq-master
+	: 
+	;
+
+exe VentRandomNum : VentRandomNum.cpp JsonConfig.cpp Vent.cpp Messager.cpp 
+		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe taskvent : taskvent.cpp JsonConfig.cpp zmq 
+exe WorkSleep : WorkSleep.cpp JsonConfig.cpp Work.cpp Messager.cpp 
+		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe taskwork : taskwork.cpp JsonConfig.cpp zmq 
-	: <include>../../cppzmq-master
-	: 
-	;
-
-exe tasksink : tasksink.cpp JsonConfig.cpp zmq 
+exe SinkElapsed : SinkElapsed.cpp JsonConfig.cpp Sink.cpp Messager.cpp 
+		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
