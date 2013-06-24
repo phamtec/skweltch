@@ -12,10 +12,10 @@ class Sink {
 
 private:
 	IMessager *msg;
-	std::ofstream *outfile;
+	std::ostream *outfile;
 		
 public:
-	Sink(IMessager *m, std::ofstream *f) : msg(m), outfile(f) {}
+	Sink(IMessager *m, std::ostream *f) : msg(m), outfile(f) {}
 	
 	void service(JsonNode *root);
 	

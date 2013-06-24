@@ -3,7 +3,6 @@
 
 #include "../runner.hpp"
 #include "../JsonConfig.hpp"
-#include "../Vent.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
@@ -147,10 +146,3 @@ BOOST_AUTO_TEST_CASE( pidFileExistsTest )
 		BOOST_CHECK(!f.is_open());
 	}
 }
-
-BOOST_AUTO_TEST_CASE( ventTest )
-{
-
-	
-}
-

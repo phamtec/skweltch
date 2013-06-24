@@ -69,7 +69,7 @@ int main (int argc, char *argv[])
 	
 	SleepMsgExecutor e(&outfile);
 	Work w(&msg, &e);
-	w.service(&root);
+	w.service(&root, true);
 
     return 0;
 

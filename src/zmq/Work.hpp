@@ -26,7 +26,7 @@ private:
 public:
 	Work(IMessager *m, IWorkMsgExecutor *w) : msg(m), work(w) {}
 	
-	void service(JsonNode *root);
+	void service(JsonNode *root, bool forever);
 	
 };
 

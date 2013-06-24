@@ -5,7 +5,7 @@
 using namespace std;
 using namespace boost;
 
-void Work::service(JsonNode *root) {
+void Work::service(JsonNode *root, bool forever) {
 
 	work->init();
 
@@ -20,6 +20,10 @@ void Work::service(JsonNode *root) {
         //  Send results to sink
         message.rebuild();
  		msg->send(&message);
+ 		
+ 		if (!forever) {
+ 			break;
+ 		}
     }
     
 }
