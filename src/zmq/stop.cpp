@@ -1,6 +1,7 @@
 
-#include "runner.hpp"
+#include "Runner.hpp"
 #include "jsonConfig.hpp"
+#include <fstream>
 
 using namespace boost;
 using namespace std;
@@ -17,7 +18,11 @@ int main (int argc, char *argv[])
 	JsonNode r;
 	c.read(&r);
 
-	stopBackground(r.getString("pidFile"));
+   	ExeRunner er;
+   	Runner runner(&er);
+	StopTasksFileTask t(&runner);
+	FileProcessor fp(&t);
+	fp.processFileIfExistsThenDelete(r.getString("pidFile"));
 
 	return 0;
 	

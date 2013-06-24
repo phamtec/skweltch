@@ -1,8 +1,8 @@
 
-#include "runner.hpp"
+#include "Runner.hpp"
 #include "jsonConfig.hpp"
-
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace boost;
@@ -22,8 +22,15 @@ int main (int argc, char *argv[])
    	string pidFilename = r.getString("pidFile");
    	string exePath = r.getString("exePath");
    	
+   	ExeRunner er;
+   	Runner runner(&er);
+   	
    	// stop anything already started.
-	stopBackground(pidFilename);
+   	{
+   		StopTasksFileTask t(&runner);
+		FileProcessor fp(&t);
+		fp.processFileIfExistsThenDelete(pidFilename);
+	}
 	
 	// and start anything required up.
 	{
@@ -37,10 +44,10 @@ int main (int argc, char *argv[])
 			stringstream exe;
 			exe << exePath << "/" << bg.current()->getString("exe");
 			if (count > 0) {
-				startBackground(&pidfile, count, exe.str().c_str());
+				runner.startBackground(&pidfile, count, exe.str().c_str());
 			}
 			else {
-				startBackground(&pidfile, exe.str().c_str());
+				runner.startBackground(&pidfile, exe.str().c_str());
 			}
 			bg.next();
 		}

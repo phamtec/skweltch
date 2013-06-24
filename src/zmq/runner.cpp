@@ -1,8 +1,7 @@
 
-#include "runner.hpp"
+#include "Runner.hpp"
 
 #include <boost/lexical_cast.hpp>
-//#include <boost/property_tree/json_parser.hpp>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -12,7 +11,7 @@
 using namespace std;
 using namespace boost;
 
-pid_t runExe(const std::string &exe) {
+pid_t ExeRunner::run(const std::string &exe) {
 
     int fdset[2], nullfd;
     if (pipe(fdset) != 0) {
@@ -54,17 +53,21 @@ pid_t runExe(const std::string &exe) {
 	
 }
 
-void start1Background(ofstream *pidfile, const std::string &exe) {
-	pid_t pid = runExe(exe);
+void ExeRunner::kill(int pid) {
+	::kill(pid, SIGKILL);
+}
+
+void Runner::start1Background(ostream *pidfile, const std::string &exe) {
+	pid_t pid = runner->run(exe);
 	*pidfile << pid << endl;
 }
 
-void startBackground(ofstream *pidfile, const std::string &exe) {
+void Runner::startBackground(ostream *pidfile, const std::string &exe) {
 	cout << "starting..." << endl;
 	start1Background(pidfile, exe);
 }
 
-void startBackground(ofstream *pidfile, int n, const std::string &exe) {
+void Runner::startBackground(ostream *pidfile, int n, const std::string &exe) {
 	cout << "starting (" << n << ")..." << endl;
 	for (int i=0; i<n; i++) {
 		stringstream cmd;
@@ -73,16 +76,25 @@ void startBackground(ofstream *pidfile, int n, const std::string &exe) {
 	}
 }
 
-void stopBackground(const std::string &pidfilename) {
-	ifstream pidfile(pidfilename.c_str());
+void Runner::stopBackground(istream *pidfile) {
 	string line;
+	cout << "stopping..." << endl;
+	while (getline(*pidfile, line)) {
+		pid_t pid = lexical_cast<int>(line);
+		runner->kill(pid);
+	}
+}
+
+void StopTasksFileTask::process(std::istream *stream) {
+	runner->stopBackground(stream);
+}
+
+void FileProcessor::processFileIfExistsThenDelete(const std::string &filename)
+{
+	ifstream pidfile(filename.c_str());	
 	if (pidfile.is_open()) {
-		cout << "stopping..." << endl;
-		while (getline(pidfile, line)) {
-			pid_t pid = lexical_cast<int>(line);
-			kill(pid, SIGKILL);
-		}
-   		pidfile.close();
-    	remove(pidfilename.c_str());
+		task->process(&pidfile);
+		pidfile.close();
+		remove(filename.c_str());
 	}
 }

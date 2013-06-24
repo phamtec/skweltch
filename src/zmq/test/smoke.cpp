@@ -10,10 +10,6 @@
 using namespace std;
 using namespace boost;
 
-MOCK_BASE_CLASS( mock_exe_runner, IExeRunner )
-{
-};
-
 BOOST_AUTO_TEST_CASE( configTest )
 {
 //	mock_exe_runner er;
@@ -60,5 +56,89 @@ BOOST_AUTO_TEST_CASE( configTest )
 	BOOST_CHECK(!bg.hasMore());
 	BOOST_CHECK(r.getString("run") == "exe3");
 
+}
+
+MOCK_BASE_CLASS( mock_exe_runner, IExeRunner )
+{
+	MOCK_METHOD( run, 1 )
+	MOCK_METHOD( kill, 1 )
+
+};
+
+BOOST_AUTO_TEST_CASE( startTest )
+{
+	mock_exe_runner er;
+	
+	MOCK_EXPECT(er.run).with(mock::equal("exe1")).returns(1);
+	
+	Runner r(&er);
+	stringstream pids;
+	r.startBackground(&pids, "exe1");
+
+}
+
+BOOST_AUTO_TEST_CASE( startMultipleTest )
+{
+	mock_exe_runner er;
+	
+	MOCK_EXPECT(er.run).with(mock::equal("exe1 0")).returns(1);
+	MOCK_EXPECT(er.run).with(mock::equal("exe1 1")).returns(1);
+	
+	Runner r(&er);
+	stringstream pids;
+	r.startBackground(&pids, 2, "exe1");
+
+}
+
+BOOST_AUTO_TEST_CASE( stopTest )
+{
+	mock_exe_runner er;
+	
+	MOCK_EXPECT(er.kill).with(mock::equal(1));
+	MOCK_EXPECT(er.kill).with(mock::equal(2));
+
+	Runner r(&er);
+	stringstream pids("1\n2\n");
+	r.stopBackground(&pids);
+
+}
+
+MOCK_BASE_CLASS( mock_file_task, IFileTask )
+{
+	MOCK_METHOD( process, 1 )
+};
+
+BOOST_AUTO_TEST_CASE( pidFileNotExistTest )
+{
+	mock_file_task f;
+	
+	MOCK_EXPECT(f.process).never().with(mock::any);
+
+	FileProcessor fp(&f);
+	fp.processFileIfExistsThenDelete("test.pids");
+
+}
+
+BOOST_AUTO_TEST_CASE( pidFileExistsTest )
+{
+	mock_file_task f;
+	
+	MOCK_EXPECT(f.process).once().with(mock::any);
+
+	// write the test file out.
+	{
+		ofstream f("test.pids");
+		f << "1\n\2";
+	}
+	
+	// process it, should delete the file.
+	FileProcessor fp(&f);
+	fp.processFileIfExistsThenDelete("test.pids");
+
+	// make sure it's gone.
+	{
+		ifstream f("test.pids");
+		BOOST_CHECK(!f.is_open());
+	}
 }
 

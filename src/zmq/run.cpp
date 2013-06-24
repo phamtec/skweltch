@@ -1,5 +1,6 @@
-#include "runner.hpp"
+#include "Runner.hpp"
 #include "jsonConfig.hpp"
+#include <fstream>
 
 using namespace boost;
 using namespace std;
@@ -21,6 +22,8 @@ int main (int argc, char *argv[])
 	stringstream exe;
 	exe << exePath << "/" << r.getString("run");
 	
-	runExe(exe.str().c_str());
+   	ExeRunner er;
+
+	er.run(exe.str().c_str());
 
 }
