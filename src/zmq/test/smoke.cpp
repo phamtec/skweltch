@@ -48,14 +48,15 @@ BOOST_AUTO_TEST_CASE( configTest )
 	BOOST_CHECK(r.getString("exePath") == "./bin");
 	JsonNode bg;
 	r.getChild("background", &bg);
-	JsonNode t;
-	bg.start(&t);
+	bg.start();
 	BOOST_CHECK(bg.hasMore());
-	BOOST_CHECK(t.getInt("count", 0) == 5);
-	BOOST_CHECK(t.getString("exe") == "exe1");
-	bg.next(&t);
-	BOOST_CHECK(t.getInt("count", 0) == 0);
-	BOOST_CHECK(t.getString("exe") == "exe2");
+	BOOST_CHECK(bg.current()->getInt("count", 0) == 5);
+	BOOST_CHECK(bg.current()->getString("exe") == "exe1");
+	bg.next();
+	BOOST_CHECK(bg.hasMore());
+	BOOST_CHECK(bg.current()->getInt("count", 0) == 0);
+	BOOST_CHECK(bg.current()->getString("exe") == "exe2");
+	bg.next();
 	BOOST_CHECK(!bg.hasMore());
 	BOOST_CHECK(r.getString("run") == "exe3");
 

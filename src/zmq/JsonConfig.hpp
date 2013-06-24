@@ -13,22 +13,23 @@ private:
 	friend class JsonConfig;	
 	boost::property_tree::ptree pt;
 	boost::property_tree::ptree::iterator i;
+	std::auto_ptr<JsonNode> cur;
 	
 public:
 
 	/*
 		use like this:
 		
-		JsonNode t;
-		bg.start(&t);
-		while (bg.hasMore()) {
-			// use t
-			bg.next(&t);
+		c.start();
+		while (c.hasMore()) {
+			// use c.current()
+			c.next();
 		}
 	*/
-	void start(JsonNode *child);
+	void start();
 	bool hasMore();
-	void next(JsonNode *child);
+	void next();
+	JsonNode *current() { return cur.get(); }
 	
 	// get a named child.
 	void getChild(const std::string &key, JsonNode *child);

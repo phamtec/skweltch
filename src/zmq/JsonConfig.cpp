@@ -17,19 +17,22 @@ void JsonNode::getChild(const std::string &key, JsonNode *child) {
 	child->pt = pt.get_child(key);
 }
 
-void JsonNode::start(JsonNode *child) {
+void JsonNode::start() {
 	i = pt.begin();
-	child->pt = i->second;
-	i++;
+	cur.reset(new JsonNode());
+	cur->pt = i->second;
 }
 
 bool JsonNode::hasMore() {
 	return i != pt.end();
 }
 
-void JsonNode::next(JsonNode *child) {
-	child->pt = i->second;
+void JsonNode::next() {
 	i++;
+	if (i != pt.end()) {
+		cur.reset(new JsonNode());
+		cur->pt = i->second;
+	}
 }
 
 string JsonNode::getString(const string &key) { 

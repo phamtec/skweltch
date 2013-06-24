@@ -3,7 +3,6 @@
 #include "jsonConfig.hpp"
 
 #include <iostream>
-#include <boost/property_tree/ptree.hpp>
 
 using namespace std;
 using namespace boost;
@@ -32,34 +31,20 @@ int main (int argc, char *argv[])
 		
 		JsonNode bg;
 		r.getChild("background", &bg);
-		JsonNode t;
-		bg.start(&t);
+		bg.start();
 		while (bg.hasMore()) {
-			int count = t.getInt("count", 0);
+			int count = bg.current()->getInt("count", 0);
 			stringstream exe;
-			exe << exePath << "/" << t.getString("exe");
+			exe << exePath << "/" << bg.current()->getString("exe");
 			if (count > 0) {
 				startBackground(&pidfile, count, exe.str().c_str());
 			}
 			else {
 				startBackground(&pidfile, exe.str().c_str());
 			}
-			bg.next(&t);
+			bg.next();
 		}
-/*
-		property_tree::ptree bg = pt.get_child("background");
-		for (property_tree::ptree::iterator i = bg.begin(); i != bg.end(); i++) {
-			int count = i->second.get("count", 0);
-			stringstream exe;
-			exe << exePath << "/" << i->second.get<string>("exe");
-			if (count > 0) {
-				startBackground(&pidfile, count, exe.str().c_str());
-			}
-			else {
-				startBackground(&pidfile, exe.str().c_str());
-			}
-		}
-*/
+
 	}
 
 	return 0;
