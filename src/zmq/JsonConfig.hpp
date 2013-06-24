@@ -40,6 +40,9 @@ public:
 	std::string getString(const std::string &key);
 	int getInt(const std::string &key, int def);
 	
+	// get an entire subnode as a JsonString.
+	std::string getChildAsString(const std::string &key);
+	
 };
 
 /**

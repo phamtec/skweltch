@@ -1,3 +1,4 @@
+#include "JsonConfig.hpp"
 #include "zhelpers.hpp"
 
 #include <iostream>
@@ -7,24 +8,35 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 2) {
-		cerr << "usage: " << argv[0] << " taskId" << endl;
+	if (argc != 3) {
+		cerr << "usage: " << argv[0] << " taskId config" << endl;
 		return 1;
 	}
+	
+	stringstream outfn;
+	outfn << "task" << argv[1] << ".out";
+	ofstream outfile(outfn.str().c_str());
+	outfile << argv[2] << endl;
+	
+ 	string pullfrom, pushto;
+ 	{
+ 		stringstream ss(argv[1]);
+ 		JsonConfig json(&ss);
+ 		JsonNode r;
+ 		json.read(&r);
+ 		pullfrom = r.getString("pullFrom");
+ 		pushto = r.getString("pushTo");
+ 	}
 	
     zmq::context_t context(1);
 
     //  Socket to receive messages on
     zmq::socket_t receiver(context, ZMQ_PULL);
-    receiver.connect("tcp://localhost:5557");
+    receiver.connect(pullfrom.c_str());
 
     //  Socket to send messages to
     zmq::socket_t sender(context, ZMQ_PUSH);
-    sender.connect("tcp://localhost:5558");
-
-	stringstream outfn;
-	outfn << "task" << argv[1] << ".out";
-	ofstream outfile(outfn.str().c_str());
+    sender.connect(pushto.c_str());
 
     //  Process tasks forever
     while (1) {

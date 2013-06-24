@@ -2,8 +2,10 @@
 #include "JsonConfig.hpp"
 
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string/trim.hpp>
+
 #include <iostream>
-#
+
 using namespace std;
 using namespace boost;
 
@@ -44,4 +46,13 @@ string JsonNode::getString(const string &key) {
 
 int JsonNode::getInt(const string &key, int def) { 
 	return pt.get(key, def); 
+}
+
+std::string JsonNode::getChildAsString(const std::string &key) {
+	boost::property_tree::ptree c = pt.get_child(key);
+	ostringstream ss;
+	property_tree::write_json(ss, c, false);
+	string s = ss.str();
+	trim(s);           
+	return s;
 }

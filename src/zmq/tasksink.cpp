@@ -1,3 +1,4 @@
+#include "JsonConfig.hpp"
 #include <zmq.hpp>
 #include <time.h>
 #include <sys/time.h>
@@ -8,10 +9,27 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
+
+ 	if (argc != 2) {
+		cerr << "usage: " << argv[0] << " config" << endl;
+		return 1;
+	}
+	
+	ofstream outfile("sink.out");
+
+ 	string pullfrom;
+ 	{
+ 		stringstream ss(argv[1]);
+ 		JsonConfig json(&ss);
+ 		JsonNode r;
+ 		json.read(&r);
+ 		pullfrom = r.getString("pullFrom");
+ 	}
+	
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context,ZMQ_PULL);
-    receiver.bind("tcp://*:5558");
+    receiver.bind(pullfrom.c_str());
 
     //  Wait for start of batch
     zmq::message_t message;
@@ -21,7 +39,6 @@ int main (int argc, char *argv[])
     struct timeval tstart;
     gettimeofday (&tstart, NULL);
 
-	ofstream outfile("sink.out");
 
     //  Process 100 confirmations
     int task_nbr;

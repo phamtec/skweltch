@@ -27,17 +27,17 @@ exe run : run.cpp Runner.cpp JsonConfig.cpp zmq
 	: 
 	;
 
-exe taskvent : taskvent.cpp zmq 
+exe taskvent : taskvent.cpp JsonConfig.cpp zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe taskwork : taskwork.cpp zmq 
+exe taskwork : taskwork.cpp JsonConfig.cpp zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe tasksink : tasksink.cpp zmq 
+exe tasksink : tasksink.cpp JsonConfig.cpp zmq 
 	: <include>../../cppzmq-master
 	: 
 	;

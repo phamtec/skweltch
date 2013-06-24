@@ -1,3 +1,4 @@
+#include "JsonConfig.hpp"
 #include <zmq.hpp>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,21 +12,32 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
-    zmq::context_t context (1);
+	if (argc != 2) {
+		cerr << "usage: " << argv[0] << " config" << endl;
+		return 1;
+	}
+	
+ 	ofstream outfile("vent.out");
+ 	
+ 	string pushto, syncto;
+ 	{
+ 		stringstream ss(argv[1]);
+ 		JsonConfig json(&ss);
+ 		JsonNode r;
+ 		json.read(&r);
+ 		pushto = r.getString("pushTo");
+ 		syncto = r.getString("syncTo");
+ 	}
+	
+   	zmq::context_t context (1);
 
     //  Socket to send messages on
     zmq::socket_t  sender(context, ZMQ_PUSH);
-    sender.bind("tcp://*:5557");
-
-//    std::cout << "Press Enter when the workers are ready: " << std::endl;
-//    getchar ();
-//    std::cout << "Sending tasks to workers…\n" << std::endl;
-
-	ofstream outfile("vent.out");
+    sender.bind(pushto.c_str());
 
     //  The first message is "0" and signals start of batch
     zmq::socket_t sink(context, ZMQ_PUSH);
-    sink.connect("tcp://localhost:5558");
+    sink.connect(syncto.c_str());
     zmq::message_t message(2);
     memcpy(message.data(), "0", 1);
     sink.send(message);

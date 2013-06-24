@@ -43,11 +43,13 @@ int main (int argc, char *argv[])
 			int count = bg.current()->getInt("count", 0);
 			stringstream exe;
 			exe << exePath << "/" << bg.current()->getString("exe");
+			stringstream config;
+			config << "'" << bg.current()->getChildAsString("config") << "'";
 			if (count > 0) {
-				runner.startBackground(&pidfile, count, exe.str().c_str());
+				runner.startBackground(&pidfile, count, exe.str(), config.str());
 			}
 			else {
-				runner.startBackground(&pidfile, exe.str().c_str());
+				runner.startBackground(&pidfile, exe.str(), config.str());
 			}
 			bg.next();
 		}

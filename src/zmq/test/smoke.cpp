@@ -6,13 +6,13 @@
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 using namespace std;
 using namespace boost;
 
 BOOST_AUTO_TEST_CASE( configTest )
 {
-//	mock_exe_runner er;
 	stringstream json(
 "{\n"
 "	\"pidFile\": \"pids.pid\",\n"
@@ -31,7 +31,11 @@ BOOST_AUTO_TEST_CASE( configTest )
 "	],\n"
 "	\n"
 "	// this is what is used to feed the machine.\n"
-"	\"run\": \"exe3\"\n"
+"	\"run\": \"exe3\",\n"
+"	\"config\" : {\n"
+"		\"a\": \"x\",\n"
+"		\"b\": \"y\"\n"
+"	}\n"
 "	\n"
 "}\n"
 );
@@ -55,7 +59,8 @@ BOOST_AUTO_TEST_CASE( configTest )
 	bg.next();
 	BOOST_CHECK(!bg.hasMore());
 	BOOST_CHECK(r.getString("run") == "exe3");
-
+	BOOST_CHECK(r.getChildAsString("config") == "{\"a\":\"x\",\"b\":\"y\"}");
+    
 }
 
 MOCK_BASE_CLASS( mock_exe_runner, IExeRunner )
@@ -69,11 +74,11 @@ BOOST_AUTO_TEST_CASE( startTest )
 {
 	mock_exe_runner er;
 	
-	MOCK_EXPECT(er.run).with(mock::equal("exe1")).returns(1);
+	MOCK_EXPECT(er.run).with(mock::equal("exe1 ''")).returns(1);
 	
 	Runner r(&er);
 	stringstream pids;
-	r.startBackground(&pids, "exe1");
+	r.startBackground(&pids, "exe1", "''");
 
 }
 
@@ -81,12 +86,12 @@ BOOST_AUTO_TEST_CASE( startMultipleTest )
 {
 	mock_exe_runner er;
 	
-	MOCK_EXPECT(er.run).with(mock::equal("exe1 0")).returns(1);
-	MOCK_EXPECT(er.run).with(mock::equal("exe1 1")).returns(1);
+	MOCK_EXPECT(er.run).with(mock::equal("exe1 0 ''")).returns(1);
+	MOCK_EXPECT(er.run).with(mock::equal("exe1 1 ''")).returns(1);
 	
 	Runner r(&er);
 	stringstream pids;
-	r.startBackground(&pids, 2, "exe1");
+	r.startBackground(&pids, 2, "exe1", "''");
 
 }
 

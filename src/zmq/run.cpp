@@ -20,10 +20,10 @@ int main (int argc, char *argv[])
    	string exePath = r.getString("exePath");
 
 	stringstream exe;
-	exe << exePath << "/" << r.getString("run");
+	exe << exePath << "/" << r.getString("run") << " '" << r.getChildAsString("config") << "'";
 	
    	ExeRunner er;
 
-	er.run(exe.str().c_str());
+	er.run(exe.str());
 
 }

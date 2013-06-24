@@ -13,6 +13,8 @@ using namespace boost;
 
 pid_t ExeRunner::run(const std::string &exe) {
 
+	cout << "run: " << exe << endl;
+	
     int fdset[2], nullfd;
     if (pipe(fdset) != 0) {
         cerr << "couldn't pipe" << endl;
@@ -57,22 +59,24 @@ void ExeRunner::kill(int pid) {
 	::kill(pid, SIGKILL);
 }
 
-void Runner::start1Background(ostream *pidfile, const std::string &exe) {
-	pid_t pid = runner->run(exe);
+void Runner::start1Background(ostream *pidfile, const std::string &exe, const std::string &config) {
+	stringstream cmd;
+	cmd << exe << " " << config;
+	pid_t pid = runner->run(cmd.str());
 	*pidfile << pid << endl;
 }
 
-void Runner::startBackground(ostream *pidfile, const std::string &exe) {
+void Runner::startBackground(ostream *pidfile, const std::string &exe, const std::string &config) {
 	cout << "starting..." << endl;
-	start1Background(pidfile, exe);
+	start1Background(pidfile, exe, config);
 }
 
-void Runner::startBackground(ostream *pidfile, int n, const std::string &exe) {
+void Runner::startBackground(ostream *pidfile, int n, const std::string &exe, const std::string &config) {
 	cout << "starting (" << n << ")..." << endl;
 	for (int i=0; i<n; i++) {
 		stringstream cmd;
 		cmd << exe << " " << i;
-		start1Background(pidfile, cmd.str().c_str());
+		start1Background(pidfile, cmd.str(), config);
 	}
 }
 

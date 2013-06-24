@@ -6,15 +6,26 @@
 	"background": [
 		{
 			"count": 10, // need 10 of these. first arg to the program is the id.
-			"exe": "taskwork"
+			"exe": "taskwork",
+			"config" : {
+				"pullFrom": "tcp://localhost:5557",
+				"pushTo": "tcp://localhost:5558"
+			}
 		},
 		{
 			// only 1 of these.
-			"exe": "tasksink"
+			"exe": "tasksink",
+			"config" : {
+				"pullFrom": "tcp://*:5558"
+			}
 		}
 	],
 	
 	// this is what is used to feed he machine.
-	"run": "taskvent"
+	"run": "taskvent",
+	"config" : {
+		"pushTo": "tcp://*:5557"
+		"syncTo": "tcp://*:5558"
+	}
 	
 }
