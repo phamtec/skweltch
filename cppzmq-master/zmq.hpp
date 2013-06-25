@@ -285,7 +285,15 @@ namespace zmq
         void operator = (const context_t&);
     };
 
-    class socket_t
+	// PTH: make the socket mockable.
+	class i_socket_t
+	{
+	public:
+    	virtual bool send (message_t &msg_, int flags_ = 0) = 0;
+        virtual bool recv (message_t *msg_, int flags_ = 0) = 0;
+	};
+	
+    class socket_t : public i_socket_t
     {
     public:
 

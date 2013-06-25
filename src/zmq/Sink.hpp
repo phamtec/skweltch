@@ -5,19 +5,17 @@
 #include <zmq.hpp>
 #include <string>
 
-class IMessager;
 class JsonNode;
 
 class Sink {
 
 private:
-	IMessager *msg;
 	std::ostream *outfile;
 		
 public:
-	Sink(IMessager *m, std::ostream *f) : msg(m), outfile(f) {}
+	Sink(std::ostream *f) : outfile(f) {}
 	
-	void service(JsonNode *root);
+	void service(JsonNode *root, zmq::i_socket_t *receiver);
 	
 };
 

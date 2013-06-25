@@ -1,6 +1,5 @@
 #include "JsonConfig.hpp"
 #include "Sink.hpp"
-#include "Messager.hpp"
 #include <zmq.hpp>
 #include <iostream>
 #include <fstream>
@@ -30,10 +29,7 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
-	ZmQMessager msg;
-	msg.setReceiver(&receiver);
-
-	Sink s(&msg, &outfile);
-	s.service(&root);
+	Sink s(&outfile);
+	s.service(&root, &receiver);
 
 }

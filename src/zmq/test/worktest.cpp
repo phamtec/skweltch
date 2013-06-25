@@ -3,7 +3,6 @@
 
 #include "../JsonConfig.hpp"
 #include "../Work.hpp"
-#include "../Messager.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
@@ -12,10 +11,10 @@
 using namespace std;
 using namespace boost;
 
-MOCK_BASE_CLASS( mock_messager, IMessager )
+MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 {
-	MOCK_METHOD( send, 1 )
-	MOCK_METHOD( receive, 1 )
+    MOCK_METHOD_EXT( send, 2, bool(zmq::message_t &, int), send )
+   	MOCK_METHOD_EXT( recv, 2, bool(zmq::message_t *, int), recv )
 };
 
 MOCK_BASE_CLASS( mock_work, IWorkMsgExecutor )
@@ -26,21 +25,21 @@ MOCK_BASE_CLASS( mock_work, IWorkMsgExecutor )
 
 BOOST_AUTO_TEST_CASE( workTest )
 {
-	mock_messager m;
+	mock_socket sender;
+	mock_socket receiver;
 	mock_work w;
 	
-	MOCK_EXPECT(m.receive).with(mock::any).exactly(1);
-	MOCK_EXPECT(m.send).with(mock::any).exactly(1);
+	MOCK_EXPECT(receiver.recv).with(mock::any, 0).once().returns(true);
+	MOCK_EXPECT(sender.send).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(w.init).once();
 	MOCK_EXPECT(w.doit).with(mock::any).exactly(1);
-
-    Work s(&m, &w);
     
     stringstream json("{}");
 	JsonConfig c(&json);
 	JsonNode root;
 	c.read(&root);
     
-    s.service(&root, false);
+   	Work s(&w);
+    s.service(&root, &receiver, &sender, false);
     
 }

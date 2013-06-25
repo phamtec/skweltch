@@ -1,6 +1,5 @@
 
 #include "Work.hpp"
-#include "Messager.hpp"
 #include "JsonConfig.hpp"
 #include "zhelpers.hpp"
 
@@ -63,13 +62,9 @@ int main (int argc, char *argv[])
     zmq::socket_t sender(context, ZMQ_PUSH);
     sender.connect(pushto.c_str());
 
-	ZmQMessager msg;
-	msg.setSender(&sender);
-	msg.setReceiver(&receiver);
-	
 	SleepMsgExecutor e(&outfile);
-	Work w(&msg, &e);
-	w.service(&root, true);
+	Work w(&e);
+	w.service(&root, &receiver, &sender, true);
 
     return 0;
 

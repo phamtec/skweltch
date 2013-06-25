@@ -3,34 +3,33 @@
 
 #include "../JsonConfig.hpp"
 #include "../Sink.hpp"
-#include "../Messager.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <zmq.hpp>
 
 using namespace std;
 using namespace boost;
 
-MOCK_BASE_CLASS( mock_messager, IMessager )
+MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 {
-	MOCK_METHOD( send, 1 )
-	MOCK_METHOD( receive, 1 )
+    MOCK_METHOD_EXT( send, 2, bool(zmq::message_t &, int), send )
+   	MOCK_METHOD_EXT( recv, 2, bool(zmq::message_t *, int), recv )
 };
 
 BOOST_AUTO_TEST_CASE( sinkTest )
 {
-	mock_messager m;
+	mock_socket receiver;
 	
-	MOCK_EXPECT(m.receive).with(mock::any).exactly(6);
+	MOCK_EXPECT(receiver.recv).with(mock::any, 0).exactly(6).returns(true);
 
-    Sink s(&m, &cout);
-    
     stringstream json("{\"expect\": 5}");
 	JsonConfig c(&json);
 	JsonNode root;
 	c.read(&root);
     
-    s.service(&root);
+    Sink s(&cout);
+    s.service(&root, &receiver);
     
 }

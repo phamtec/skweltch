@@ -5,7 +5,6 @@
 #include <zmq.hpp>
 #include <string>
 
-class IMessager;
 class JsonNode;
 
 class IWorkMsgExecutor {
@@ -20,13 +19,12 @@ public:
 class Work {
 
 private:
-	IMessager *msg;
 	IWorkMsgExecutor *work;
 	
 public:
-	Work(IMessager *m, IWorkMsgExecutor *w) : msg(m), work(w) {}
+	Work(IWorkMsgExecutor *w) : work(w) {}
 	
-	void service(JsonNode *root, bool forever);
+	void service(JsonNode *root, zmq::i_socket_t *receiver, zmq::i_socket_t *sender, bool forever);
 	
 };
 

@@ -1,7 +1,6 @@
 
 #include "JsonConfig.hpp"
 #include "Vent.hpp"
-#include "Messager.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -70,13 +69,9 @@ int main (int argc, char *argv[])
     memcpy(message.data(), "0", 1);
     sink.send(message);
 
-	ZmQMessager msg;
-	msg.setSender(&sender);
-	msg.setReceiver(&sink);
-	
 	RandomMsgBuilder vrn(low, high);
-	Vent v(&msg, &vrn);
-	v.service(&root);
+	Vent v(&vrn);
+	v.service(&root, &sender);
 
     return 0;
 }

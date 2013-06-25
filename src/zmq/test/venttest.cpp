@@ -3,7 +3,6 @@
 
 #include "../JsonConfig.hpp"
 #include "../Vent.hpp"
-#include "../Messager.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
@@ -12,10 +11,10 @@
 using namespace std;
 using namespace boost;
 
-MOCK_BASE_CLASS( mock_messager, IMessager )
+MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 {
-	MOCK_METHOD( send, 1 )
-	MOCK_METHOD( receive, 1 )
+    MOCK_METHOD_EXT( send, 2, bool(zmq::message_t &, int), send )
+   	MOCK_METHOD_EXT( recv, 2, bool(zmq::message_t *, int), recv )
 };
 
 MOCK_BASE_CLASS( mock_builder, IVentMsgBuilder )
@@ -26,20 +25,20 @@ MOCK_BASE_CLASS( mock_builder, IVentMsgBuilder )
 
 BOOST_AUTO_TEST_CASE( ventTest )
 {
-	mock_messager m;
+	mock_socket sender;
 	mock_builder b;
 	
-	MOCK_EXPECT(m.send).with(mock::any).exactly(2);
+	MOCK_EXPECT(sender.send).with(mock::any, 0).exactly(2).returns(true);
 	MOCK_EXPECT(b.init).once();
 	MOCK_EXPECT(b.buildMessage).with(mock::any, mock::any).exactly(2);
 
-    Vent s(&m, &b);
+    Vent s(&b);
     
     stringstream json("{\"count\": 2}");
 	JsonConfig c(&json);
 	JsonNode root;
 	c.read(&root);
     
-    s.service(&root);
+    s.service(&root, &sender);
     
 }

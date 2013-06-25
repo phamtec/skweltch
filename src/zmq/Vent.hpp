@@ -5,7 +5,6 @@
 #include <zmq.hpp>
 #include <string>
 
-class IMessager;
 class JsonNode;
 
 class IVentMsgBuilder {
@@ -20,13 +19,12 @@ public:
 class Vent {
 
 private:
-	IMessager *msg;
 	IVentMsgBuilder *work;
 	
 public:
-	Vent(IMessager *m, IVentMsgBuilder *w) : msg(m), work(w) {}
+	Vent(IVentMsgBuilder *w) : work(w) {}
 	
-	void service(JsonNode *root);
+	void service(JsonNode *root, zmq::i_socket_t *sender);
 	
 };
 

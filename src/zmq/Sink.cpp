@@ -1,5 +1,4 @@
 #include "Sink.hpp"
-#include "Messager.hpp"
 #include "JsonConfig.hpp"
 #include <iostream>
 #include <fstream>
@@ -8,13 +7,13 @@
 using namespace std;
 using namespace boost;
 
-void Sink::service(JsonNode *root) {
+void Sink::service(JsonNode *root, zmq::i_socket_t *receiver) {
 
  	int expect = root->getInt("expect", 100);
 
     //  Wait for start of batch
     zmq::message_t message;
-    msg->receive(&message);
+    receiver->recv(&message);
 
     //  Start our clock now
     struct timeval tstart;
@@ -25,7 +24,7 @@ void Sink::service(JsonNode *root) {
     int total_msec = 0;     //  Total calculated cost in msecs
     for (task_nbr = 0; task_nbr < expect; task_nbr++) {
 
-        msg->receive(&message);
+    	receiver->recv(&message);
         if ((task_nbr / 10) * 10 == task_nbr)
             *outfile << ":" << std::flush;
         else

@@ -30,19 +30,19 @@ exe run : run.cpp Runner.cpp JsonConfig.cpp
 	: 
 	;
 
-exe VentRandomNum : VentRandomNum.cpp JsonConfig.cpp Vent.cpp Messager.cpp 
+exe VentRandomNum : VentRandomNum.cpp JsonConfig.cpp Vent.cpp
 		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe WorkSleep : WorkSleep.cpp JsonConfig.cpp Work.cpp Messager.cpp 
+exe WorkSleep : WorkSleep.cpp JsonConfig.cpp Work.cpp
 		zmq 
 	: <include>../../cppzmq-master
 	: 
 	;
 
-exe SinkElapsed : SinkElapsed.cpp JsonConfig.cpp Sink.cpp Messager.cpp 
+exe SinkElapsed : SinkElapsed.cpp JsonConfig.cpp Sink.cpp
 		zmq 
 	: <include>../../cppzmq-master
 	: 
