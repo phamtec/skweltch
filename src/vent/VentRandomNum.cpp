@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
- 	ofstream outfile("out/vent.out");
+ 	ofstream outfile("vent.out");
  	
  	JsonNode root;
  	{

@@ -1,12 +1,11 @@
 {
 	"pidFile": "tasks.pid",
-	"exePath": "./bin/darwin-4.2.1/debug/threading-multi",
 	
 	// these are all run in the background and remembered.
 	"background": [
 		{
 			"count": 10, // need 10 of these. first arg to the program is the id.
-			"exe": "WorkSleep",
+			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/WorkSleep",
 			"config" : {
 				"pullFrom": "tcp://localhost:5557",
 				"pushTo": "tcp://localhost:5558"
@@ -14,7 +13,7 @@
 		},
 		{
 			// only 1 of these, we sample 100 messages that can come through.
-			"exe": "SinkElapsed",
+			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/SinkElapsed",
 			"config" : {
 				"pullFrom": "tcp://*:5558",
 				"expect": 100
@@ -23,7 +22,7 @@
 	],
 	
 	// this is what is used to feed the machine. 100 at a time.
-	"run": "VentRandomNum",
+	"run": "./vent/bin/darwin-4.2.1/debug/threading-multi/VentRandomNum",
 	"config" : {
 		"pushTo": "tcp://*:5557",
 		"syncTo": "tcp://localhost:5558",

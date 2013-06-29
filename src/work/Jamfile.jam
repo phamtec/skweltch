@@ -1,5 +1,5 @@
 
-project zmq
+project work
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -10,10 +10,9 @@ project zmq
 
 lib zmq : : <name>zmq ;
 
-exe SinkElapsed : SinkElapsed.cpp ../JsonConfig.cpp ../Sink.cpp
+exe WorkSleep : WorkSleep.cpp ../zmq/JsonConfig.cpp ../zmq/Work.cpp
 		zmq 
-	: 	<include>../../../cppzmq-master
-		<include>..
+	: 	<include>../../cppzmq-master
+		<include>../zmq
 	: 
 	;
-

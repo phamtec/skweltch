@@ -1,0 +1,18 @@
+
+project monitor
+    : requirements 
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+
+exe monitor : monitor.cpp ../zmq/Runner.cpp ../zmq/JsonConfig.cpp ../zmq/FileProcessor.cpp ../zmq/ExeRunner.cpp ../zmq/StopTasksFileTask.cpp
+		zmq
+	:	<include>../cppzmq-master
+		<include>../zmq
+	: 
+	;

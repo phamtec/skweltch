@@ -1,5 +1,5 @@
 
-project zmq
+project vent
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -10,9 +10,9 @@ project zmq
 
 lib zmq : : <name>zmq ;
 
-exe WorkSleep : WorkSleep.cpp ../JsonConfig.cpp ../Work.cpp
+exe VentRandomNum : VentRandomNum.cpp ../zmq/JsonConfig.cpp ../zmq/Vent.cpp
 		zmq 
-	: 	<include>../../../cppzmq-master
-		<include>..
+	:	<include>../../cppzmq-master
+		<include>../zmq
 	: 
 	;

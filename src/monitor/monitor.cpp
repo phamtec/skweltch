@@ -24,7 +24,6 @@ int main (int argc, char *argv[])
 	c.read(&r);
 
    	string pidFilename = r.getString("pidFile");
-   	string exePath = r.getString("exePath");
    	
    	ExeRunner er;
 
@@ -46,15 +45,14 @@ int main (int argc, char *argv[])
 			bg.start();
 			while (bg.hasMore()) {
 				int count = bg.current()->getInt("count", 0);
-				stringstream exe;
-				exe << exePath << "/" << bg.current()->getString("exe");
+				string exe(bg.current()->getString("exe"));
 				stringstream config;
 				config << "'" << bg.current()->getChildAsString("config") << "'";
 				if (count > 0) {
-					runner.startBackground(&pidfile, count, exe.str(), config.str());
+					runner.startBackground(&pidfile, count, exe, config.str());
 				}
 				else {
-					runner.startBackground(&pidfile, exe.str(), config.str());
+					runner.startBackground(&pidfile, exe, config.str());
 				}
 				bg.next();
 			}
@@ -62,13 +60,10 @@ int main (int argc, char *argv[])
 	}
 	else if (std::string(argv[2]) == "run") {
 		stringstream exe;
-		exe << exePath << "/" << r.getString("run") << " '" << r.getChildAsString("config") << "'";
+		exe << r.getString("run") << " '" << r.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 	else if (std::string(argv[2]) == "wait") {
-		stringstream exe;
-		exe << exePath << "/" << r.getString("run") << " '" << r.getChildAsString("config") << "'";
-		er.run(exe.str());
 	}
 	else {
 		cerr << "usage: " << argv[0] << " jsonConfig [start|stop|run|wait]" << endl;

@@ -15,6 +15,16 @@ src/zmq/bin/*
 
 src/zmq/test/bin/*
 
+src/monitor/bin/*
+
+src/sink/bin/*
+
+src/vent/bin/*
+
+src/work/bin/*
+
+src/skweltch.bbprojectd/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*

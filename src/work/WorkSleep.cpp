@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
 	}
 	
 	stringstream outfn;
-	outfn << "out/task" << argv[1] << ".out";
+	outfn << "task" << argv[1] << ".out";
 	ofstream outfile(outfn.str().c_str());
 	
  	JsonNode root;

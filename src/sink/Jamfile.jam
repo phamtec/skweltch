@@ -1,5 +1,5 @@
 
-project zmq
+project sink
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -10,9 +10,10 @@ project zmq
 
 lib zmq : : <name>zmq ;
 
-exe VentRandomNum : VentRandomNum.cpp ../JsonConfig.cpp ../Vent.cpp
+exe SinkElapsed : SinkElapsed.cpp ../zmq/JsonConfig.cpp ../zmq/Sink.cpp
 		zmq 
-	:	<include>../../../cppzmq-master
-		<include>..
+	:	<include>../../cppzmq-master
+		<include>../zmq
 	: 
 	;
+
