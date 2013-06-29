@@ -4,22 +4,7 @@
 
 #include <string>
 
-class IExeRunner {
-public:
-
-	virtual int run(const std::string &exe) = 0;
-	virtual void kill(int pid) = 0;
-	
-};
-
-class ExeRunner : public IExeRunner {
-
-public:
-
-	virtual int run(const std::string &exe);
-	virtual void kill(int pid);
-
-};
+class IExeRunner;
 
 class Runner {
 
@@ -33,39 +18,6 @@ public:
 	
 	void startBackground(std::ostream *pidfile, int n, const std::string &exe, const std::string &config);
 	void startBackground(std::ostream *pidfile, const std::string &exe, const std::string &config);
-	void stopBackground(std::istream *pidfile);
-	
-};
-
-class IFileTask {
-
-public:
-
-	virtual void process(std::istream *stream) = 0;
-	
-};
-
-class FileProcessor {
-
-private:
-	IFileTask *task;
-	
-public:
-	FileProcessor(IFileTask *t) : task(t) {}
-
-	void processFileIfExistsThenDelete(const std::string &filename);
-	
-};
-
-class StopTasksFileTask : public IFileTask {
-
-private:
-	Runner *runner;
-	
-public:
-	StopTasksFileTask(Runner *r) : runner(r) {}
-
-	virtual void process(std::istream *stream);
 	
 };
 

@@ -1,0 +1,18 @@
+
+project zmq
+    : requirements 
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+
+exe VentRandomNum : VentRandomNum.cpp ../JsonConfig.cpp ../Vent.cpp
+		zmq 
+	:	<include>../../../cppzmq-master
+		<include>..
+	: 
+	;

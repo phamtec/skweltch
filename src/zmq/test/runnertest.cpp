@@ -3,6 +3,10 @@
 
 #include "../runner.hpp"
 #include "../JsonConfig.hpp"
+#include "../IFileTask.hpp"
+#include "../IExeRunner.hpp"
+#include "../StopTasksFileTask.hpp"
+
 #include <turtle/mock.hpp>
 #include <iostream>
 #include <fstream>
@@ -102,47 +106,8 @@ BOOST_AUTO_TEST_CASE( stopTest )
 	MOCK_EXPECT(er.kill).with(mock::equal(1));
 	MOCK_EXPECT(er.kill).with(mock::equal(2));
 
-	Runner r(&er);
+	StopTasksFileTask r(&er);
 	stringstream pids("1\n2\n");
-	r.stopBackground(&pids);
+	r.process(&pids);
 
-}
-
-MOCK_BASE_CLASS( mock_file_task, IFileTask )
-{
-	MOCK_METHOD( process, 1 )
-};
-
-BOOST_AUTO_TEST_CASE( pidFileNotExistTest )
-{
-	mock_file_task f;
-	
-	MOCK_EXPECT(f.process).never().with(mock::any);
-
-	FileProcessor fp(&f);
-	fp.processFileIfExistsThenDelete("test.pids");
-
-}
-
-BOOST_AUTO_TEST_CASE( pidFileExistsTest )
-{
-	mock_file_task f;
-	
-	MOCK_EXPECT(f.process).once().with(mock::any);
-
-	// write the test file out.
-	{
-		ofstream f("test.pids");
-		f << "1\n\2";
-	}
-	
-	// process it, should delete the file.
-	FileProcessor fp(&f);
-	fp.processFileIfExistsThenDelete("test.pids");
-
-	// make sure it's gone.
-	{
-		ifstream f("test.pids");
-		BOOST_CHECK(!f.is_open());
-	}
 }

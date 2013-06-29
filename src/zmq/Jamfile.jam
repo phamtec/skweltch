@@ -9,30 +9,14 @@ project zmq
     ;
 
 build-project test ;
+build-project sink ;
+build-project vent ;
+build-project work ;
 
 lib zmq : : <name>zmq ;
 
-exe monitor : monitor.cpp Runner.cpp JsonConfig.cpp 
+exe monitor : monitor.cpp Runner.cpp JsonConfig.cpp FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp
 		zmq
 	: <include>../../cppzmq-master
 	: 
 	;
-
-exe VentRandomNum : VentRandomNum.cpp JsonConfig.cpp Vent.cpp
-		zmq 
-	: <include>../../cppzmq-master
-	: 
-	;
-
-exe WorkSleep : WorkSleep.cpp JsonConfig.cpp Work.cpp
-		zmq 
-	: <include>../../cppzmq-master
-	: 
-	;
-
-exe SinkElapsed : SinkElapsed.cpp JsonConfig.cpp Sink.cpp
-		zmq 
-	: <include>../../cppzmq-master
-	: 
-	;
-

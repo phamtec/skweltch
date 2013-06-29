@@ -20,8 +20,8 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 
-unit-test smoke.test
-	: smoke.cpp ../JsonConfig.cpp ../Runner.cpp
+unit-test runner.test
+	: runnertest.cpp ../JsonConfig.cpp ../Runner.cpp ../StopTasksFileTask.cpp
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
@@ -49,6 +49,15 @@ unit-test work.test
 
 unit-test vent.test
 	: venttest.cpp ../JsonConfig.cpp ../Vent.cpp
+		zmq
+		/boost/test
+	:   <include>../../../turtle-1.2.2/include 
+		<include>../../../cppzmq-master
+	:
+	;
+
+unit-test fileprocessor.test
+	: fileprocessortest.cpp ../JsonConfig.cpp ../FileProcessor.cpp 
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 

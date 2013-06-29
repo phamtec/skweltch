@@ -14,7 +14,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-	ofstream outfile("sink.out");
+	ofstream outfile("out/sink.out");
 
   	JsonNode root;
  	{
