@@ -12,21 +12,9 @@ build-project test ;
 
 lib zmq : : <name>zmq ;
 
-exe start : start.cpp Runner.cpp JsonConfig.cpp 
+exe monitor : monitor.cpp Runner.cpp JsonConfig.cpp 
 		zmq
 	: <include>../../cppzmq-master
-	: 
-	;
-
-exe stop : stop.cpp Runner.cpp JsonConfig.cpp 
-		zmq 
-	: <include>../../cppzmq-master
-	: 
-	;
-
-exe run : run.cpp Runner.cpp JsonConfig.cpp 
-	zmq 
-		: <include>../../cppzmq-master
 	: 
 	;
 
