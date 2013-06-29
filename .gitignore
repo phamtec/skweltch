@@ -1,8 +1,6 @@
 
 *.pde
 
-*.DS_Store
-
 src/test/bin/*
 
 *.out
