@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE sink-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../JsonConfig.hpp"
+#include "JsonConfig.hpp"
 #include "../Sink.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>

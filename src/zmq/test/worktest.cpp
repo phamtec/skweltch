@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE work-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../JsonConfig.hpp"
+#include "JsonConfig.hpp"
 #include "../Work.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>

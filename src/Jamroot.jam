@@ -7,6 +7,7 @@ import testing ;
 use-project /boost : /Users/paul/Documents/boost_1_53_0  ;
 
 build-project test ;
+build-project config ;
 build-project zmq ;
 build-project monitor ;
 build-project sink ;

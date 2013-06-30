@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE config-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../runner.hpp"
 #include "../JsonConfig.hpp"
 
 #include <turtle/mock.hpp>

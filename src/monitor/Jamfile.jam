@@ -10,9 +10,10 @@ project monitor
 
 lib zmq : : <name>zmq ;
 
-exe monitor : monitor.cpp ../zmq/Runner.cpp ../zmq/JsonConfig.cpp ../zmq/FileProcessor.cpp ../zmq/ExeRunner.cpp ../zmq/StopTasksFileTask.cpp
+exe monitor : monitor.cpp ../zmq/Runner.cpp ../config/JsonConfig.cpp ../zmq/FileProcessor.cpp ../zmq/ExeRunner.cpp ../zmq/StopTasksFileTask.cpp
 		zmq
 	:	<include>../cppzmq-master
 		<include>../zmq
+		<include>../config
 	: 
 	;
