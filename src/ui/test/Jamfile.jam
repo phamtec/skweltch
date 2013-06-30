@@ -18,9 +18,11 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
-unit-test config.test
-	: configtest.cpp ../JsonConfig.cpp ../JsonNode.cpp
+unit-test ui.test
+	: uitest.cpp ../RestHandler.cpp ../RestContext.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp
 		/boost/test
+		/boost/system
 	:   <include>../../../turtle-1.2.2/include
+		<include>../../config
 	:
 	;

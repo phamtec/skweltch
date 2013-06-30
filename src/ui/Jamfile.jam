@@ -1,0 +1,29 @@
+
+project ui
+    : requirements 
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+    :
+    :
+    ;
+
+build-project test ;
+
+exe rest : rest.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
+	connection.cpp
+    connection_manager.cpp
+    mime_types.cpp
+    reply.cpp
+    request_handler.cpp
+    request_parser.cpp
+    server.cpp
+    RestHandler.cpp
+    RestContext.cpp
+    /boost/system//boost_system
+    /boost/thread//boost_thread
+  	:	<define>BOOST_ALL_NO_LIB=1
+		<include>../config 
+	: 
+	;
+

@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Skwletch</title>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<link rel="stylesheet" href="main.css" />
+	<script>
+	$(function() {
+		$( "#load" )
+			.button()
+			.click(function( event ) {
+				$.ajax({
+				  url: "/rest/load?file=machine.json",
+				  cache: false
+				}).done(function( html ) {
+				});
+				event.preventDefault();
+			});
+		$( "#nodes" )
+			.button()
+			.click(function( event ) {
+				$.ajax({
+				  url: "/rest/nodes",
+				  cache: false
+				}).done(function( html ) {
+					var nodes = jQuery.parseJSON(html);
+					for (n in nodes) {
+						$("#graph").append("<span class=\"node\">" + n + "</div>")
+					}
+				});
+				event.preventDefault();
+			});
+	});
+	</script>
+</head>
+<body>
+<h3>Skweltch</h3>
+<button id="load">Load</button>
+<button id="nodes">Nodes</button>
+<div class="graph" id="graph">
+</div>
+</form>
+</body>
+</html>

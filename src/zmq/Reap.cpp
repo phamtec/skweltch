@@ -1,5 +1,5 @@
 #include "Reap.hpp"
-#include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include "StopTasksFileTask.hpp"
 #include "FileProcessor.hpp"
 #include "ExeRunner.hpp"

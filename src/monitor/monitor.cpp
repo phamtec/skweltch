@@ -1,6 +1,7 @@
 
 #include "Runner.hpp"
 #include "jsonConfig.hpp"
+#include "jsonNode.hpp"
 #include "ExeRunner.hpp"
 #include "StopTasksFileTask.hpp"
 #include "FileProcessor.hpp"

@@ -29,8 +29,14 @@ src/config/bin/*
 
 src/skweltch.bbprojectd/*
 
+src/ui/bin/*
+
+src/ui/test/bin/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*
 
 *.log
+
+arbor-v0.92/*

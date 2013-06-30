@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include "../Vent.hpp"
 #include <turtle/mock.hpp>
 #include <iostream>

@@ -1,4 +1,5 @@
 #include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include "Reap.hpp"
 #include <zmq.hpp>
 #include <iostream>

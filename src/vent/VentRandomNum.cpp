@@ -1,5 +1,6 @@
 
 #include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include "Vent.hpp"
 #include <iostream>
 #include <fstream>

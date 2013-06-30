@@ -21,7 +21,7 @@ explicit unit_test_framework ;
 lib zmq : : <name>zmq ;
 
 unit-test runner.test
-	: runnertest.cpp ../../config/JsonConfig.cpp ../Runner.cpp ../StopTasksFileTask.cpp
+	: runnertest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Runner.cpp ../StopTasksFileTask.cpp
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
@@ -31,7 +31,7 @@ unit-test runner.test
 	;
 
 unit-test sink.test
-	: sinktest.cpp ../../config/JsonConfig.cpp ../Sink.cpp
+	: sinktest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Sink.cpp
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
@@ -41,7 +41,7 @@ unit-test sink.test
 	;
 
 unit-test work.test
-	: worktest.cpp ../../config/JsonConfig.cpp ../Work.cpp
+	: worktest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Work.cpp
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
@@ -51,7 +51,7 @@ unit-test work.test
 	;
 
 unit-test vent.test
-	: venttest.cpp ../../config/JsonConfig.cpp ../Vent.cpp
+	: venttest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Vent.cpp
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
@@ -61,7 +61,7 @@ unit-test vent.test
 	;
 
 unit-test fileprocessor.test
-	: fileprocessortest.cpp ../../config/JsonConfig.cpp ../FileProcessor.cpp 
+	: fileprocessortest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../FileProcessor.cpp 
 		zmq
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 

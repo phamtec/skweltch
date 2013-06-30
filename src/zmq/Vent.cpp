@@ -1,5 +1,5 @@
 #include "Vent.hpp"
-#include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 
 using namespace std;
 using namespace boost;

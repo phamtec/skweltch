@@ -1,5 +1,5 @@
 #include "Sink.hpp"
-#include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>

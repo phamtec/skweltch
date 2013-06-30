@@ -10,7 +10,7 @@ project work
 
 lib zmq : : <name>zmq ;
 
-exe WorkSleep : WorkSleep.cpp ../config/JsonConfig.cpp ../zmq/Work.cpp
+exe WorkSleep : WorkSleep.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp ../zmq/Work.cpp
 		zmq 
 	: 	<include>../../cppzmq-master
 		<include>../zmq

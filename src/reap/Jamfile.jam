@@ -11,7 +11,7 @@ project sink
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
-exe GrimReaper : GrimReaper.cpp ../config/JsonConfig.cpp ../zmq/Reap.cpp 
+exe GrimReaper : GrimReaper.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp ../zmq/Reap.cpp 
 			../zmq/FileProcessor.cpp 
 			../zmq/StopTasksFileTask.cpp ../zmq/ExeRunner.cpp
 		zmq czmq

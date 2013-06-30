@@ -1,6 +1,7 @@
 
 #include "Work.hpp"
 #include "JsonConfig.hpp"
+#include "JsonNode.hpp"
 #include "zhelpers.hpp"
 
 #include <iostream>

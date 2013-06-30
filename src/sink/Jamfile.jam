@@ -10,7 +10,7 @@ project sink
 
 lib zmq : : <name>zmq ;
 
-exe SinkElapsed : SinkElapsed.cpp ../config/JsonConfig.cpp ../zmq/Sink.cpp
+exe SinkElapsed : SinkElapsed.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp ../zmq/Sink.cpp
 		zmq 
 	:	<include>../../cppzmq-master
 		<include>../zmq
