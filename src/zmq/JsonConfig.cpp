@@ -9,10 +9,19 @@
 using namespace std;
 using namespace boost;
 
-void JsonConfig::read(JsonNode *root) {
+bool JsonConfig::read(JsonNode *root, ostream *outfile) {
 
-  	property_tree::read_json(*jsonstream, root->pt);
-
+	try
+    {
+  		property_tree::read_json(*jsonstream, root->pt);
+  		return true;
+    }
+    catch(property_tree::json_parser::json_parser_error &je)
+    {
+        *outfile << "Error parsing: " << je.filename() << " on line: " << je.line() << std::endl;
+        *outfile << je.message() << std::endl;
+        return false;
+    }
 }
 
 void JsonNode::getChild(const std::string &key, JsonNode *child) {

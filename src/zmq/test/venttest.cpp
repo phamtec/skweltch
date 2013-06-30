@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( ventTest )
     stringstream json("{\"count\": 2}");
 	JsonConfig c(&json);
 	JsonNode root;
-	c.read(&root);
+	BOOST_CHECK(c.read(&root, &std::cout));
     
     s.service(&root, &sender);
     

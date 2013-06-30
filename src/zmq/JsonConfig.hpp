@@ -55,7 +55,7 @@ class JsonConfig {
 public:
 	JsonConfig(std::istream *s) : jsonstream(s) {}
 
-	void read(JsonNode *root);
+	bool read(JsonNode *root, std::ostream *outfile);
 	
 };
 

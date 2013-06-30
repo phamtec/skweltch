@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( sinkTest )
     stringstream json("{\"expect\": 5}");
 	JsonConfig c(&json);
 	JsonNode root;
-	c.read(&root);
+	BOOST_CHECK(c.read(&root, &std::cout));
     
     Sink s(&cout);
     s.service(&root, &receiver);

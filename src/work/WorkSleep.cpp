@@ -50,8 +50,11 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
- 		json.read(&root);
+		if (!json.read(&root, &std::cout)) {
+			return 1;
+		}
  	}
+ 	
  	pullfrom = root.getString("pullFrom");
  	pushto = root.getString("pushTo");
 	

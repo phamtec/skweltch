@@ -22,21 +22,25 @@
 	],
 	
 	// this is what is used to feed the machine. 100 at a time.
-	"vent": "./vent/bin/darwin-4.2.1/debug/threading-multi/VentRandomNum",
-	"ventConfig" : {
-		"pushTo": "tcp://*:5557",
-		"syncTo": "tcp://localhost:5558",
-		"count": 100,
-		"low": 1,
-		"high": 50
+	"vent" : {
+		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/VentRandomNum",
+		"config" : {
+			"pushTo": "tcp://*:5557",
+			"syncTo": "tcp://localhost:5558",
+			"count": 100,
+			"low": 1,
+			"high": 50
+		}
 	},
 	
 	// and this is what is used to reap.
-	"reap": "./reap/bin/darwin-4.2.1/debug/threading-multi/GrimReaper",
-	"reapConfig" : {
-		"pullFrom": "tcp://*:5559",
-		"pidFile": "tasks.pid",
-		"totalTime":10000
+	"reap": {
+		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/GrimReaper",
+		"config" : {
+			"pullFrom": "tcp://*:5559",
+			"pidFile": "tasks.pid",
+			"totalTime":10000
+		}
 	}
-	
+		
 }

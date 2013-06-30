@@ -20,6 +20,15 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 
+unit-test config.test
+	: configtest.cpp ../JsonConfig.cpp
+		zmq
+		/boost/test
+	:   <include>../../../turtle-1.2.2/include 
+		<include>../../../cppzmq-master
+	:
+	;
+
 unit-test runner.test
 	: runnertest.cpp ../JsonConfig.cpp ../Runner.cpp ../StopTasksFileTask.cpp
 		zmq

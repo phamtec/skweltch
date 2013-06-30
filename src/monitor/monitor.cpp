@@ -21,7 +21,9 @@ int main (int argc, char *argv[])
 	ifstream jsonfile(argv[1]);
 	JsonConfig c(&jsonfile);
 	JsonNode r;
-	c.read(&r);
+	if (!c.read(&r, &std::cout)) {
+		return 1;
+	}
 
    	string pidFilename = r.getString("pidFile");
    	
@@ -56,15 +58,19 @@ int main (int argc, char *argv[])
 
 	// something to vent.
 	{
+		JsonNode vent;
+		r.getChild("vent", &vent);
 		stringstream exe;
-		exe << r.getString("vent") << " '" << r.getChildAsString("ventConfig") << "'";
+		exe << vent.getString("exe") << " '" << vent.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 	
 	// something to reap.
 	{
+		JsonNode reap;
+		r.getChild("reap", &reap);
 		stringstream exe;
-		exe << r.getString("reap") << " '" << r.getChildAsString("reapConfig") << "'";
+		exe << reap.getString("exe") << " '" << reap.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 

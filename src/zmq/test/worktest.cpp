@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( workTest )
     stringstream json("{}");
 	JsonConfig c(&json);
 	JsonNode root;
-	c.read(&root);
+	BOOST_CHECK(c.read(&root, &std::cout));
     
    	Work s(&w);
     s.service(&root, &receiver, &sender, false);
