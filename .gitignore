@@ -21,6 +21,8 @@ src/vent/bin/*
 
 src/work/bin/*
 
+src/reap/bin/*
+
 src/skweltch.bbprojectd/*
 
 turtle-1.2.2.zip

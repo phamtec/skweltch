@@ -1,5 +1,5 @@
 #include "JsonConfig.hpp"
-#include "Sink.hpp"
+#include "Reap.hpp"
 #include <zmq.hpp>
 #include <iostream>
 #include <fstream>
@@ -14,7 +14,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-	ofstream outfile("sink.out");
+	ofstream outfile("reap.out");
 
   	JsonNode root;
  	{
@@ -22,7 +22,7 @@ int main (int argc, char *argv[])
  		JsonConfig json(&ss);
  		json.read(&root);
  	}
- 	
+ 	 	
  	string pullfrom = root.getString("pullFrom");
 	
     //  Prepare our context and socket
@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
-	Sink s(&outfile);
-	s.service(&root, &receiver);
+	Reap r(&outfile);
+	r.service(&root, &receiver);
 
 }

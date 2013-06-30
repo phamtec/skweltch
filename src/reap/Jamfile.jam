@@ -1,0 +1,22 @@
+
+project sink
+    : requirements 
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+
+exe GrimReaper : GrimReaper.cpp ../zmq/JsonConfig.cpp ../zmq/Reap.cpp 
+			../zmq/FileProcessor.cpp 
+			../zmq/StopTasksFileTask.cpp ../zmq/ExeRunner.cpp
+		zmq czmq
+	:	<include>../../cppzmq-master
+		<include>../zmq
+	: 
+	;
+

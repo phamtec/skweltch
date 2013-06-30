@@ -13,8 +13,8 @@ using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 3) {
-		cerr << "usage: " << argv[0] << " jsonConfig [start|stop|run|wait]" << endl;
+	if (argc != 2) {
+		cerr << "usage: " << argv[0] << " jsonConfig" << endl;
 		return 1;
 	}
 	
@@ -26,48 +26,46 @@ int main (int argc, char *argv[])
    	string pidFilename = r.getString("pidFile");
    	
    	ExeRunner er;
+	Runner runner(&er);
 
-	if (std::string(argv[2]) == "start" || std::string(argv[2]) == "stop") {
-	
-		// first stop.
-		StopTasksFileTask t(&er);
-		FileProcessor fp(&t);
-		fp.processFileIfExistsThenDelete(pidFilename);
+	// first stop anything.
+	StopTasksFileTask t(&er);
+	FileProcessor fp(&t);
+	fp.processFileIfExistsThenDelete(pidFilename);
 
-		if (std::string(argv[2]) == "start") {
-	
-			Runner runner(&er);
-		
-			ofstream pidfile(pidFilename.c_str());
-	
-			JsonNode bg;
-			r.getChild("background", &bg);
-			bg.start();
-			while (bg.hasMore()) {
-				int count = bg.current()->getInt("count", 0);
-				string exe(bg.current()->getString("exe"));
-				stringstream config;
-				config << "'" << bg.current()->getChildAsString("config") << "'";
-				if (count > 0) {
-					runner.startBackground(&pidfile, count, exe, config.str());
-				}
-				else {
-					runner.startBackground(&pidfile, exe, config.str());
-				}
-				bg.next();
+	// now run up the workers.
+	{
+		ofstream pidfile(pidFilename.c_str());
+		JsonNode bg;
+		r.getChild("background", &bg);
+		bg.start();
+		while (bg.hasMore()) {
+			int count = bg.current()->getInt("count", 0);
+			string exe(bg.current()->getString("exe"));
+			stringstream config;
+			config << "'" << bg.current()->getChildAsString("config") << "'";
+			if (count > 0) {
+				runner.startBackground(&pidfile, count, exe, config.str());
 			}
+			else {
+				runner.startBackground(&pidfile, exe, config.str());
+			}
+			bg.next();
 		}
 	}
-	else if (std::string(argv[2]) == "run") {
+
+	// something to vent.
+	{
 		stringstream exe;
-		exe << r.getString("run") << " '" << r.getChildAsString("config") << "'";
+		exe << r.getString("vent") << " '" << r.getChildAsString("ventConfig") << "'";
 		er.run(exe.str());
 	}
-	else if (std::string(argv[2]) == "wait") {
-	}
-	else {
-		cerr << "usage: " << argv[0] << " jsonConfig [start|stop|run|wait]" << endl;
-		return 1;
+	
+	// something to reap.
+	{
+		stringstream exe;
+		exe << r.getString("reap") << " '" << r.getChildAsString("reapConfig") << "'";
+		er.run(exe.str());
 	}
 
 	return 0;
