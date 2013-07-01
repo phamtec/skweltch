@@ -1,5 +1,4 @@
 
-#include "Runner.hpp"
 #include "jsonConfig.hpp"
 #include "jsonNode.hpp"
 #include "ExeRunner.hpp"
@@ -11,6 +10,13 @@
 
 using namespace std;
 using namespace boost;
+
+void start1Background(ExeRunner *er, ostream *pidfile, const std::string &exe, const std::string &config) {
+	stringstream cmd;
+	cmd << exe << " " << config;
+	pid_t pid = er->run(cmd.str());
+	*pidfile << pid << endl;
+}
 
 int main (int argc, char *argv[])
 {
@@ -29,7 +35,6 @@ int main (int argc, char *argv[])
    	string pidFilename = r.getString("pidFile");
    	
    	ExeRunner er;
-	Runner runner(&er);
 
 	// first stop anything.
 	StopTasksFileTask t(&er);
@@ -48,10 +53,14 @@ int main (int argc, char *argv[])
 			stringstream config;
 			config << "'" << bg.current()->getChildAsString("config") << "'";
 			if (count > 0) {
-				runner.startBackground(&pidfile, count, exe, config.str());
+				for (int i=0; i<count; i++) {
+					stringstream cmd;
+					cmd << exe << " " << i;
+					start1Background(&er, &pidfile, cmd.str(), config.str());
+				}
 			}
 			else {
-				runner.startBackground(&pidfile, exe, config.str());
+				start1Background(&er, &pidfile, exe, config.str());
 			}
 			bg.next();
 		}

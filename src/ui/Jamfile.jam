@@ -11,8 +11,7 @@ project ui
 build-project rest ;
 build-project test ;
 
-exe ui : ui.cpp
-	connection.cpp
+lib httpserver : connection.cpp
     connection_manager.cpp
     mime_types.cpp
     reply.cpp
@@ -26,8 +25,14 @@ exe ui : ui.cpp
  	/config//config
    	/boost/system//boost_system
     /boost/thread//boost_thread
-  	:	<define>BOOST_ALL_NO_LIB=1
+	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 
+	: 
+	;
+	
+exe ui : ui.cpp
+	httpserver
+  	:
 	: 
 	;
 

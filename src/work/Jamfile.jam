@@ -11,7 +11,7 @@ project work
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
-exe WorkSleep : WorkSleep.cpp
+exe worksleep : worksleep.cpp
 		zmq 
 		czmq
 		/config//config

@@ -10,7 +10,7 @@ project monitor
 
 lib zmq : : <name>zmq ;
 
-exe monitor : monitor.cpp Runner.cpp
+exe monitor : monitor.cpp
 		/config//config
 		/core//core
 		zmq

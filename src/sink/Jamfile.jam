@@ -10,7 +10,7 @@ project sink
 
 lib zmq : : <name>zmq ;
 
-exe SinkElapsed : SinkElapsed.cpp
+exe sinkelapsed : sinkelapsed.cpp
 		/config//config
 		zmq 
 	:	<include>../../cppzmq-master

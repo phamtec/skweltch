@@ -6,7 +6,7 @@
 		{
 			"count": 3, // need 3 of these. first arg to the program is the id.
 			"name": "WorkSleep",
-			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/WorkSleep",
+			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/worksleep",
 			"config" : {
 				"pullFrom": "tcp://localhost:5557",
 				"pushTo": "tcp://localhost:5558"
@@ -15,7 +15,7 @@
 		{
 			// only 1 of these, we sample 100 messages that can come through.
 			"name": "SinkElapsed",
-			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/SinkElapsed",
+			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/sinkelapsed",
 			"config" : {
 				"pullFrom": "tcp://*:5558",
 				"expect": 50
@@ -26,7 +26,7 @@
 	// this is what is used to feed the machine. 100 at a time.
 	"vent" : {
 		"name": "VentRandomNum",
-		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/VentRandomNum",
+		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/ventrandomnum",
 		"config" : {
 			"pushTo": "tcp://*:5557",
 			"syncTo": "tcp://localhost:5558",
@@ -40,7 +40,7 @@
 	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
-		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/GrimReaper",
+		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/grimreaper",
 		"config" : {
 			"pullFrom": "tcp://*:5559",
 			"pidFile": "tasks.pid",

@@ -19,11 +19,9 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 unit-test nodes.test
-	: nodestest.cpp ../../RestHandler.cpp ../../RestContext.cpp
-		../nodesHandler.cpp
-		/config//config
+	: nodestest.cpp
+		/ui//httpserver
 		/boost/test
-		/boost/system
 	:   <include>../../../turtle-1.2.2/include
 		<include>../../../config
 	:

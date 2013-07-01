@@ -11,7 +11,7 @@ project vent
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
-exe VentRandomNum : VentRandomNum.cpp
+exe ventrandomnum : ventrandomnum.cpp
 		zmq 
 		czmq
 		/config//config

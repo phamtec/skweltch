@@ -6,7 +6,6 @@ import testing ;
 
 use-project /boost : /Users/paul/Documents/boost_1_53_0  ;
 
-build-project test ;
 build-project config ;
 build-project core ;
 build-project monitor ;
@@ -14,4 +13,4 @@ build-project sink ;
 build-project vent ;
 build-project work ;
 build-project reap ;
-# build-project ui ;
+build-project ui ;

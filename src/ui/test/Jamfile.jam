@@ -19,7 +19,8 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 unit-test ui.test
-	: uitest.cpp ../RestHandler.cpp ../RestContext.cpp
+	: uitest.cpp
+		/ui//httpserver
 		/config//config
 		/boost/test
 		/boost/system
