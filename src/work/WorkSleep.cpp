@@ -1,39 +1,14 @@
 
-#include "Work.hpp"
 #include "JsonConfig.hpp"
 #include "JsonNode.hpp"
-#include "zhelpers.hpp"
+#include <zmq.hpp>
+#include <czmq.h>
+#include <zclock.h>
 
 #include <iostream>
 #include <fstream>
 
 using namespace std;
-
-class SleepMsgExecutor : public IWorkMsgExecutor {
-
-private:
-	ofstream *outfile;
-	
-public:
-	SleepMsgExecutor(ofstream *f) : outfile(f) {}
-	
-	virtual void init() {}
-	virtual void doit(zmq::message_t *message);
-
-};
-
-void SleepMsgExecutor::doit(zmq::message_t *message) {
-
-	int workload;
-	std::istringstream iss(static_cast<char*>(message->data()));
-	iss >> workload;
-
-	//  Do the work
-	s_sleep(workload);
-
-	*outfile << "." << std::flush;
-	
-}
 
 int main (int argc, char *argv[])
 {
@@ -66,9 +41,27 @@ int main (int argc, char *argv[])
     zmq::socket_t sender(context, ZMQ_PUSH);
     sender.connect(pushto.c_str());
 
-	SleepMsgExecutor e(&outfile);
-	Work w(&e);
-	w.service(&root, &receiver, &sender, true);
+    //  Process tasks forever
+    while (1) {
+
+        zmq::message_t message;
+        receiver.recv(&message);
+
+		int workload;
+		std::istringstream iss(static_cast<char*>(message.data()));
+		iss >> workload;
+
+		//  Do the work
+ 		zclock_sleep(workload);
+
+		outfile << "." << std::flush;
+
+        //  Send results to sink
+        message.rebuild();
+        sender.send(message);
+
+    }
+    
 
     return 0;
 

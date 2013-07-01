@@ -12,11 +12,11 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
 exe GrimReaper : GrimReaper.cpp
-		/zmq//core
+		/core//core
 		/config//config
 		zmq czmq
 	:	<include>../../cppzmq-master
-		<include>../zmq
+		<include>../core
 		<include>../config
 	: 
 	;

@@ -9,13 +9,14 @@ project work
     ;
 
 lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
 
 exe WorkSleep : WorkSleep.cpp
-		/zmq//core
 		zmq 
+		czmq
 		/config//config
 	: 	<include>../../cppzmq-master
-		<include>../zmq
+		<include>../core
 		<include>../config
 	: 
 	;

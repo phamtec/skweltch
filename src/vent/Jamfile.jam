@@ -9,13 +9,13 @@ project vent
     ;
 
 lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
 
 exe VentRandomNum : VentRandomNum.cpp
-		/zmq//core
 		zmq 
+		czmq
 		/config//config
 	:	<include>../../cppzmq-master
-		<include>../zmq
 		<include>../config
 	: 
 	;

@@ -1,5 +1,5 @@
 
-project zmq
+project core
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -10,16 +10,9 @@ project zmq
 
 build-project test ;
 
-lib zmq : : <name>zmq ;
-lib czmq : : <name>czmq ;
-
-lib core : Runner.cpp FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp 
-		Sink.cpp Reap.cpp Work.cpp Vent.cpp
+lib core : FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp 
 		/config//config
-		zmq
-		czmq
 	:	<link>static
-		<include>../../cppzmq-master
 		<include>../config
 	: 
 	;

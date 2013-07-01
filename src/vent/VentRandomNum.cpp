@@ -1,43 +1,15 @@
 
 #include "JsonConfig.hpp"
 #include "JsonNode.hpp"
-#include "Vent.hpp"
 #include <iostream>
 #include <fstream>
+#include <zmq.hpp>
+#include <czmq.h>
+#include <zclock.h>
 
 #define within(num) (int) ((float) num * random () / (RAND_MAX + 1.0))
 
 using namespace std;
-
-class RandomMsgBuilder : public IVentMsgBuilder {
-
-private:
- 	int low, high;
-	
-public:
-	RandomMsgBuilder(int l, int h) : low(l), high(h) {}
-	
-	virtual void init();
-	virtual void buildMessage(int n, zmq::message_t *message);
-
-};
-
-void RandomMsgBuilder::init() {
-
-    //  Initialize random number generator
-    srandom ((unsigned) time (NULL));
-}
-
-void RandomMsgBuilder::buildMessage(int n, zmq::message_t *message) {
-
-	//  Random number from 1 to the range specified
-	int num = within(high) + low;
-
-	// maximum length the number can be. Just fixed size messages.
-	message->rebuild(10);
-	sprintf((char *)message->data(), "%d", num);
-
-}
 
 int main (int argc, char *argv[])
 {
@@ -72,9 +44,33 @@ int main (int argc, char *argv[])
     memcpy(message.data(), "0", 1);
     sink.send(message);
 
-	RandomMsgBuilder vrn(low, high);
-	Vent v(&vrn);
-	v.service(&root, &sender);
+ 	int count = root.getInt("count", 10);
+ 	int sleeptime = root.getInt("sleep", 0);
 
+    //  Initialize random number generator
+    srandom ((unsigned) time (NULL));
+
+    //  Send count tasks
+    int task_nbr;
+    for (task_nbr = 0; task_nbr < count; task_nbr++) {
+    	zmq::message_t message(2);
+    	
+		//  Random number from 1 to the range specified
+		int num = within(high) + low;
+
+		// maximum length the number can be. Just fixed size messages.
+		message.rebuild(10);
+		sprintf((char *)message.data(), "%d", num);
+ 
+     	sender.send(message);
+     	
+     	if (sleeptime > 0) {
+			//  Do the work
+			zclock_sleep(sleeptime);
+     	}
+    }
+    
+    sleep (1); //  Give 0MQ time to deliver
+    
     return 0;
 }

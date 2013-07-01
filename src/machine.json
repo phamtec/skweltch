@@ -4,7 +4,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 10, // need 10 of these. first arg to the program is the id.
+			"count": 3, // need 3 of these. first arg to the program is the id.
 			"name": "WorkSleep",
 			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/WorkSleep",
 			"config" : {
@@ -18,7 +18,7 @@
 			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/SinkElapsed",
 			"config" : {
 				"pullFrom": "tcp://*:5558",
-				"expect": 100
+				"expect": 50
 			}
 		}
 	],
@@ -32,7 +32,8 @@
 			"syncTo": "tcp://localhost:5558",
 			"count": 100,
 			"low": 1,
-			"high": 50
+			"high": 50,
+			"sleep": 5
 		}
 	},
 	
@@ -43,7 +44,7 @@
 		"config" : {
 			"pullFrom": "tcp://*:5559",
 			"pidFile": "tasks.pid",
-			"totalTime": 5000
+			"totalTime": 2000
 		}
 	}
 		

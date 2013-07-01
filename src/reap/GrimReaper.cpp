@@ -1,9 +1,13 @@
 #include "JsonConfig.hpp"
 #include "JsonNode.hpp"
-#include "Reap.hpp"
+#include "StopTasksFileTask.hpp"
+#include "FileProcessor.hpp"
+#include "ExeRunner.hpp"
 #include <zmq.hpp>
 #include <iostream>
 #include <fstream>
+#include <czmq.h>
+#include <zclock.h>
 
 using namespace std;
 
@@ -33,7 +37,13 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
-	Reap r(&outfile);
-	r.service(&root, &receiver);
+ 	int totaltime = root.getInt("totalTime", 5000);
+ 	zclock_sleep(totaltime);
+ 	outfile << "waited " << totaltime << "ms, killing everything." << std::endl;
+ 	
+   	ExeRunner er;
+	StopTasksFileTask t(&er);
+	FileProcessor fp(&t);
+	fp.processFileIfExistsThenDelete(root.getString("pidFile"));
 
 }

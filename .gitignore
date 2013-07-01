@@ -9,13 +9,17 @@ src/test/bin/*
 
 src/test/bin/*
 
-src/zmq/bin/*
+src/core/bin/*
+
+src/core/test/bin/*
+
+src/config/bin/*
 
 src/config/test/bin/*
 
-src/zmq/test/bin/*
-
 src/monitor/bin/*
+
+src/monitor/test/bin/*
 
 src/sink/bin/*
 
@@ -24,8 +28,6 @@ src/vent/bin/*
 src/work/bin/*
 
 src/reap/bin/*
-
-src/config/bin/*
 
 src/skweltch.bbprojectd/*
 
