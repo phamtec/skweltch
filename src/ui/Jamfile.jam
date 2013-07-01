@@ -27,6 +27,7 @@ lib httpserver : connection.cpp
     /boost/thread//boost_thread
 	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 
+		<link>static
 	: 
 	;
 	

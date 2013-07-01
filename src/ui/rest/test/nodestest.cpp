@@ -55,6 +55,7 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
 	
+	cout << content << endl;
 	{
 		stringstream jresult(content);
 		ptree pt;
@@ -62,6 +63,11 @@ BOOST_AUTO_TEST_CASE( nodesTest )
   		ptree xxx = pt.get_child("xxx");
   		BOOST_CHECK(xxx.get("count", 0) == 10);
   		BOOST_CHECK(xxx.get<string>("type") == "background");
+  		ptree rect = xxx.get_child("rect");
+  		BOOST_CHECK(rect.get("left", 0) == 10);
+  		BOOST_CHECK(rect.get("top", 0) == 10);
+  		BOOST_CHECK(rect.get("width", 0) == 100);
+  		BOOST_CHECK(rect.get("height", 0) == 100);
 	}
 	
 }

@@ -26,7 +26,11 @@
 				}).done(function( html ) {
 					var nodes = jQuery.parseJSON(html);
 					for (n in nodes) {
-						$("#graph").append("<span class=\"node\">" + n + "</div>")
+						$("#graph").append("<span id=\"" + n +  "\" class=\"node\">" + n + "</div>");
+						if (nodes[n].count > 0) {
+							$("#" + n ).append("<div class=\"count\">" + nodes[n].count + "</div>");
+						}
+						$("#" + n ).css(nodes[n].rect);
 					}
 				});
 				event.preventDefault();
