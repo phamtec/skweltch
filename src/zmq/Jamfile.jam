@@ -18,7 +18,8 @@ lib core : Runner.cpp FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp
 		/config//config
 		zmq
 		czmq
-	:	<include>../../cppzmq-master
+	:	<link>static
+		<include>../../cppzmq-master
 		<include>../config
 	: 
 	;

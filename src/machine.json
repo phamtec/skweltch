@@ -43,7 +43,7 @@
 		"config" : {
 			"pullFrom": "tcp://*:5559",
 			"pidFile": "tasks.pid",
-			"totalTime":10000
+			"totalTime": 5000
 		}
 	}
 		

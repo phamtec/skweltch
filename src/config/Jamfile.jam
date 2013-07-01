@@ -11,6 +11,6 @@ project config
 build-project test ;
 
 lib config : JsonConfig.cpp JsonNode.cpp
-	:
+	: <link>static
 	: 
 	;
