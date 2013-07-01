@@ -19,7 +19,8 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 unit-test ui.test
-	: uitest.cpp ../RestHandler.cpp ../RestContext.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp
+	: uitest.cpp ../RestHandler.cpp ../RestContext.cpp 
+		../../config/JsonConfig.cpp ../../config/JsonNode.cpp
 		/boost/test
 		/boost/system
 	:   <include>../../../turtle-1.2.2/include

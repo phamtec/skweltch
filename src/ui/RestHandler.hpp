@@ -6,17 +6,9 @@
 #include <map>
 #include <boost/function.hpp>
 
-#include "reply.hpp"
-#include "header.hpp"
+#include "handlerType.hpp"
 
-class RestContext;
-
-typedef boost::function<http::server::reply::status_type (
-		RestContext *, 
-		const std::string &args,
-		std::vector<http::server::header> *headers,
-		std::string *content
-	)> handlerPointer;
+typedef boost::function<handlerType> handlerPointer;
 
 /**
 	A handler for REST

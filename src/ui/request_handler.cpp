@@ -9,6 +9,9 @@
 #include "request.hpp"
 #include "RestHandler.hpp"
 
+#include "rest/nodesHandler.hpp"
+#include "rest/loadHandler.hpp"
+
 namespace http {
 namespace server {
 
@@ -42,6 +45,8 @@ void request_handler::handle_request(const request& req, reply& rep)
 	}
 	
 	RestHandler handler;
+	handler.add("/rest/nodes", &nodesHandler);
+	handler.add("/rest/load", &loadHandler);
 	if (handler.isRest(request_path)) {
 		rep.status = handler.call(request_path, &rep.headers, &rep.content);
 		return;

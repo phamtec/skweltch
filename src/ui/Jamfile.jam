@@ -8,9 +8,10 @@ project ui
     :
     ;
 
+build-project rest ;
 build-project test ;
 
-exe rest : rest.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
+exe ui : ui.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
 	connection.cpp
     connection_manager.cpp
     mime_types.cpp
@@ -20,6 +21,8 @@ exe rest : rest.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
     server.cpp
     RestHandler.cpp
     RestContext.cpp
+    rest/nodesHandler.cpp
+    rest/loadHandler.cpp
     /boost/system//boost_system
     /boost/thread//boost_thread
   	:	<define>BOOST_ALL_NO_LIB=1
