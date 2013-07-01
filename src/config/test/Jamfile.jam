@@ -19,7 +19,8 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 unit-test config.test
-	: configtest.cpp ../JsonConfig.cpp ../JsonNode.cpp
+	: configtest.cpp
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include
 	:

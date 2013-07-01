@@ -20,8 +20,8 @@ explicit unit_test_framework ;
 
 unit-test nodes.test
 	: nodestest.cpp ../../RestHandler.cpp ../../RestContext.cpp
-		../../../config/JsonConfig.cpp ../../../config/JsonNode.cpp
 		../nodesHandler.cpp
+		/config//config
 		/boost/test
 		/boost/system
 	:   <include>../../../turtle-1.2.2/include

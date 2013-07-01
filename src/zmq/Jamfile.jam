@@ -11,3 +11,14 @@ project zmq
 build-project test ;
 
 lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+
+lib core : Runner.cpp FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp 
+		Sink.cpp Reap.cpp Work.cpp Vent.cpp
+		/config//config
+		zmq
+		czmq
+	:	<include>../../cppzmq-master
+		<include>../config
+	: 
+	;

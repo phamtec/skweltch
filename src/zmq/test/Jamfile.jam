@@ -21,8 +21,10 @@ explicit unit_test_framework ;
 lib zmq : : <name>zmq ;
 
 unit-test runner.test
-	: runnertest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Runner.cpp ../StopTasksFileTask.cpp
+	: runnertest.cpp
 		zmq
+		/zmq//core
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
 		<include>../../../cppzmq-master
@@ -31,8 +33,10 @@ unit-test runner.test
 	;
 
 unit-test sink.test
-	: sinktest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Sink.cpp
+	: sinktest.cpp
 		zmq
+		/zmq//core
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
 		<include>../../../cppzmq-master
@@ -41,8 +45,10 @@ unit-test sink.test
 	;
 
 unit-test work.test
-	: worktest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Work.cpp
+	: worktest.cpp
 		zmq
+		/zmq//core
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
 		<include>../../../cppzmq-master
@@ -51,8 +57,10 @@ unit-test work.test
 	;
 
 unit-test vent.test
-	: venttest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../Vent.cpp
+	: venttest.cpp
 		zmq
+		/zmq//core
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
 		<include>../../../cppzmq-master
@@ -61,8 +69,10 @@ unit-test vent.test
 	;
 
 unit-test fileprocessor.test
-	: fileprocessortest.cpp ../../config/JsonConfig.cpp ../../config/JsonNode.cpp ../FileProcessor.cpp 
+	: fileprocessortest.cpp
 		zmq
+		/zmq//core
+		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include 
 		<include>../../../cppzmq-master

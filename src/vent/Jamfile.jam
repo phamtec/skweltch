@@ -10,8 +10,10 @@ project vent
 
 lib zmq : : <name>zmq ;
 
-exe VentRandomNum : VentRandomNum.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp ../zmq/Vent.cpp
+exe VentRandomNum : VentRandomNum.cpp
+		/zmq//core
 		zmq 
+		/config//config
 	:	<include>../../cppzmq-master
 		<include>../zmq
 		<include>../config

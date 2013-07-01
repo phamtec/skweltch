@@ -11,7 +11,7 @@ project ui
 build-project rest ;
 build-project test ;
 
-exe ui : ui.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
+exe ui : ui.cpp
 	connection.cpp
     connection_manager.cpp
     mime_types.cpp
@@ -23,7 +23,8 @@ exe ui : ui.cpp ../config/JsonConfig.cpp ../config/JsonNode.cpp
     RestContext.cpp
     rest/nodesHandler.cpp
     rest/loadHandler.cpp
-    /boost/system//boost_system
+ 	/config//config
+   	/boost/system//boost_system
     /boost/thread//boost_thread
   	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 
