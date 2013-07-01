@@ -11,13 +11,6 @@
 using namespace std;
 using namespace boost;
 
-void start1Background(ExeRunner *er, ostream *pidfile, const std::string &exe, const std::string &config) {
-	stringstream cmd;
-	cmd << exe << " " << config;
-	pid_t pid = er->run(cmd.str());
-	*pidfile << pid << endl;
-}
-
 int main (int argc, char *argv[])
 {
 	if (argc != 2) {
@@ -41,12 +34,14 @@ int main (int argc, char *argv[])
 	FileProcessor fp(&t);
 	fp.processFileIfExistsThenDelete(pidFilename);
 
+	boost::property_tree::ptree pids;
+
 	// now run up the workers.
 	{
-		ofstream pidfile(pidFilename.c_str());
 		JsonNode bg;
 		r.getChild("background", &bg);
 		bg.start();
+		ofstream pidfile(pidFilename.c_str());
 		while (bg.hasMore()) {
 			int count = bg.current()->getInt("count", 0);
 			string exe(bg.current()->getString("exe"));
@@ -55,17 +50,21 @@ int main (int argc, char *argv[])
 			if (count > 0) {
 				for (int i=0; i<count; i++) {
 					stringstream cmd;
-					cmd << exe << " " << i;
-					start1Background(&er, &pidfile, cmd.str(), config.str());
+					cmd << exe << " " << i << " " << config.str();
+					pid_t pid = er.run(cmd.str());
+					pidfile << pid << endl;
 				}
 			}
 			else {
-				start1Background(&er, &pidfile, exe, config.str());
+				stringstream cmd;
+				cmd << exe << " " << config.str();
+				pid_t pid = er.run(cmd.str());
+				pidfile << pid << endl;
 			}
 			bg.next();
 		}
 	}
-
+	
 	// something to vent.
 	{
 		JsonNode vent;
