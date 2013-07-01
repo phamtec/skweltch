@@ -5,14 +5,11 @@
 #include "../nodesHandler.hpp"
 #include "../../RestContext.hpp"
 
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 using namespace std;
 using namespace boost;
+using namespace boost::property_tree;
 using namespace http::server;
 
 BOOST_AUTO_TEST_CASE( nodesTest )
@@ -57,9 +54,14 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 	BOOST_CHECK(c.read(RestContext::getContext()->getRoot(), &std::cout));
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
-	vector<string> lines;
-	split(lines, content, is_any_of("\n"));
-	BOOST_CHECK(lines.size() == 55);
-	BOOST_CHECK(lines[7] == "        \"type\": \"background\"");
+	
+	{
+		stringstream jresult(content);
+		ptree pt;
+  		read_json(jresult, pt);
+  		ptree xxx = pt.get_child("xxx");
+  		BOOST_CHECK(xxx.get("count", 0) == 10);
+  		BOOST_CHECK(xxx.get<string>("type") == "background");
+	}
 	
 }

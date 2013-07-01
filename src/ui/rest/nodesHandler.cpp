@@ -29,17 +29,11 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 			boost::property_tree::ptree info;
 			info.add("type", "background");
 			if (count > 0) {
-				for (int i=0; i<count; i++) {
-					stringstream ss;
-					ss << name << "(" << i << ")";
-					boost::property_tree::ptree info;
-					info.add("type", "background");
-					pt.put_child(ss.str(), info);
-				}
+				stringstream ss;
+				ss << count;
+				info.add("count", ss.str());
 			}
-			else {
-				pt.put_child(name, info);
-			}
+			pt.put_child(name, info);
 			bg.next();
 		}
 	}
