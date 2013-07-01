@@ -26,5 +26,6 @@ unit-test ui.test
 		/boost/system
 	:   <include>../../../turtle-1.2.2/include
 		<include>../../config
+		<link>static
 	:
 	;

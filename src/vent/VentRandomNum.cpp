@@ -1,6 +1,7 @@
 
 #include "JsonConfig.hpp"
 #include "JsonNode.hpp"
+#include "Ports.hpp"
 #include <iostream>
 #include <fstream>
 #include <zmq.hpp>
@@ -13,24 +14,34 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 2) {
-		cerr << "usage: " << argv[0] << " config" << endl;
+ 	ofstream outfile("vent.out");
+
+	if (argc != 3) {
+		outfile << "usage: " << argv[0] << " pipes config" << endl;
 		return 1;
 	}
 	
- 	ofstream outfile("vent.out");
- 	
- 	JsonNode root;
+  	JsonNode pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &std::cout)) {
+		if (!json.read(&pipes, &outfile)) {
+			return 1;
+		}
+ 	}
+ 	JsonNode root;
+ 	{
+ 		stringstream ss(argv[2]);
+ 		JsonConfig json(&ss);
+		if (!json.read(&root, &outfile)) {
 			return 1;
 		}
  	}
 
-  	string pushto = root.getString("pushTo");
- 	string syncto = root.getString("syncTo");
+ 	Ports ports;
+ 	string syncto = ports.getConnectSocket(&pipes, &root, "syncTo");
+ 	string pushto = ports.getBindSocket(&pipes, &root, "pushTo");
+
 	int low = root.getInt("low", 1);
  	int high = root.getInt("high", 100);
 	

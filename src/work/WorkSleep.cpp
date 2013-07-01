@@ -1,6 +1,7 @@
 
 #include "JsonConfig.hpp"
 #include "JsonNode.hpp"
+#include "Ports.hpp"
 #include <zmq.hpp>
 #include <czmq.h>
 #include <zclock.h>
@@ -12,8 +13,9 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 3) {
-		cerr << "usage: " << argv[0] << " taskId config" << endl;
+
+	if (argc != 4) {
+		cerr << "usage: " << argv[0] << " taskId pipes config" << endl;
 		return 1;
 	}
 	
@@ -21,19 +23,27 @@ int main (int argc, char *argv[])
 	outfn << "task" << argv[1] << ".out";
 	ofstream outfile(outfn.str().c_str());
 	
- 	JsonNode root;
- 	string pullfrom, pushto;
+  	JsonNode pipes;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &std::cout)) {
+		if (!json.read(&pipes, &outfile)) {
+			return 1;
+		}
+ 	}
+ 	JsonNode root;
+ 	{
+ 		stringstream ss(argv[3]);
+ 		JsonConfig json(&ss);
+		if (!json.read(&root, &outfile)) {
 			return 1;
 		}
  	}
  	
- 	pullfrom = root.getString("pullFrom");
- 	pushto = root.getString("pushTo");
-	
+ 	Ports ports;
+ 	string pullfrom = ports.getConnectSocket(&pipes, &root, "pullFrom");
+ 	string pushto = ports.getConnectSocket(&pipes, &root, "pushTo");
+
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.connect(pullfrom.c_str());

@@ -14,8 +14,10 @@ lib czmq : : <name>czmq ;
 exe ventrandomnum : ventrandomnum.cpp
 		zmq 
 		czmq
+		/core//core
 		/config//config
 	:	<include>../../cppzmq-master
 		<include>../config
+		<include>../core
 	: 
 	;

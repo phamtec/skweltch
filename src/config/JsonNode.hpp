@@ -43,6 +43,8 @@ public:
 	// get an entire subnode as a JsonString.
 	std::string getChildAsString(const std::string &key);
 	
+	boost::property_tree::ptree *getPt() { return &pt; }
+	
 };
 
 #endif // __JSONNODE_HPP_INCLUDED__

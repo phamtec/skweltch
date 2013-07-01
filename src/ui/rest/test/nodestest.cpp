@@ -18,21 +18,42 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 	std::string content;
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::no_content);
 
-
 	stringstream json(
 "{\n"
+"	\"pipes\": {\n"
+"		\"pipe1\": {\n"
+"			\"node\": \"localhost\",\n"
+"			\"port\": 5558\n"
+"		},\n"
+"		\"pipe2\": {\n"
+"			\"node\": \"localhost\",\n"
+"			\"port\": 5557\n"
+"		}\n"
+"	},\n"
 "	\"background\": [\n"
 "		{\n"
 "			\"count\": 10,\n"
 "			\"name\": \"xxx\",\n"
 "			\"exe\": \"xxx\",\n"
 "			\"config\" : {\n"
+"				\"connections\": {\n"
+"					\"pullFrom\": {\n"
+"						\"pipe\": \"pipe2\",\n"
+"						\"direction\": \"from\" \n"
+"					}\n"
+"				}\n"
 "			}\n"
 "		},\n"
 "		{\n"
 "			\"name\": \"yyy\",\n"
 "			\"exe\": \"yyy\",\n"
 "			\"config\" : {\n"
+"				\"connections\": {\n"
+"					\"pushTo\": {\n"
+"						\"pipe\": \"pipe2\",\n"
+"						\"direction\": \"to\" \n"
+"					}\n"
+"				}\n"
 "			}\n"
 "		}\n"
 "	],\n"
@@ -64,10 +85,14 @@ BOOST_AUTO_TEST_CASE( nodesTest )
   		BOOST_CHECK(xxx.get("count", 0) == 10);
   		BOOST_CHECK(xxx.get<string>("type") == "background");
   		ptree rect = xxx.get_child("rect");
-  		BOOST_CHECK(rect.get("left", 0) == 10);
-  		BOOST_CHECK(rect.get("top", 0) == 10);
-  		BOOST_CHECK(rect.get("width", 0) == 100);
-  		BOOST_CHECK(rect.get("height", 0) == 100);
-	}
+  		BOOST_CHECK(rect.get("left", 0) > 0);
+  		BOOST_CHECK(rect.get("top", 0) > 0);
+  		BOOST_CHECK(rect.get("width", 0) > 0);
+  		BOOST_CHECK(rect.get("height", 0) > 0);
+  		
+  		ptree pipe = pt.get_child("connections.pipe2");
+ 		BOOST_CHECK(pipe.get<string>("from") == "yyy");
+ 		BOOST_CHECK(pipe.get<string>("to") == "xxx");
+ 	}
 	
 }

@@ -14,6 +14,7 @@ lib czmq : : <name>czmq ;
 exe worksleep : worksleep.cpp
 		zmq 
 		czmq
+		/core//core
 		/config//config
 	: 	<include>../../cppzmq-master
 		<include>../core

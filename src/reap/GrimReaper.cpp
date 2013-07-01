@@ -3,6 +3,7 @@
 #include "StopTasksFileTask.hpp"
 #include "FileProcessor.hpp"
 #include "ExeRunner.hpp"
+#include "Ports.hpp"
 #include <zmq.hpp>
 #include <iostream>
 #include <fstream>
@@ -14,23 +15,32 @@ using namespace std;
 int main (int argc, char *argv[])
 {
 
- 	if (argc != 2) {
-		cerr << "usage: " << argv[0] << " config" << endl;
+	ofstream outfile("reap.out");
+
+ 	if (argc != 3) {
+		outfile << "usage: " << argv[0] << " pipes config" << endl;
 		return 1;
 	}
 	
-	ofstream outfile("reap.out");
-
-  	JsonNode root;
+  	JsonNode pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &std::cout)) {
+		if (!json.read(&pipes, &outfile)) {
 			return 1;
 		}
  	}
- 	 	
- 	string pullfrom = root.getString("pullFrom");
+  	JsonNode root;
+ 	{
+ 		stringstream ss(argv[2]);
+ 		JsonConfig json(&ss);
+		if (!json.read(&root, &outfile)) {
+			return 1;
+		}
+ 	}
+
+  	Ports ports;
+ 	string pullfrom = ports.getBindSocket(&pipes, &root, "pullFrom");
 	
     //  Prepare our context and socket
     zmq::context_t context(1);

@@ -24,5 +24,6 @@ unit-test nodes.test
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include
 		<include>../../../config
+		<link>static
 	:
 	;

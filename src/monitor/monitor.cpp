@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
 	ifstream jsonfile(argv[1]);
 	JsonConfig c(&jsonfile);
 	JsonNode r;
-	if (!c.read(&r, &std::cout)) {
+	if (!c.read(&r, &cout)) {
 		return 1;
 	}
 
@@ -34,7 +34,8 @@ int main (int argc, char *argv[])
 	FileProcessor fp(&t);
 	fp.processFileIfExistsThenDelete(pidFilename);
 
-	boost::property_tree::ptree pids;
+	stringstream pipes;
+	pipes << "'" << r.getChildAsString("pipes") << "'";
 
 	// now run up the workers.
 	{
@@ -50,14 +51,14 @@ int main (int argc, char *argv[])
 			if (count > 0) {
 				for (int i=0; i<count; i++) {
 					stringstream cmd;
-					cmd << exe << " " << i << " " << config.str();
+					cmd << exe << " " << i << " " << pipes.str() << " " << config.str();
 					pid_t pid = er.run(cmd.str());
 					pidfile << pid << endl;
 				}
 			}
 			else {
 				stringstream cmd;
-				cmd << exe << " " << config.str();
+				cmd << exe << " " << pipes.str() << " " << config.str();
 				pid_t pid = er.run(cmd.str());
 				pidfile << pid << endl;
 			}
@@ -70,7 +71,7 @@ int main (int argc, char *argv[])
 		JsonNode vent;
 		r.getChild("vent", &vent);
 		stringstream exe;
-		exe << vent.getString("exe") << " '" << vent.getChildAsString("config") << "'";
+		exe << vent.getString("exe") << " " << pipes.str() << " '" << vent.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 	
@@ -79,7 +80,7 @@ int main (int argc, char *argv[])
 		JsonNode reap;
 		r.getChild("reap", &reap);
 		stringstream exe;
-		exe << reap.getString("exe") << " '" << reap.getChildAsString("config") << "'";
+		exe << reap.getString("exe") << "'" << " " << pipes.str() << " '" << reap.getChildAsString("config");
 		er.run(exe.str());
 	}
 

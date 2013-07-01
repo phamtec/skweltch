@@ -20,7 +20,7 @@ function sketchProc(processing) {
     // determine center and max clock arm length
     var centerX = processing.width / 2, centerY = processing.height / 2;
     var maxArmLength = Math.min(centerX, centerY);
-9
+
     function drawArm(position, lengthScale, weight) {      
       processing.strokeWeight(weight);
       processing.line(centerX, centerY, 

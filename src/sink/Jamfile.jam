@@ -11,10 +11,12 @@ project sink
 lib zmq : : <name>zmq ;
 
 exe sinkelapsed : sinkelapsed.cpp
+		/core//core
 		/config//config
 		zmq 
 	:	<include>../../cppzmq-master
 		<include>../config
+		<include>../core
 	: 
 	;
 

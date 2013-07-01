@@ -1,6 +1,21 @@
 {
 	"pidFile": "tasks.pid",
 	
+	"pipes": {
+		 "pipe1": {
+			"node": "localhost",
+			"port": 5558
+		},
+		"pipe2": {
+			"node": "localhost",
+			"port": 5557
+		},
+		"pipe3": {
+			"node": "localhost",
+			"port": 5559
+		}
+	},
+	
 	// these are all run in the background and remembered.
 	"background": [
 		{
@@ -8,8 +23,16 @@
 			"name": "WorkSleep",
 			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/worksleep",
 			"config" : {
-				"pullFrom": "tcp://localhost:5557",
-				"pushTo": "tcp://localhost:5558"
+				"connections": {
+					"pullFrom": {
+						"pipe": "pipe2",
+						"direction": "from" 
+					},
+					"pushTo": {
+						"pipe": "pipe1",
+						"direction": "to" 
+					}
+				}
 			}
 		},
 		{
@@ -17,7 +40,12 @@
 			"name": "SinkElapsed",
 			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/sinkelapsed",
 			"config" : {
-				"pullFrom": "tcp://*:5558",
+				"connections": {
+					"pullFrom": {
+						"pipe": "pipe1",
+						"direction": "from" 
+					}
+				},
 				"expect": 50
 			}
 		}
@@ -28,8 +56,16 @@
 		"name": "VentRandomNum",
 		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/ventrandomnum",
 		"config" : {
-			"pushTo": "tcp://*:5557",
-			"syncTo": "tcp://localhost:5558",
+			"connections": {
+				"pushTo": {
+					"pipe": "pipe2",
+					"direction": "to" 
+				},
+				"syncTo": {
+					"pipe": "pipe1",
+					"direction": "to" 
+				}
+			},
 			"count": 100,
 			"low": 1,
 			"high": 50,
@@ -42,7 +78,12 @@
 		"name": "GrimReaper",
 		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/grimreaper",
 		"config" : {
-			"pullFrom": "tcp://*:5559",
+			"connections": {
+				"pullFrom": {
+					"pipe": "pipe3",
+					"direction": "from" 
+				}
+			},
 			"pidFile": "tasks.pid",
 			"totalTime": 2000
 		}
