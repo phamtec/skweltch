@@ -33,6 +33,10 @@ src/ui/bin/*
 
 src/ui/test/bin/*
 
+src/ui/rest/bin/*
+
+src/ui/rest/test/bin/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*
