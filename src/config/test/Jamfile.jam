@@ -18,8 +18,16 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
-unit-test config.test
-	: configtest.cpp
+# unit-test config.test
+# 	: configtest.cpp
+# 		/config//config
+# 		/boost/test
+# 	:   <include>../../../turtle-1.2.2/include
+# 	:
+# 	;
+
+unit-test json.test
+	: jsontest.cpp
 		/config//config
 		/boost/test
 	:   <include>../../../turtle-1.2.2/include

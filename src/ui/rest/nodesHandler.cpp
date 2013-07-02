@@ -22,10 +22,10 @@ void addRect(ptree *info, int *x, int *y) {
 
 	ptree rect;
 	
-	rect.add("left", lexical_cast<string>(*x));
-	rect.add("top", lexical_cast<string>(*y));
-	rect.add("width", lexical_cast<string>(NODE_WIDTH));
-	rect.add("height", lexical_cast<string>(NODE_HEIGHT));
+	rect.add<int>("left", *x);
+	rect.add<int>("top", *y);
+	rect.add<int>("width", NODE_WIDTH);
+	rect.add<int>("height", NODE_HEIGHT);
 	
 	info->put_child("rect", rect);
 	*x += NODE_WIDTH + NODE_GAP;
@@ -53,9 +53,7 @@ void addNode(ptree *pt, JsonNode *node, JsonNode *pipes,
 	ptree info;
 	info.add("type", type);
 	if (count > 0) {
-		stringstream ss;
-		ss << count;
-		info.add("count", ss.str());
+		info.add<int>("count", count);
 	}
 	addRect(&info, x, y);
 	pt->put_child(name, info);

@@ -10,7 +10,7 @@ project config
 
 build-project test ;
 
-lib config : JsonConfig.cpp JsonNode.cpp
+lib config : JsonConfig.cpp JsonNode.cpp JsonWriter.cpp
 	: <link>static
 	: 
 	;
