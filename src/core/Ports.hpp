@@ -9,8 +9,8 @@ class Ports {
 
 public:
 
-	std::string getBindSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &root, const std::string &name);
-	std::string getConnectSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &root, const std::string &name);
+	std::string getBindSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &config, const std::string &name);
+	std::string getConnectSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &config, const std::string &name);
 
 };
 

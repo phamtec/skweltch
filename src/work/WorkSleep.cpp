@@ -43,9 +43,6 @@ int main (int argc, char *argv[])
  	string pullfrom = ports.getConnectSocket(pipes, root, "pullFrom");
  	string pushto = ports.getConnectSocket(pipes, root, "pushTo");
 
-   	cout << "here" << endl;
- 	return 1;
-	
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.connect(pullfrom.c_str());

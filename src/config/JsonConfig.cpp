@@ -1,6 +1,5 @@
 
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string/trim.hpp>
