@@ -31,3 +31,15 @@ unit-test fileprocessor.test
 		<include>../../config
 	:
 	;
+
+unit-test ports.test
+	: portstest.cpp
+		zmq
+		/core//core
+		/config//config
+		/boost/test
+	:   <include>../../../turtle-1.2.2/include 
+		<include>../../../cppzmq-master
+		<include>../../config
+	:
+	;

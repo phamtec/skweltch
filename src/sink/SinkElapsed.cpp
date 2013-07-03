@@ -1,5 +1,4 @@
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 #include "Ports.hpp"
 #include <zmq.hpp>
 #include <iostream>
@@ -17,7 +16,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 
-  	JsonNode pipes;
+	boost::property_tree::ptree pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
@@ -25,7 +24,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
-  	JsonNode root;
+	boost::property_tree::ptree root;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -35,14 +34,14 @@ int main (int argc, char *argv[])
  	}
  	
  	Ports ports;
- 	string pullfrom = ports.getBindSocket(&pipes, &root, "pullFrom");
+ 	string pullfrom = ports.getBindSocket(pipes, root, "pullFrom");
 	
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
- 	int expect = root.getInt("expect", 100);
+ 	int expect = root.get<int>("expect", 100);
 
     //  Wait for start of batch
     zmq::message_t message;

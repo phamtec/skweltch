@@ -4,7 +4,6 @@
 #include "../RestHandler.hpp"
 #include "../RestContext.hpp"
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>

@@ -2,11 +2,11 @@
 #ifndef __JSONNODE_HPP_INCLUDED__
 #define __JSONNODE_HPP_INCLUDED__
 
-#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/ptree.hpp>
 
 /**
 	A single node in the config file.
-*/
+* /
 class JsonNode {
 
 private:
@@ -27,7 +27,7 @@ public:
 			// use c.current()
 			c.next();
 		}
-	*/
+	* /
 	void start();
 	bool hasMore();
 	void next();
@@ -46,5 +46,6 @@ public:
 	boost::property_tree::ptree *getPt() { return &pt; }
 	
 };
+*/
 
 #endif // __JSONNODE_HPP_INCLUDED__

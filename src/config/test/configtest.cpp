@@ -2,7 +2,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../JsonConfig.hpp"
-#include "../JsonNode.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -42,25 +41,24 @@ BOOST_AUTO_TEST_CASE( configTest )
 );
 
 	JsonConfig c(&json);
-	JsonNode r;
+	property_tree::ptree r;
 	BOOST_CHECK(c.read(&r, &std::cout));
 
-	BOOST_CHECK(r.getString("pidFile") == "pids.pid");
-	BOOST_CHECK(r.getString("exePath") == "./bin");
-	JsonNode bg;
-	r.getChild("background", &bg);
-	bg.start();
-	BOOST_CHECK(bg.hasMore());
-	BOOST_CHECK(bg.current()->getInt("count", 0) == 5);
-	BOOST_CHECK(bg.current()->getString("exe") == "exe1");
-	bg.next();
-	BOOST_CHECK(bg.hasMore());
-	BOOST_CHECK(bg.current()->getInt("count", 0) == 0);
-	BOOST_CHECK(bg.current()->getString("exe") == "exe2");
-	bg.next();
-	BOOST_CHECK(!bg.hasMore());
-	BOOST_CHECK(r.getString("run") == "exe3");
-	BOOST_CHECK(r.getChildAsString("config") == "{\"a\":\"x\",\"b\":\"y\"}");
+	BOOST_CHECK(r.get<string>("pidFile") == "pids.pid");
+	BOOST_CHECK(r.get<string>("exePath") == "./bin");
+	property_tree::ptree bg = r.get_child("background");
+	property_tree::iterator i = bg.begin();
+	BOOST_CHECK(i != bg.end());
+	BOOST_CHECK(i->second.get("count", 0) == 5);
+	BOOST_CHECK(i->second.get<string>("exe") == "exe1");
+	i++;
+	BOOST_CHECK(i != bg.end());
+	BOOST_CHECK(i->second.get("count", 0) == 0);
+	BOOST_CHECK(i->second.get<string>("exe") == "exe2");
+	i++;
+	BOOST_CHECK(i == bg.end();
+	BOOST_CHECK(r.get<string>("run") == "exe3");
+	BOOST_CHECK(c.gteChildAsString(r, "config") == "{\"a\":\"x\",\"b\":\"y\"}");
     
 }
 
@@ -74,7 +72,7 @@ BOOST_AUTO_TEST_CASE( badConfig1Test )
 );
 
 	JsonConfig c(&json);
-	JsonNode r;
+	property_tree::ptree r;
 	BOOST_CHECK(!c.read(&r, &std::cout));
     
 }

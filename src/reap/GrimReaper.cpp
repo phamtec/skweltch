@@ -1,5 +1,4 @@
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 #include "StopTasksFileTask.hpp"
 #include "FileProcessor.hpp"
 #include "ExeRunner.hpp"
@@ -22,7 +21,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-  	JsonNode pipes;
+  	boost::property_tree::ptree pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
@@ -30,7 +29,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
-  	JsonNode root;
+  	boost::property_tree::ptree root;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -40,20 +39,20 @@ int main (int argc, char *argv[])
  	}
 
   	Ports ports;
- 	string pullfrom = ports.getBindSocket(&pipes, &root, "pullFrom");
+ 	string pullfrom = ports.getBindSocket(pipes, root, "pullFrom");
 	
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
- 	int totaltime = root.getInt("totalTime", 5000);
+ 	int totaltime = root.get<int>("totalTime", 5000);
  	zclock_sleep(totaltime);
  	outfile << "waited " << totaltime << "ms, killing everything." << std::endl;
  	
    	ExeRunner er;
 	StopTasksFileTask t(&er);
 	FileProcessor fp(&t);
-	fp.processFileIfExistsThenDelete(root.getString("pidFile"));
+	fp.processFileIfExistsThenDelete(root.get<string>("pidFile"));
 
 }

@@ -1,6 +1,5 @@
 
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 #include "Ports.hpp"
 #include <zmq.hpp>
 #include <czmq.h>
@@ -23,7 +22,7 @@ int main (int argc, char *argv[])
 	outfn << "task" << argv[1] << ".out";
 	ofstream outfile(outfn.str().c_str());
 	
-  	JsonNode pipes;
+  	boost::property_tree::ptree pipes;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -31,7 +30,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
- 	JsonNode root;
+	boost::property_tree::ptree root;
  	{
  		stringstream ss(argv[3]);
  		JsonConfig json(&ss);
@@ -39,11 +38,14 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
- 	
- 	Ports ports;
- 	string pullfrom = ports.getConnectSocket(&pipes, &root, "pullFrom");
- 	string pushto = ports.getConnectSocket(&pipes, &root, "pushTo");
 
+ 	Ports ports;
+ 	string pullfrom = ports.getConnectSocket(pipes, root, "pullFrom");
+ 	string pushto = ports.getConnectSocket(pipes, root, "pushTo");
+
+   	cout << "here" << endl;
+ 	return 1;
+	
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.connect(pullfrom.c_str());

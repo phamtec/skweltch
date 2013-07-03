@@ -1,6 +1,5 @@
 
 #include "JsonConfig.hpp"
-#include "JsonNode.hpp"
 #include "Ports.hpp"
 #include <iostream>
 #include <fstream>
@@ -21,7 +20,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-  	JsonNode pipes;
+  	boost::property_tree::ptree pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
@@ -29,7 +28,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
- 	JsonNode root;
+ 	boost::property_tree::ptree root;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -39,11 +38,11 @@ int main (int argc, char *argv[])
  	}
 
  	Ports ports;
- 	string syncto = ports.getConnectSocket(&pipes, &root, "syncTo");
- 	string pushto = ports.getBindSocket(&pipes, &root, "pushTo");
+ 	string syncto = ports.getConnectSocket(pipes, root, "syncTo");
+ 	string pushto = ports.getBindSocket(pipes, root, "pushTo");
 
-	int low = root.getInt("low", 1);
- 	int high = root.getInt("high", 100);
+	int low = root.get<int>("low", 1);
+ 	int high = root.get<int>("high", 100);
 	
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -55,8 +54,8 @@ int main (int argc, char *argv[])
     memcpy(message.data(), "0", 1);
     sink.send(message);
 
- 	int count = root.getInt("count", 10);
- 	int sleeptime = root.getInt("sleep", 0);
+ 	int count = root.get<int>("count", 10);
+ 	int sleeptime = root.get<int>("sleep", 0);
 
     //  Initialize random number generator
     srandom ((unsigned) time (NULL));

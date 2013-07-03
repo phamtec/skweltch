@@ -45,11 +45,11 @@ void addConnection(ptree *info, ptree *connection, const string &name) {
 	}
 }
 
-void addNode(ptree *pt, JsonNode *node, JsonNode *pipes, 
+void addNode(ptree *pt, boost::property_tree::ptree *node, boost::property_tree::ptree *pipes, 
 		const string &type, int *x, int *y, ptree *connections) {
 		
-	int count = node->getInt("count", 0);
-	string name(node->getString("name"));
+	int count = node->get("count", 0);
+	string name(node->get<string>("name"));
 	ptree info;
 	info.add("type", type);
 	if (count > 0) {
@@ -59,7 +59,7 @@ void addNode(ptree *pt, JsonNode *node, JsonNode *pipes,
 	pt->put_child(name, info);
 	
 	// and a connection.
-	optional<ptree &> child = node->getPt()->get_child_optional("config.connections");
+	optional<ptree &> child = node->get_child_optional("config.connections");
 	if (child) {
 		for (ptree::iterator i = child->begin(); i != child->end(); i++) {
 			string pipename = i->second.get<string>("pipe"); 
@@ -83,37 +83,31 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 	}
 	
 	ptree pt;
-	JsonNode *root = context->getRoot();
+	boost::property_tree::ptree *root = context->getRoot();
 
 	// we need the pipes for below.
-	JsonNode pipes;
-	root->getChild("pipes", &pipes);
+	boost::property_tree::ptree pipes = root->get_child("pipes");
 
 	ptree connections;
 	
 	int x = ((GRAPH_WIDTH - NODE_WIDTH)/2);
 	int y = NODE_GAP;
 	{
-		JsonNode vent;
-		root->getChild("vent", &vent);
+		boost::property_tree::ptree vent = root->get_child("vent");
 		addNode(&pt, &vent, &pipes, "vent", &x, &y, &connections);
 	}
 	x = NODE_GAP;
 	y = (NODE_GAP*2) + NODE_HEIGHT;
 	{
-		JsonNode bg;
-		root->getChild("background", &bg);
-		bg.start();
-		while (bg.hasMore()) {
-			addNode(&pt, bg.current(), &pipes, "background", &x, &y, &connections);
-			bg.next();
+		boost::property_tree::ptree bg = root->get_child("background");
+		for (ptree::iterator i = bg.begin(); i != bg.end(); i++) {
+			addNode(&pt, &i->second, &pipes, "background", &x, &y, &connections);
 		}
 	}
 	y += NODE_GAP + NODE_HEIGHT;
 	x = ((GRAPH_WIDTH - NODE_WIDTH)/2);
 	{
-		JsonNode reap;
-		root->getChild("reap", &reap);
+		boost::property_tree::ptree reap = root->get_child("reap");
 		addNode(&pt, &reap, &pipes, "reap", &x, &y, &connections);
 	}
 	
