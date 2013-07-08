@@ -34,10 +34,10 @@
 					for (n in nodes) {
 						if (n  != "connections") {
 							ctx.strokeRect(nodes[n].rect.left, nodes[n].rect.top, nodes[n].rect.width, nodes[n].rect.height);
-							ctx.fillText(n, parseInt(nodes[n].rect.left)+16, parseInt(nodes[n].rect.top)+16);
-							if ((typeof nodes[n].count) == "string" && parseInt(nodes[n].count) != 0) {
-								ctx.fillText(nodes[n].count, parseInt(nodes[n].rect.left) + parseInt(nodes[n].rect.width) - 10, 
-									parseInt(nodes[n].rect.top) - 5);
+							ctx.fillText(n, nodes[n].rect.left+16, nodes[n].rect.top+16);
+							if ((typeof nodes[n].count) == "string" && nodes[n].count != 0) {
+								ctx.fillText(nodes[n].count, nodes[n].rect.left + nodes[n].rect.width - 10, 
+									nodes[n].rect.top - 5);
 							}
 						}
 					}
@@ -48,11 +48,11 @@
 						var from = nodes[conn[n].from];
 						var to = nodes[conn[n].to];
 						if ((typeof to) == "object") {
-							ctx.moveTo(parseInt(from.rect.left) + 50, parseInt(from.rect.top) + 50);
-  							ctx.lineTo(parseInt(to.rect.left), parseInt(to.rect.top));
+							ctx.moveTo(from.rect.left + 50, from.rect.top + 50);
+  							ctx.lineTo(to.rect.left, to.rect.top);
   							ctx.stroke();			
   							ctx.beginPath();
-							ctx.arc(parseInt(to.rect.left), parseInt(to.rect.top), 5, 0, 2*Math.PI);
+							ctx.arc(to.rect.left, to.rect.top, 5, 0, 2*Math.PI);
 							ctx.stroke();
   						}
 					}
