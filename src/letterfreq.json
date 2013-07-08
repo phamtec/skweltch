@@ -1,0 +1,90 @@
+{
+	"pidFile": "tasks.pid",
+	
+	"pipes": {
+		"pipe1": {
+			"node": "localhost",
+			"port": 5558
+		},
+		"pipe2": {
+			"node": "localhost",
+			"port": 5557
+		},
+		"pipe3": {
+			"node": "localhost",
+			"port": 5559
+		}
+	},
+	
+	// these are all run in the background and remembered.
+	"background": [
+		{
+			"count": 6,
+			"name": "WorkCharCount",
+			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/workcharcount",
+			"config" : {
+				"connections": {
+					"pullFrom": {
+						"pipe": "pipe2",
+						"direction": "from" 
+					},
+					"pushTo": {
+						"pipe": "pipe1",
+						"direction": "to" 
+					}
+				}
+			}
+		},
+		{
+			"name": "SinkAvg",
+			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/sinkavg",
+			"config" : {
+				"connections": {
+					"pullFrom": {
+						"pipe": "pipe1",
+						"direction": "from" 
+					}
+				},
+				// this needs to be derived by sending a "finished" message.
+				"expect": 4505
+			}
+		}
+	],
+	
+	// this is what is used to feed the machine.
+	"vent" : {
+		"name": "VentWords",
+		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/ventwords",
+		"config" : {
+			"connections": {
+				"pushTo": {
+					"pipe": "pipe2",
+					"direction": "to" 
+				},
+				"syncTo": {
+					"pipe": "pipe1",
+					"direction": "to" 
+				}
+			},
+			"filename": "data/words.txt",
+			"sleep": 4
+		}
+	},
+	
+	// and this is what is used to reap.
+	"reap": {
+		"name": "GrimReaper",
+		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/grimreaper",
+		"config" : {
+			"connections": {
+				"pullFrom": {
+					"pipe": "pipe3",
+					"direction": "from" 
+				}
+			},
+			"pidFile": "tasks.pid",
+			"totalTime": 2000
+		}
+	}
+		
+}
