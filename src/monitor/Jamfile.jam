@@ -17,5 +17,6 @@ exe monitor : monitor.cpp
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
 	: 
 	;

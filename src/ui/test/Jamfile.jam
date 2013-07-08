@@ -24,8 +24,9 @@ unit-test ui.test
 		/config//config
 		/boost/test
 		/boost/system
-	:   <include>../../../turtle-1.2.2/include
+	:   <include>../../turtle-1.2.2/include
 		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
 		<link>static
 	:
 	;

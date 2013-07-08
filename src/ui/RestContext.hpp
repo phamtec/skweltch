@@ -3,7 +3,7 @@
 #define __RESTCONTEXT_HPP_INCLUDED__
 
 #include <vector>
-#include <boost/property_tree/ptree.hpp>
+#include "JsonObject.hpp"
 #include "header.hpp"
 
 /**
@@ -19,7 +19,7 @@ public:
 	bool load(const std::string &config);
 	bool isLoaded() { return loaded; }
 	void setLoaded() { loaded = true; }
-	boost::property_tree::ptree *getRoot() { return &root; }
+	JsonObject *getRoot() { return &root; }
 	
 private:
 
@@ -28,7 +28,7 @@ private:
 	static RestContext *gContext;
 	
 	bool loaded;
-	boost::property_tree::ptree root;
+	JsonObject root;
 	
 };
 

@@ -14,9 +14,10 @@ exe sinkelapsed : sinkelapsed.cpp
 		/core//core
 		/config//config
 		zmq 
-	:	<include>../../cppzmq-master
+	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
+		<include>../json_spirit_v4.06/json_spirit
 	: 
 	;
 

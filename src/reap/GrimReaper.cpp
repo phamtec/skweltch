@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-  	boost::property_tree::ptree pipes;
+	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
-  	boost::property_tree::ptree root;
+	JsonObject root;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -46,13 +46,13 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
- 	int totaltime = root.get<int>("totalTime", 5000);
+ 	int totaltime = root.getInt("totalTime", 5000);
  	zclock_sleep(totaltime);
  	outfile << "waited " << totaltime << "ms, killing everything." << std::endl;
  	
    	ExeRunner er;
 	StopTasksFileTask t(&er);
 	FileProcessor fp(&t);
-	fp.processFileIfExistsThenDelete(root.get<string>("pidFile"));
+	fp.processFileIfExistsThenDelete(root.getString("pidFile"));
 
 }

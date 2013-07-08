@@ -16,8 +16,9 @@ exe ventrandomnum : ventrandomnum.cpp
 		czmq
 		/core//core
 		/config//config
-	:	<include>../../cppzmq-master
+	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
+		<include>../json_spirit_v4.06/json_spirit
 	: 
 	;

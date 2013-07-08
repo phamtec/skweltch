@@ -1,0 +1,386 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Limitations</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="../index.html" title="Turtle">
+<link rel="up" href="../index.html" title="Turtle">
+<link rel="prev" href="rationale.html" title="Rationale">
+<link rel="next" href="changelog.html" title="Changelog">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="" width="" height="" src="../images/boost.png"></td>
+<td align="center"><a href="https://sourceforge.net/projects/turtle/files">Download</a></td>
+<td align="center"><a href="https://sourceforge.net/projects/turtle/support">Support</a></td>
+<td align="center"><a href="https://sourceforge.net/projects/turtle">Project</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rationale.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="changelog.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section turtle_limitations">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="turtle.limitations"></a><a class="link" href="limitations.html" title="Limitations">Limitations</a>
+</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.no_support_for_unicode_logging">No
+      support for unicode logging</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.litteral_0_cannot_be_used_as_null_pointer_in_constraints">Litteral
+      0 cannot be used as null pointer in constraints</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.template_methods_cannot_be_mocked">Template
+      methods cannot be mocked</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.private_virtual_methods_cannot_be_mocked_without_spelling_out_the_signature">Private
+      virtual methods cannot be mocked without spelling out the signature</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.compilers_without_support_for_variadic_macros_cannot_rely_solely_on_mock_method">Compilers
+      without support for variadic macros cannot rely solely on MOCK_METHOD</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.compilers_without_support_for_variadic_macros_fail_on_commas_in_mock_base_class">Compilers
+      without support for variadic macros fail on commas in MOCK_BASE_CLASS</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.warning_c4505__________unreferenced_local_function_has_been_removed">Warning
+      C4505: '...' : unreferenced local function has been removed</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.warning_c4301_________overriding_virtual_function_only_differs_from_______by_const_volatile_qualifier">Warning
+      C4301: '...': overriding virtual function only differs from '...' by const/volatile
+      qualifier</a></span></dt>
+<dt><span class="section"><a href="limitations.html#turtle.limitations.warning_c4267___argument____conversion_from__size_t__to__unsigned_int___possible_loss_of_data">Warning
+      C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss
+      of data</a></span></dt>
+</dl></div>
+<p>
+      This section lists the library known limitations.
+    </p>
+<div class="section turtle_limitations_no_support_for_unicode_logging">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.no_support_for_unicode_logging"></a><a class="link" href="limitations.html#turtle.limitations.no_support_for_unicode_logging" title="No support for unicode logging">No
+      support for unicode logging</a>
+</h3></div></div></div>
+<p>
+        There is no support for unicode logging mainly because Boost.Test does not
+        support it either.
+      </p>
+</div>
+<div class="section turtle_limitations_litteral_0_cannot_be_used_as_null_pointer_in_constraints">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.litteral_0_cannot_be_used_as_null_pointer_in_constraints"></a><a class="link" href="limitations.html#turtle.limitations.litteral_0_cannot_be_used_as_null_pointer_in_constraints" title="Litteral 0 cannot be used as null pointer in constraints">Litteral
+      0 cannot be used as null pointer in constraints</a>
+</h3></div></div></div>
+<p>
+        Given :
+      </p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">base</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">method</span><span class="special">(</span> <span class="keyword">int</span> <span class="identifier">i</span><span class="special">*</span> <span class="special">)</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">mock_base</span><span class="special">,</span> <span class="identifier">base</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">1</span> <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+<p>
+        The following code does not compile :
+      </p>
+<pre class="programlisting"><span class="identifier">mock_base</span> <span class="identifier">m</span><span class="special">;</span>
+<span class="identifier">MOCK_EXPECT</span><span class="special">(</span> <span class="identifier">m</span><span class="special">.</span><span class="identifier">method</span> <span class="special">).</span><span class="identifier">with</span><span class="special">(</span> <span class="identifier">mock</span><span class="special">::</span><span class="identifier">equal</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">);</span> <span class="comment">// this fails</span>
+<span class="identifier">MOCK_EXPECT</span><span class="special">(</span> <span class="identifier">m</span><span class="special">.</span><span class="identifier">method</span> <span class="special">).</span><span class="identifier">with</span><span class="special">(</span> <span class="number">0</span> <span class="special">);</span>                <span class="comment">// this fails too !</span>
+</pre>
+<p>
+        This is due to the fact that the library uses templates pretty heavily, and
+        the litteral 0 is considered as an int when instantiating a template function.
+      </p>
+<p>
+        A workaround is :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_EXPECT</span><span class="special">(</span> <span class="identifier">m</span><span class="special">.</span><span class="identifier">method</span> <span class="special">).</span><span class="identifier">with</span><span class="special">(</span> <span class="identifier">mock</span><span class="special">::</span><span class="identifier">equal</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">*</span> <span class="special">&gt;(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">);</span> <span class="comment">// this compiles</span>
+</pre>
+<p>
+        However a somewhat better solution would be :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_EXPECT</span><span class="special">(</span> <span class="identifier">m</span><span class="special">.</span><span class="identifier">method</span> <span class="special">).</span><span class="identifier">with</span><span class="special">(</span> <span class="identifier">mock</span><span class="special">::</span><span class="identifier">negate</span> <span class="special">);</span>
+</pre>
+</div>
+<div class="section turtle_limitations_template_methods_cannot_be_mocked">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.template_methods_cannot_be_mocked"></a><a class="link" href="limitations.html#turtle.limitations.template_methods_cannot_be_mocked" title="Template methods cannot be mocked">Template
+      methods cannot be mocked</a>
+</h3></div></div></div>
+<p>
+        Given the following client code :
+      </p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">concept</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T</span> <span class="special">&gt;</span>
+    <span class="keyword">void</span> <span class="identifier">method</span><span class="special">(</span> <span class="identifier">T</span> <span class="identifier">t</span> <span class="special">)</span>
+    <span class="special">{}</span>
+<span class="special">};</span>
+
+<span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T</span> <span class="special">&gt;</span>
+<span class="keyword">class</span> <span class="identifier">client</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="identifier">client</span><span class="special">(</span> <span class="identifier">T</span> <span class="identifier">t</span> <span class="special">)</span>             <span class="comment">// T is supposed to model the previous concept</span>
+    <span class="special">{</span>
+        <span class="identifier">t</span><span class="special">.</span><span class="identifier">method</span><span class="special">(</span> <span class="number">42</span> <span class="special">);</span>
+        <span class="identifier">t</span><span class="special">.</span><span class="identifier">method</span><span class="special">(</span> <span class="string">"string"</span> <span class="special">);</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+</pre>
+<p>
+        Writing a mock object modeling 'concept' requires to list all the possible
+        versions of 'method' :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_CLASS</span><span class="special">(</span> <span class="identifier">mock_concept</span> <span class="special">)</span>
+<span class="special">{</span>
+   <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(</span> <span class="keyword">int</span> <span class="special">),</span> <span class="identifier">method_int</span> <span class="special">)</span>
+   <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="special">),</span> <span class="identifier">method_string</span> <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+<p>
+        While still somewhat possible, mocking a template method is indeed a bit
+        cumbersome.
+      </p>
+</div>
+<div class="section turtle_limitations_private_virtual_methods_cannot_be_mocked_without_spelling_out_the_signature">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.private_virtual_methods_cannot_be_mocked_without_spelling_out_the_signature"></a><a class="link" href="limitations.html#turtle.limitations.private_virtual_methods_cannot_be_mocked_without_spelling_out_the_signature" title="Private virtual methods cannot be mocked without spelling out the signature">Private
+      virtual methods cannot be mocked without spelling out the signature</a>
+</h3></div></div></div>
+<p>
+        The following code does not compile :
+      </p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">base</span>
+<span class="special">{</span>
+<span class="keyword">private</span><span class="special">:</span>
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">method</span><span class="special">()</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">mock_base</span><span class="special">,</span> <span class="identifier">base</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">0</span> <span class="special">)</span>       <span class="comment">// this fails to compile because 'method' is not visible</span>
+<span class="special">};</span>
+</pre>
+<p>
+        The workaround would be to add the signature to MOCK_METHOD :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">mock_base</span><span class="special">,</span> <span class="identifier">base</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD_EXT</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">void</span><span class="special">()</span> <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+</div>
+<div class="section turtle_limitations_compilers_without_support_for_variadic_macros_cannot_rely_solely_on_mock_method">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.compilers_without_support_for_variadic_macros_cannot_rely_solely_on_mock_method"></a><a class="link" href="limitations.html#turtle.limitations.compilers_without_support_for_variadic_macros_cannot_rely_solely_on_mock_method" title="Compilers without support for variadic macros cannot rely solely on MOCK_METHOD">Compilers
+      without support for variadic macros cannot rely solely on MOCK_METHOD</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="identifier">MOCK_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method_1</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">void</span><span class="special">()</span> <span class="special">)</span>           <span class="comment">// this fails to compile with compilers without variadic macros</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method_2</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(),</span> <span class="identifier">method_2</span> <span class="special">)</span> <span class="comment">// this too fails with compilers without variadic macros</span>
+<span class="special">};</span>
+</pre>
+<p>
+        The workaround would be to use the MOCK_METHOD_EXT macro :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD_EXT</span><span class="special">(</span> <span class="identifier">method_1</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(),</span> <span class="identifier">method_1</span> <span class="special">)</span> <span class="comment">// the last argument must be specified</span>
+    <span class="identifier">MOCK_METHOD_EXT</span><span class="special">(</span> <span class="identifier">method_2</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(),</span> <span class="identifier">method_2</span> <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+<p>
+        The last 'identifier' argument must also always be specified for all other
+        macros.
+      </p>
+<p>
+        Synopsis :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_METHOD_EXT</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>               <span class="comment">// generates both const and non-const methods, compatible with compilers not supporting variadic macros</span>
+<span class="identifier">MOCK_CONST_METHOD_EXT</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>         <span class="comment">// generates only the const version of the method, for compilers not supporting variadic macros</span>
+<span class="identifier">MOCK_NON_CONST_METHOD_EXT</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>     <span class="comment">// generates only the non-const version of the method, for compilers not supporting variadic macros</span>
+
+<span class="identifier">MOCK_METHOD_EXT_TPL</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>           <span class="comment">// must be used if the signature uses a template parameter of the class, for compilers not supporting variadic macros</span>
+<span class="identifier">MOCK_CONST_METHOD_EXT_TPL</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>     <span class="comment">// must be used if the signature uses a template parameter of the class, for compilers not supporting variadic macros</span>
+<span class="identifier">MOCK_NON_CONST_METHOD_EXT_TPL</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span> <span class="comment">// must be used if the signature uses a template parameter of the class, for compilers not supporting variadic macros</span>
+
+<span class="identifier">MOCK_STATIC_METHOD</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>
+<span class="identifier">MOCK_STATIC_METHOD_TPL</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>        <span class="comment">// must be used if the signature uses a template parameter of the class, 'identifier' cannot be omitted, for compilers not supporting variadic macros</span>
+
+<span class="identifier">MOCK_FUNCTION</span><span class="special">(</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">arity</span><span class="special">,</span> <span class="identifier">signature</span><span class="special">,</span> <span class="identifier">identifier</span> <span class="special">)</span>                 <span class="comment">// 'identifier' cannot be omitted, for compilers not supporting variadic macros</span>
+</pre>
+<p>
+        The other parts of the user interface remain unchanged.
+      </p>
+<p>
+        Of course those macros are also available for compilers which support variadic
+        macros.
+      </p>
+</div>
+<div class="section turtle_limitations_compilers_without_support_for_variadic_macros_fail_on_commas_in_mock_base_class">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.compilers_without_support_for_variadic_macros_fail_on_commas_in_mock_base_class"></a><a class="link" href="limitations.html#turtle.limitations.compilers_without_support_for_variadic_macros_fail_on_commas_in_mock_base_class" title="Compilers without support for variadic macros fail on commas in MOCK_BASE_CLASS">Compilers
+      without support for variadic macros fail on commas in MOCK_BASE_CLASS</a>
+</h3></div></div></div>
+<p>
+        For compilers without support for variadic macros the following code does
+        not compile :
+      </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span> <span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">my_base_class</span>
+<span class="special">{};</span>
+
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span><span class="special">,</span> <span class="identifier">my_base_class</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span> <span class="special">&gt;</span> <span class="special">)</span> <span class="comment">// this fails to compile because the pre-processor believes the macro to be called with 3 arguments</span>
+<span class="special">{};</span>
+</pre>
+<p>
+        One workaround is :
+      </p>
+<pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">my_base_class</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span> <span class="special">&gt;</span> <span class="identifier">my_base_type</span><span class="special">;</span>
+
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span><span class="special">,</span> <span class="identifier">my_base_type</span> <span class="special">)</span>
+<span class="special">{};</span>
+</pre>
+<p>
+        Of course this is not always possible, as in :
+      </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span> <span class="special">&gt;</span>
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span><span class="special">,</span> <span class="identifier">my_base_type</span><span class="special">&lt;</span> <span class="identifier">T1</span><span class="special">,</span> <span class="identifier">T2</span> <span class="special">&gt;</span> <span class="special">)</span>
+<span class="special">{};</span>
+</pre>
+<p>
+        Another workaround would make use of <a href="http://www.boost.org/libs/preprocessor" target="_top">Boost.Preprocessor</a>
+        :
+      </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span> <span class="special">&gt;</span>
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">my_mock</span><span class="special">,</span> <span class="identifier">my_base_type</span><span class="special">&lt;</span> <span class="identifier">T1</span> <span class="identifier">BOOST_PP_COMMA</span><span class="special">()</span> <span class="identifier">T2</span> <span class="special">&gt;</span> <span class="special">)</span>
+<span class="special">{};</span>
+</pre>
+<p>
+        Actually BOOST_PP_COMMA implementation is quite trivial, being only :
+      </p>
+<pre class="programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_PP_COMMA</span><span class="special">()</span> <span class="special">,</span>
+</pre>
+<p>
+        Finally another workaround would be to not use the macro at all :
+      </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span> <span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">my_mock</span> <span class="special">:</span> <span class="identifier">my_base_type</span><span class="special">&lt;</span> <span class="identifier">T1</span><span class="special">,</span> <span class="identifier">T2</span> <span class="special">&gt;,</span> <span class="identifier">mock</span><span class="special">::</span><span class="identifier">object</span>
+<span class="special">{};</span>
+</pre>
+<p>
+        Note that <a href="../www.boost.org/libs/utility/identity_type/doc/html/index.html" target="_top">Boost.IdentityType</a>
+        is of little help here because the type is by essence very often abstract,
+        which doesn't work well for some compilers (e.g. gcc)].
+      </p>
+</div>
+<div class="section turtle_limitations_warning_c4505__________unreferenced_local_function_has_been_removed">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.warning_c4505__________unreferenced_local_function_has_been_removed"></a><a class="link" href="limitations.html#turtle.limitations.warning_c4505__________unreferenced_local_function_has_been_removed" title="Warning C4505: '...' : unreferenced local function has been removed">Warning
+      C4505: '...' : unreferenced local function has been removed</a>
+</h3></div></div></div>
+<p>
+        Example :
+      </p>
+<pre class="programlisting">warning C4505: 'base::[thunk]: __thiscall base::`vcall'{0,{flat}}' }'' : unreferenced local function has been removed
+</pre>
+<p>
+        This seems to be <a href="https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=324427" target="_top">a
+        random bug</a> with some versions of the Microsoft Visual Studio compiler.
+      </p>
+<p>
+        The only known workaround is to disable the warning with a pragma :
+      </p>
+<pre class="programlisting"><span class="preprocessor">#pragma</span> <span class="identifier">warning</span><span class="special">(</span> <span class="identifier">disable</span><span class="special">:</span> <span class="number">4505</span> <span class="special">)</span>
+</pre>
+</div>
+<div class="section turtle_limitations_warning_c4301_________overriding_virtual_function_only_differs_from_______by_const_volatile_qualifier">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.warning_c4301_________overriding_virtual_function_only_differs_from_______by_const_volatile_qualifier"></a><a class="link" href="limitations.html#turtle.limitations.warning_c4301_________overriding_virtual_function_only_differs_from_______by_const_volatile_qualifier" title="Warning C4301: '...': overriding virtual function only differs from '...' by const/volatile qualifier">Warning
+      C4301: '...': overriding virtual function only differs from '...' by const/volatile
+      qualifier</a>
+</h3></div></div></div>
+<p>
+        Example :
+      </p>
+<pre class="programlisting">warning C4301: '`anonymous-namespace'::base::method': overriding virtual function only differs from '`anonymous-namespace'::base::method' by const/volatile qualifier
+</pre>
+<p>
+        The following code produces this warning with some versions of the Microsoft
+        Visual Studio compiler :
+      </p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">base</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">method</span><span class="special">(</span> <span class="keyword">const</span> <span class="keyword">int</span> <span class="special">)</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">mock_base</span><span class="special">,</span> <span class="identifier">base</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">1</span> <span class="special">)</span>                    <span class="comment">// this produces the warning</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(</span> <span class="keyword">const</span> <span class="keyword">int</span> <span class="special">)</span> <span class="special">)</span> <span class="comment">// forcing the signature will not help, this produces the warning too !</span>
+<span class="special">};</span>
+</pre>
+<p>
+        The problem is that the 'const' is actually not part of the function signature
+        and therefore cannot be introspected.
+      </p>
+<p>
+        The first workaround would be to remove the 'const' all together.
+      </p>
+<p>
+        This is more sensible than it first sounds, after all the 'const' is useless
+        in this situation, indeed :
+      </p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">derived</span> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">base</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="identifier">method</span><span class="special">(</span> <span class="keyword">const</span> <span class="keyword">int</span> <span class="special">);</span>
+<span class="special">};</span>
+
+<span class="keyword">void</span> <span class="identifier">derived</span><span class="special">::</span><span class="identifier">method</span><span class="special">(</span> <span class="keyword">int</span> <span class="special">)</span>           <span class="comment">// this compiles, links and is valid C++</span>
+<span class="special">{}</span>
+</pre>
+<p>
+        Otherwise another workaround would be to provide a proxy method :
+      </p>
+<pre class="programlisting"><span class="identifier">MOCK_BASE_CLASS</span><span class="special">(</span> <span class="identifier">mock_base</span><span class="special">,</span> <span class="identifier">base</span> <span class="special">)</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="identifier">method</span><span class="special">(</span> <span class="keyword">const</span> <span class="keyword">int</span> <span class="identifier">i</span> <span class="special">)</span>
+    <span class="special">{</span>
+        <span class="identifier">method_stub</span><span class="special">(</span> <span class="identifier">i</span> <span class="special">);</span>
+    <span class="special">}</span>
+    <span class="identifier">MOCK_METHOD</span><span class="special">(</span> <span class="identifier">method_stub</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">void</span><span class="special">(</span> <span class="keyword">int</span> <span class="special">),</span> <span class="identifier">method</span> <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+</div>
+<div class="section turtle_limitations_warning_c4267___argument____conversion_from__size_t__to__unsigned_int___possible_loss_of_data">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="turtle.limitations.warning_c4267___argument____conversion_from__size_t__to__unsigned_int___possible_loss_of_data"></a><a class="link" href="limitations.html#turtle.limitations.warning_c4267___argument____conversion_from__size_t__to__unsigned_int___possible_loss_of_data" title="Warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data">Warning
+      C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss
+      of data</a>
+</h3></div></div></div>
+<p>
+        Compiling under Microsoft Visual Studio with the /Wp64 flag produces this
+        warning at various locations in the library code.
+      </p>
+<p>
+        This is actually a bug in the compiler, for more information see <a href="http://connect.microsoft.com/VisualStudio/feedback/details/253172/incorrect-warning-c4267" target="_top">incorrect-warning-c4267</a>.
+      </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2013 Mathieu Champlon<p>
+        Distributed under the <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Boost
+        Software License, Version 1.0</a>.
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rationale.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="changelog.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

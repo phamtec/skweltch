@@ -16,7 +16,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 
-	boost::property_tree::ptree pipes;
+ 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
@@ -24,7 +24,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
-	boost::property_tree::ptree root;
+	JsonObject root;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -41,7 +41,7 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     receiver.bind(pullfrom.c_str());
 
- 	int expect = root.get<int>("expect", 100);
+ 	int expect = root.getInt("expect", 100);
 
     //  Wait for start of batch
     zmq::message_t message;

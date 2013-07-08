@@ -5,11 +5,8 @@
 #include "../nodesHandler.hpp"
 #include "../../RestContext.hpp"
 
-#include <boost/property_tree/json_parser.hpp>
-
 using namespace std;
 using namespace boost;
-using namespace boost::property_tree;
 using namespace http::server;
 
 BOOST_AUTO_TEST_CASE( nodesTest )
@@ -76,23 +73,25 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
 	
-	cout << content << endl;
+//	cout << content << endl;
 	{
-		stringstream jresult(content);
-		ptree pt;
-  		read_json(jresult, pt);
-  		ptree xxx = pt.get_child("xxx");
-  		BOOST_CHECK(xxx.get("count", 0) == 10);
-  		BOOST_CHECK(xxx.get<string>("type") == "background");
-  		ptree rect = xxx.get_child("rect");
-  		BOOST_CHECK(rect.get("left", 0) > 0);
-  		BOOST_CHECK(rect.get("top", 0) > 0);
-  		BOOST_CHECK(rect.get("width", 0) > 0);
-  		BOOST_CHECK(rect.get("height", 0) > 0);
+		JsonObject pt;
+  		BOOST_CHECK(pt.read(content));
+  		JsonObject xxx = pt.getChild("xxx");
+  		BOOST_CHECK(xxx.getInt("count", 0) == 10);
+  		BOOST_CHECK(xxx.getString("type") == "background");
+  		JsonObject rect = xxx.getChild("rect");
+  		BOOST_CHECK(rect.getInt("left", 0) > 0);
+  		BOOST_CHECK(rect.getInt("top", 0) > 0);
+  		BOOST_CHECK(rect.getInt("width", 0) > 0);
+  		BOOST_CHECK(rect.getInt("height", 0) > 0);
   		
-  		ptree pipe = pt.get_child("connections.pipe2");
- 		BOOST_CHECK(pipe.get<string>("from") == "yyy");
- 		BOOST_CHECK(pipe.get<string>("to") == "xxx");
+  		JsonObject conn = pt.getChild("connections");
+  		BOOST_CHECK(!conn.empty());
+  		JsonObject pipe = conn.getChild("pipe2");
+  		BOOST_CHECK(!pipe.empty());
+ 		BOOST_CHECK(pipe.getString("from") == "yyy");
+ 		BOOST_CHECK(pipe.getString("to") == "xxx");
  	}
 	
 }

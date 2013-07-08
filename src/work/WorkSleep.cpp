@@ -22,7 +22,7 @@ int main (int argc, char *argv[])
 	outfn << "task" << argv[1] << ".out";
 	ofstream outfile(outfn.str().c_str());
 	
-  	boost::property_tree::ptree pipes;
+	JsonObject pipes;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
 			return 1;
 		}
  	}
-	boost::property_tree::ptree root;
+	JsonObject root;
  	{
  		stringstream ss(argv[3]);
  		JsonConfig json(&ss);

@@ -1,5 +1,7 @@
 
 #include "JsonConfig.hpp"
+#include "JsonObject.hpp"
+#include "JsonArray.hpp"
 #include "ExeRunner.hpp"
 #include "StopTasksFileTask.hpp"
 #include "FileProcessor.hpp"
@@ -8,7 +10,6 @@
 #include <fstream>
 
 using namespace std;
-using namespace boost;
 
 int main (int argc, char *argv[])
 {
@@ -19,12 +20,12 @@ int main (int argc, char *argv[])
 	
 	ifstream jsonfile(argv[1]);
 	JsonConfig c(&jsonfile);
-	boost::property_tree::ptree r;
+	JsonObject r;
 	if (!c.read(&r, &cout)) {
 		return 1;
 	}
 
-   	string pidFilename = r.get<string>("pidFile");
+   	string pidFilename = r.getString("pidFile");
    	
    	ExeRunner er;
 
@@ -34,17 +35,17 @@ int main (int argc, char *argv[])
 	fp.processFileIfExistsThenDelete(pidFilename);
 
 	stringstream pipes;
-	pipes << "'" << c.getChildAsString(r, "pipes") << "'";
+	pipes << "'" << r.getChildAsString("pipes") << "'";
 
 	// now run up the workers.
 	{
-		boost::property_tree::ptree bg = r.get_child("background");
+		JsonArray bg = r.getArray("background");
 		ofstream pidfile(pidFilename.c_str());
-		for (boost::property_tree::ptree::iterator i=bg.begin(); i != bg.end(); i++) {
-			int count = i->second.get("count", 0);
-			string exe(i->second.get<string>("exe"));
+		for (JsonArray::iterator i=bg.begin(); i != bg.end(); i++) {
+			int count = bg.getInt(i, "count");
+			string exe(bg.getString(i, "exe"));
 			stringstream config;
-			config << "'" << c.getChildAsString(i->second, "config") << "'";
+			config << "'" << bg.getChildAsString(i, "config") << "'";
 			if (count > 0) {
 				for (int i=0; i<count; i++) {
 					stringstream cmd;
@@ -64,17 +65,17 @@ int main (int argc, char *argv[])
 	
 	// something to vent.
 	{
-		boost::property_tree::ptree vent = r.get_child("vent");
+		JsonObject vent = r.getChild("vent");
 		stringstream exe;
-		exe << vent.get<string>("exe") << " " << pipes.str() << " '" << c.getChildAsString(vent, "config") << "'";
+		exe << vent.getString("exe") << " " << pipes.str() << " '" << vent.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 	
 	// something to reap.
 	{
-		boost::property_tree::ptree reap = r.get_child("reap");
+		JsonObject reap = r.getChild("reap");
 		stringstream exe;
-		exe << reap.get<string>("exe") << "'" << " " << pipes.str() << " '" << c.getChildAsString(reap, "config");
+		exe << reap.getString("exe") << " " << pipes.str() << " '" << reap.getChildAsString("config") << "'";
 		er.run(exe.str());
 	}
 

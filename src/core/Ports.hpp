@@ -2,15 +2,15 @@
 #ifndef __PORTS_HPP_INCLUDED__
 #define __PORTS_HPP_INCLUDED__
 
+#include "JsonObject.hpp"
 #include <string>
-#include <boost/property_tree/ptree.hpp>
 
 class Ports {
 
 public:
 
-	std::string getBindSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &config, const std::string &name);
-	std::string getConnectSocket(const boost::property_tree::ptree &pipes, const boost::property_tree::ptree &config, const std::string &name);
+	std::string getBindSocket(const JsonObject &pipes, const JsonObject &config, const std::string &name);
+	std::string getConnectSocket(const JsonObject &pipes, const JsonObject &config, const std::string &name);
 
 };
 
