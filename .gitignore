@@ -25,6 +25,8 @@ src/sink/bin/*
 
 src/vent/bin/*
 
+src/vent/test/bin/*
+
 src/work/bin/*
 
 src/reap/bin/*

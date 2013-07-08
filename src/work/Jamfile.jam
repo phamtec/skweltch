@@ -11,7 +11,19 @@ project work
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
-exe worksleep : worksleep.cpp
+exe worksleep : WorkSleep.cpp
+		zmq 
+		czmq
+		/core//core
+		/config//config
+	: 	<include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	: 
+	;
+
+exe workcharcount : workcharcount.cpp
 		zmq 
 		czmq
 		/core//core

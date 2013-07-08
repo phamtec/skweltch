@@ -10,7 +10,18 @@ project sink
 
 lib zmq : : <name>zmq ;
 
-exe sinkelapsed : sinkelapsed.cpp
+exe sinkelapsed : SinkElapsed.cpp
+		/core//core
+		/config//config
+		zmq 
+	:	<include>../cppzmq-master
+		<include>../config
+		<include>../core
+		<include>../json_spirit_v4.06/json_spirit
+	: 
+	;
+
+exe sinkavg : sinkavg.cpp
 		/core//core
 		/config//config
 		zmq 

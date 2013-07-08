@@ -11,7 +11,7 @@ project sink
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
-exe grimreaper : grimreaper.cpp
+exe grimreaper : GrimReaper.cpp
 		/core//core
 		/config//config
 		zmq czmq
