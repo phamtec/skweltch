@@ -4,7 +4,7 @@ project src ;
 import gcc ;
 import testing ;
 
-use-project /boost : /Users/paul/Documents/boost_1_53_0  ;
+use-project /boost : /Users/paul/Documents/boost_1_54_0  ;
 
 build-project config ;
 build-project core ;
