@@ -1,6 +1,6 @@
 
 project monitor
-    : requirements 
+    : requirements
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
@@ -14,9 +14,10 @@ exe monitor : monitor.cpp
 		/config//config
 		/core//core
 		zmq
-	:	<include>../cppzmq-master
+	:	<link>static
+        <include>../cppzmq-master
 		<include>../core
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
-	: 
+	:
 	;

@@ -1,6 +1,6 @@
 
 project work
-    : requirements 
+    : requirements
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
@@ -12,25 +12,27 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
 exe worksleep : WorkSleep.cpp
-		zmq 
+		zmq
 		czmq
 		/core//core
 		/config//config
-	: 	<include>../cppzmq-master
+	: 	<link>static
+        <include>../cppzmq-master
 		<include>../core
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
-	: 
+	:
 	;
 
 exe workcharcount : workcharcount.cpp
-		zmq 
+		zmq
 		czmq
 		/core//core
 		/config//config
-	: 	<include>../cppzmq-master
+	: 	<link>static
+        <include>../cppzmq-master
 		<include>../core
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
-	: 
+	:
 	;

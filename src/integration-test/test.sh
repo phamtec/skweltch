@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rm *.out
-monitor/bin/darwin-4.2.1/debug/threading-multi/monitor integration-test/test.json > monitor.out
+monitor/bin/gcc-4.7/debug/link-static/threading-multi/monitor integration-test/test.json > monitor.out
 sleep 3
 
 # sink finds everything

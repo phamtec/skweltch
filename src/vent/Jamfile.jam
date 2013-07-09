@@ -1,6 +1,6 @@
 
 project vent
-    : requirements 
+    : requirements
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
@@ -14,19 +14,20 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 
 exe ventrandomnum : VentRandomNum.cpp
-		zmq 
+		zmq
 		czmq
 		/core//core
 		/config//config
-	:	<include>../cppzmq-master
+	:	<link>static
+        <include>../cppzmq-master
 		<include>../config
 		<include>../core
 		<include>../json_spirit_v4.06/json_spirit
-	: 
+	:
 	;
 
 exe ventwords : ventwords.cpp WordSplitter.cpp
-		zmq 
+		zmq
 		czmq
 		/core//core
 		/config//config
@@ -34,5 +35,5 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 		<include>../config
 		<include>../core
 		<include>../json_spirit_v4.06/json_spirit
-	: 
+	:
 	;

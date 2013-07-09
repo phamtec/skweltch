@@ -1,6 +1,6 @@
 {
 	"pidFile": "tasks.pid",
-	
+
 	"pipes": {
 		 "pipe1": {
 			"node": "localhost",
@@ -15,22 +15,22 @@
 			"port": 5559
 		}
 	},
-	
+
 	// these are all run in the background and remembered.
 	"background": [
 		{
 			"count": 3, // need 3 of these. first arg to the program is the id.
 			"name": "WorkSleep",
-			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/worksleep",
+			"exe": "./work/bin/gcc-4.7/debug/link-static/threading-multi/worksleep",
 			"config" : {
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe2",
-						"direction": "from" 
+						"direction": "from"
 					},
 					"pushTo": {
 						"pipe": "pipe1",
-						"direction": "to" 
+						"direction": "to"
 					}
 				}
 			}
@@ -38,32 +38,32 @@
 		{
 			// only 1 of these, we sample 100 messages that can come through.
 			"name": "SinkElapsed",
-			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/sinkelapsed",
+			"exe": "./sink/bin/gcc-4.7/debug/link-static/threading-multi/sinkelapsed",
 			"config" : {
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe1",
-						"direction": "from" 
+						"direction": "from"
 					}
 				},
 				"expect": 50
 			}
 		}
 	],
-	
+
 	// this is what is used to feed the machine. 100 at a time.
 	"vent" : {
 		"name": "VentRandomNum",
-		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/ventrandomnum",
+		"exe": "./vent/bin/gcc-4.7/debug/link-static/threading-multi/ventrandomnum",
 		"config" : {
 			"connections": {
 				"pushTo": {
 					"pipe": "pipe2",
-					"direction": "to" 
+					"direction": "to"
 				},
 				"syncTo": {
 					"pipe": "pipe1",
-					"direction": "to" 
+					"direction": "to"
 				}
 			},
 			"count": 100,
@@ -72,21 +72,21 @@
 			"sleep": 5
 		}
 	},
-	
+
 	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
-		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/grimreaper",
+		"exe": "./reap/bin/gcc-4.7/debug/link-static/threading-multi/grimreaper",
 		"config" : {
 			"connections": {
 				"pullFrom": {
 					"pipe": "pipe3",
-					"direction": "from" 
+					"direction": "from"
 				}
 			},
 			"pidFile": "tasks.pid",
 			"totalTime": 2000
 		}
 	}
-		
+
 }
