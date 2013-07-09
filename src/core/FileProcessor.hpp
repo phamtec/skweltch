@@ -6,6 +6,10 @@
 
 class IFileTask;
 
+/*
+	Process a file line by line.
+*/
+
 class FileProcessor {
 
 private:

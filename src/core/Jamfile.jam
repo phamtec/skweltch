@@ -10,7 +10,7 @@ project core
 
 build-project test ;
 
-lib core : FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp Ports.cpp
+lib core : FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp Ports.cpp Elapsed.cpp
 		/config//config
 	:	<link>static
 		<include>../config

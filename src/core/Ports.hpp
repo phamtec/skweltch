@@ -5,6 +5,10 @@
 #include "JsonObject.hpp"
 #include <string>
 
+/*
+	Given configuration JSON, get a socket by name.
+*/
+
 class Ports {
 
 public:

@@ -10,7 +10,7 @@ project config
 
 build-project test ;
 
-lib config : JsonConfig.cpp JsonWriter.cpp JsonObject.cpp JsonArray.cpp
+lib config : JsonConfig.cpp JsonObject.cpp JsonArray.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_value.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_reader.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_writer.cpp

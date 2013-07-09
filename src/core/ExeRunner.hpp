@@ -4,6 +4,10 @@
 
 #include "IExeRunner.hpp"
 
+/*
+	Class used to run and kill a program.
+*/
+
 class ExeRunner : public IExeRunner {
 
 public:

@@ -2,6 +2,10 @@
 #ifndef __IFILETASK_HPP_INCLUDED__
 #define __IFILETASK_HPP_INCLUDED__
 
+/*
+	Abstract interface for processing a file line by line.
+*/
+
 class IFileTask {
 
 public:

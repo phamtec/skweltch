@@ -1,5 +1,6 @@
 #include "JsonConfig.hpp"
 #include "Ports.hpp"
+#include "Elapsed.hpp"
 #include <zmq.hpp>
 #include <iostream>
 #include <fstream>
@@ -49,13 +50,12 @@ int main (int argc, char *argv[])
  	int expect = root.getInt("expect", 100);
     BOOST_LOG_TRIVIAL(info) << "Expecting: " << expect;
 
-    //  Wait for start of batch
+    //  Wait for start of batch. It's an empty message.
     zmq::message_t message;
     receiver.recv(&message);
 
     //  Start our clock now
-    struct timeval tstart;
-    gettimeofday (&tstart, NULL);
+    Elapsed elapsed;
 
     //  Process expected confirmations
     for (int i = 0; i < expect; i++) {
@@ -63,19 +63,8 @@ int main (int argc, char *argv[])
     }
     BOOST_LOG_TRIVIAL(info) << "Finished.";
     
-    //  Calculate and report duration of batch
-    struct timeval tend, tdiff;
-    gettimeofday (&tend, NULL);
-
-    if (tend.tv_usec < tstart.tv_usec) {
-        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec - 1;
-        tdiff.tv_usec = 1000000 + tend.tv_usec - tstart.tv_usec;
-    }
-    else {
-        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec;
-        tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
-    }
-    int total_msec = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
+     //  Calculate and report duration of batch
+    int total_msec = elapsed.getTotal();
 
 	// get results.
 	JsonObject result;

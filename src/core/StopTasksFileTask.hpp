@@ -8,6 +8,10 @@
 
 class IExeRunner;
 
+/*
+	Concrete impl of file task used to stop all tasks by pid in the stream.
+*/
+
 class StopTasksFileTask : public IFileTask {
 
 private:

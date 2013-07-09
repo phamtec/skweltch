@@ -4,6 +4,10 @@
 
 #include <string>
 
+/*
+	Abstract interface for running and killing a program.
+*/
+
 class IExeRunner {
 public:
 
