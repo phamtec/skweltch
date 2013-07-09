@@ -11,6 +11,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
@@ -30,11 +31,14 @@ public:
 
 void SendWord::word(const std::string &s) {
 
-	zmq::message_t message(s.length()+1);
+ 	zmq::message_t message(2);
 	
-	// maximum length the number can be. Just fixed size messages.
-	strcpy((char *)message.data(), s.c_str());
-
+	// pack the number up and send it.
+	msgpack::sbuffer sbuf;
+	msgpack::pack(sbuf, s);
+	message.rebuild(sbuf.size());
+	memcpy(message.data(), sbuf.data(), sbuf.size());
+ 
     if ((n % 100) == 0)
 		BOOST_LOG_TRIVIAL(info) << "..." << s << "...";
 	n++;
@@ -87,8 +91,13 @@ int main (int argc, char *argv[])
 
     zmq::socket_t sink(context, ZMQ_PUSH);
     sink.connect(syncto.c_str());
+    
+	// pack the number up and send it.
     zmq::message_t message(2);
-    memcpy(message.data(), "0", 1);
+	msgpack::sbuffer sbuf;
+	msgpack::pack(sbuf, 1);
+	message.rebuild(sbuf.size());
+	memcpy(message.data(), sbuf.data(), sbuf.size());
     sink.send(message);
 
 	ifstream f(filename.c_str(), ifstream::in);

@@ -11,6 +11,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
@@ -62,22 +63,25 @@ int main (int argc, char *argv[])
         zmq::message_t message;
         receiver.recv(&message);
 
-		string word;
-		std::istringstream iss(static_cast<char*>(message.data()));
-		iss >> word;
-		
-         if ((n % 100) == 0)
-           BOOST_LOG_TRIVIAL(info) << "..." << word << "...";
+        msgpack::unpacked msg;
+        msgpack::unpack(&msg, (const char *)message.data(), message.size());
+        msgpack::object obj = msg.get();
+        
+        if ((n % 10) == 0)
+            BOOST_LOG_TRIVIAL(info) << "..." << obj << "...";
         n++;
         
+ 		string word;
+       	obj.convert(&word);
+
 		int count = word.length();
 
         // Send results to sink
-		// maximum length the number can be. Just fixed size messages.
-		message.rebuild(10);
-		sprintf((char *)message.data(), "%d", count);
+		msgpack::sbuffer sbuf;
+		msgpack::pack(sbuf, count);
+		message.rebuild(sbuf.size());
+		memcpy(message.data(), sbuf.data(), sbuf.size());
         sender.send(message);
-
     }
     
     return 0;

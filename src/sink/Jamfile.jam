@@ -10,6 +10,7 @@ project sink
     ;
 
 lib zmq : : <name>zmq ;
+lib msgpack : : <name>msgpack ;
 
 exe sinkelapsed : SinkElapsed.cpp
 		/core//core
@@ -28,6 +29,7 @@ exe sinkavg : sinkavg.cpp
 		/config//config
 		/boost/log//boost_log
 		zmq
+		msgpack
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core

@@ -11,6 +11,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
@@ -63,18 +64,21 @@ int main (int argc, char *argv[])
        	zmq::message_t message;
         receiver.recv(&message);
 
-		int workload;
-		std::istringstream iss(static_cast<char*>(message.data()));
-		iss >> workload;
-
+        msgpack::unpacked msg;
+        msgpack::unpack(&msg, (const char *)message.data(), message.size());
+        msgpack::object obj = msg.get();
+        
         if ((n % 10) == 0)
-            BOOST_LOG_TRIVIAL(info) << "..." << workload << "...";
+            BOOST_LOG_TRIVIAL(info) << "..." << obj << "...";
         n++;
+        
+       	int workload;
+        obj.convert(&workload);
 
 		//  Do the work
  		zclock_sleep(workload);
 
-       //  Send results to sink
+       //  Send results to sink (just an empty message).
         message.rebuild();
         sender.send(message);
 

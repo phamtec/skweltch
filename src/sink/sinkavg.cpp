@@ -8,6 +8,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
@@ -61,10 +62,15 @@ int main (int argc, char *argv[])
     //  Process expected confirmations
     int total = 0;
     for (int i = 0; i < expect; i++) {
-    	receiver.recv(&message);    	
+    	receiver.recv(&message);
+    		
+        msgpack::unpacked msg;
+        msgpack::unpack(&msg, (const char *)message.data(), message.size());
+        msgpack::object obj = msg.get();
+         
 		int n;
-		std::istringstream iss(static_cast<char*>(message.data()));
-		iss >> n;
+       	obj.convert(&n);
+
     	total += n;
     }
     BOOST_LOG_TRIVIAL(info) << "Finished.";

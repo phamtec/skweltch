@@ -10,6 +10,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <msgpack.hpp>
 
 #define within(num) (int) ((float) num * random () / (RAND_MAX + 1.0))
 
@@ -53,10 +54,15 @@ int main (int argc, char *argv[])
     zmq::socket_t sender(context, ZMQ_PUSH);
     sender.bind(pushto.c_str());
 
-    zmq::socket_t sink(context, ZMQ_PUSH);
-    sink.connect(syncto.c_str());
+	zmq::socket_t sink(context, ZMQ_PUSH);
+	sink.connect(syncto.c_str());
+
+	// pack the number up and send it.
     zmq::message_t message(2);
-    memcpy(message.data(), "0", 1);
+	msgpack::sbuffer sbuf;
+	msgpack::pack(sbuf, 1);
+	message.rebuild(sbuf.size());
+	memcpy(message.data(), sbuf.data(), sbuf.size());
     sink.send(message);
 
  	int count = root.getInt("count", 10);
@@ -66,16 +72,18 @@ int main (int argc, char *argv[])
     srandom ((unsigned) time (NULL));
 
     //  Send count tasks
-    int task_nbr;
-    for (task_nbr = 0; task_nbr < count; task_nbr++) {
+    for (int i = 0; i < count; i++) {
+    
     	zmq::message_t message(2);
     	
 		//  Random number from 1 to the range specified
 		int num = within(high) + low;
 
-		// maximum length the number can be. Just fixed size messages.
-		message.rebuild(10);
-		sprintf((char *)message.data(), "%d", num);
+		// pack the number up and send it.
+		msgpack::sbuffer sbuf;
+        msgpack::pack(sbuf, num);
+ 		message.rebuild(sbuf.size());
+		memcpy(message.data(), sbuf.data(), sbuf.size());
  
      	sender.send(message);
      	
