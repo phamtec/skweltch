@@ -21,7 +21,7 @@
 		{
 			"count": 6,
 			"name": "WorkCharCount",
-			"exe": "./work/bin/darwin-4.2.1/debug/threading-multi/workcharcount",
+			"exe": "dist/workcharcount",
 			"config" : {
 				"connections": {
 					"pullFrom": {
@@ -37,7 +37,7 @@
 		},
 		{
 			"name": "SinkAvg",
-			"exe": "./sink/bin/darwin-4.2.1/debug/threading-multi/sinkavg",
+			"exe": "dist/sinkavg",
 			"config" : {
 				"connections": {
 					"pullFrom": {
@@ -54,7 +54,7 @@
 	// this is what is used to feed the machine.
 	"vent" : {
 		"name": "VentWords",
-		"exe": "./vent/bin/darwin-4.2.1/debug/threading-multi/ventwords",
+		"exe": "dist/ventwords",
 		"config" : {
 			"connections": {
 				"pushTo": {
@@ -67,14 +67,14 @@
 				}
 			},
 			"filename": "data/words.txt",
-			"sleep": 4
+			"sleep": 0
 		}
 	},
 	
 	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
-		"exe": "./reap/bin/darwin-4.2.1/debug/threading-multi/grimreaper",
+		"exe": "dist/grimreaper",
 		"config" : {
 			"connections": {
 				"pullFrom": {
@@ -83,7 +83,7 @@
 				}
 			},
 			"pidFile": "tasks.pid",
-			"totalTime": 2000
+			"totalTime": 5000
 		}
 	}
 		

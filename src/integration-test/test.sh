@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rm *.out
-monitor/bin/gcc-4.7/debug/link-static/threading-multi/monitor integration-test/test.json > monitor.out
+dist/monitor integration-test/test.json > monitor.out
 sleep 3
 
 # sink finds everything

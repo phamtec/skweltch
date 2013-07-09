@@ -15,9 +15,11 @@ class SendWord : public IWord {
 private:
 	zmq::socket_t *sender;
 	int sleeptime;
+	ofstream *outfile;
+	int n;
 	
 public:
-	SendWord(zmq::socket_t *s, int slp) : sender(s), sleeptime(slp) {}
+	SendWord(zmq::socket_t *s, int slp, ofstream *o) : sender(s), sleeptime(slp), outfile(o), n(0) {}
 	
 	virtual void word(const std::string &s);
 };
@@ -35,6 +37,10 @@ void SendWord::word(const std::string &s) {
 		//  Do the work
 		zclock_sleep(sleeptime);
 	}
+	
+	if ((n / 100) * 100 == n)
+		*outfile << "." << std::flush;
+	n++;
 	
 }
 
@@ -86,31 +92,12 @@ int main (int argc, char *argv[])
 		outfile << " no file " << filename << endl;
 		return 1;
 	}
-	SendWord w(&sender, sleeptime);
+	
+	SendWord w(&sender, sleeptime, &outfile);
 	WordSplitter splitter(&f);
 	splitter.process(&w);
-/*	
-    //  Send count tasks
-    int task_nbr;
-    for (task_nbr = 0; task_nbr < count; task_nbr++) {
-    	zmq::message_t message(2);
-    	
-		//  Random number from 1 to the range specified
-		int num = within(high) + low;
-
-		// maximum length the number can be. Just fixed size messages.
-		message.rebuild(10);
-		sprintf((char *)message.data(), "%d", num);
- 
-     	sender.send(message);
-     	
-     	if (sleeptime > 0) {
-			//  Do the work
-			zclock_sleep(sleeptime);
-     	}
-    }
- */   
-    sleep (1); //  Give 0MQ time to deliver
     
+	outfile << "finished." << endl;
+
     return 0;
 }

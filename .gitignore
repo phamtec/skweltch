@@ -41,6 +41,8 @@ src/ui/rest/bin/*
 
 src/ui/rest/test/bin/*
 
+src/dist/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*

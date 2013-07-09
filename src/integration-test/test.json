@@ -21,7 +21,7 @@
 		{
 			"count": 3, // need 3 of these. first arg to the program is the id.
 			"name": "WorkSleep",
-			"exe": "./work/bin/gcc-4.7/debug/link-static/threading-multi/worksleep",
+			"exe": "dist/worksleep",
 			"config" : {
 				"connections": {
 					"pullFrom": {
@@ -38,7 +38,7 @@
 		{
 			// only 1 of these, we sample 100 messages that can come through.
 			"name": "SinkElapsed",
-			"exe": "./sink/bin/gcc-4.7/debug/link-static/threading-multi/sinkelapsed",
+			"exe": "dist/sinkelapsed",
 			"config" : {
 				"connections": {
 					"pullFrom": {
@@ -54,7 +54,7 @@
 	// this is what is used to feed the machine. 100 at a time.
 	"vent" : {
 		"name": "VentRandomNum",
-		"exe": "./vent/bin/gcc-4.7/debug/link-static/threading-multi/ventrandomnum",
+		"exe": "dist/ventrandomnum",
 		"config" : {
 			"connections": {
 				"pushTo": {
@@ -76,7 +76,7 @@
 	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
-		"exe": "./reap/bin/gcc-4.7/debug/link-static/threading-multi/grimreaper",
+		"exe": "dist/grimreaper",
 		"config" : {
 			"connections": {
 				"pullFrom": {
