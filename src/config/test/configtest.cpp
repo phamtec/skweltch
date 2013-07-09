@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( configTest )
 
 	JsonConfig c(&json);
 	JsonObject r;
-	BOOST_CHECK(c.read(&r, &std::cout));
+	BOOST_CHECK(c.read(&r));
 
 	BOOST_CHECK(r.getString("pidFile") == "pids.pid");
 	BOOST_CHECK(r.getString("exePath") == "./bin");
@@ -77,6 +77,6 @@ BOOST_AUTO_TEST_CASE( badConfig1Test )
 
 	JsonConfig c(&json);
 	JsonObject r;
-	BOOST_CHECK(!c.read(&r, &std::cout));
+	BOOST_CHECK(!c.read(&r));
     
 }

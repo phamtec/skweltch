@@ -15,6 +15,7 @@ lib czmq : : <name>czmq ;
 exe grimreaper : GrimReaper.cpp
 		/core//core
 		/config//config
+		/boost/log//boost_log
 		zmq czmq
 	:	<include>../cppzmq-master
 		<include>../core

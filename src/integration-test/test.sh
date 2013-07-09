@@ -1,34 +1,35 @@
 #!/bin/sh
 
-rm *.out
-dist/monitor integration-test/test.json > monitor.out
+rm *.log
+rm results.json
+dist/monitor integration-test/test.json
 sleep 3
 
 # sink finds everything
-cat sink.out | grep "Total elapsed time: " > /dev/null
+cat results.json | grep "elapsed" > /dev/null
 if [ "$?" != "0" ]
 then
-	echo "FAILED"
+	echo "FAILED (results)"
 	exit 1
 fi
 
 # at least a little work for each task.
-cat task0.out | grep "...." > /dev/null
+cat work0.log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
-	echo "FAILED"
+	echo "FAILED (work0)"
 	exit 1
 fi
-cat task1.out | grep "...." > /dev/null
+cat work1.log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
-	echo "FAILED"
+	echo "FAILED (work1)"
 	exit 1
 fi
-cat task2.out | grep "...." > /dev/null
+cat work2.log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
-	echo "FAILED"
+	echo "FAILED (work2)"
 	exit 1
 fi
 

@@ -8,16 +8,20 @@
 #include <fstream>
 #include <czmq.h>
 #include <zclock.h>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
+using namespace boost;
 
 int main (int argc, char *argv[])
 {
-
-	ofstream outfile("reap.out");
-
+	log::add_file_log(log::keywords::file_name = "reap.log", log::keywords::auto_flush = true);
+	
  	if (argc != 3) {
-		outfile << "usage: " << argv[0] << " pipes config" << endl;
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config";
 		return 1;
 	}
 	
@@ -25,7 +29,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&pipes, &outfile)) {
+		if (!json.read(&pipes)) {
 			return 1;
 		}
  	}
@@ -33,7 +37,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &outfile)) {
+		if (!json.read(&root)) {
 			return 1;
 		}
  	}
@@ -48,7 +52,7 @@ int main (int argc, char *argv[])
 
  	int totaltime = root.getInt("totalTime", 5000);
  	zclock_sleep(totaltime);
- 	outfile << "waited " << totaltime << "ms, killing everything." << std::endl;
+ 	BOOST_LOG_TRIVIAL(info) << "waited " << totaltime << "ms, killing everything.";
  	
    	ExeRunner er;
 	StopTasksFileTask t(&er);

@@ -22,13 +22,13 @@ BOOST_AUTO_TEST_CASE( pidFileExistsTest )
  	{
  		stringstream ss(pipess);
  		JsonConfig json(&ss);
-		BOOST_CHECK(json.read(&pipes, &cout));
+		BOOST_CHECK(json.read(&pipes));
  	}
 	JsonObject config;
  	{
  		stringstream ss(configs);
  		JsonConfig json(&ss);
-		BOOST_CHECK(json.read(&config, &cout));
+		BOOST_CHECK(json.read(&config));
  	}
  	
 	Ports p;

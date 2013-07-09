@@ -7,23 +7,27 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
 using namespace boost;
 
 pid_t ExeRunner::run(const std::string &exe) {
 
-	cout << "run: " << exe << endl;
+	BOOST_LOG_TRIVIAL(info) << "run: " << exe;
 	
     int fdset[2], nullfd;
     if (pipe(fdset) != 0) {
-        cerr << "couldn't pipe" << endl;
+    	BOOST_LOG_TRIVIAL(error) << "couldn't pipe";
         return 1;
     }
 	pid_t pid = fork();
     switch (pid) {
     case -1: /* error */
-        cerr << "couldn't fork" << endl;
+    	BOOST_LOG_TRIVIAL(error) << "couldn't fork";
         return 1;
         
     case 0: /* child */
@@ -56,5 +60,6 @@ pid_t ExeRunner::run(const std::string &exe) {
 }
 
 void ExeRunner::kill(int pid) {
-	::kill(pid, SIGKILL);
+//	::kill(pid, SIGKILL);
+	::kill(pid, SIGHUP);
 }

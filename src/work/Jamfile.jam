@@ -17,6 +17,7 @@ exe worksleep : WorkSleep.cpp
 		czmq
 		/core//core
 		/config//config
+		/boost/log//boost_log
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config
@@ -29,6 +30,7 @@ exe workcharcount : workcharcount.cpp
 		czmq
 		/core//core
 		/config//config
+		/boost/log//boost_log
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config

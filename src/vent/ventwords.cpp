@@ -7,19 +7,23 @@
 #include <zmq.hpp>
 #include <czmq.h>
 #include <zclock.h>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
+using namespace boost;
 
 class SendWord : public IWord {
 
 private:
 	zmq::socket_t *sender;
 	int sleeptime;
-	ofstream *outfile;
 	int n;
 	
 public:
-	SendWord(zmq::socket_t *s, int slp, ofstream *o) : sender(s), sleeptime(slp), outfile(o), n(0) {}
+	SendWord(zmq::socket_t *s, int slp) : sender(s), sleeptime(slp), n(0) {}
 	
 	virtual void word(const std::string &s);
 };
@@ -31,6 +35,10 @@ void SendWord::word(const std::string &s) {
 	// maximum length the number can be. Just fixed size messages.
 	strcpy((char *)message.data(), s.c_str());
 
+    if ((n % 100) == 0)
+		BOOST_LOG_TRIVIAL(info) << "..." << s << "...";
+	n++;
+	
 	sender->send(message);
      	
 	if (sleeptime > 0) {
@@ -38,18 +46,14 @@ void SendWord::word(const std::string &s) {
 		zclock_sleep(sleeptime);
 	}
 	
-	if ((n / 100) * 100 == n)
-		*outfile << "." << std::flush;
-	n++;
-	
 }
 
 int main (int argc, char *argv[])
 {
- 	ofstream outfile("vent.out");
-
-	if (argc != 3) {
-		outfile << "usage: " << argv[0] << " pipes config" << endl;
+	log::add_file_log(log::keywords::file_name = "vent.log", log::keywords::auto_flush = true);
+	
+ 	if (argc != 3) {
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config";
 		return 1;
 	}
 	
@@ -57,7 +61,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&pipes, &outfile)) {
+		if (!json.read(&pipes)) {
 			return 1;
 		}
  	}
@@ -65,7 +69,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &outfile)) {
+		if (!json.read(&root)) {
 			return 1;
 		}
  	}
@@ -89,15 +93,15 @@ int main (int argc, char *argv[])
 
 	ifstream f(filename.c_str(), ifstream::in);
 	if (!f.is_open()) {
-		outfile << " no file " << filename << endl;
+		BOOST_LOG_TRIVIAL(info) << " no file " << filename;
 		return 1;
 	}
 	
-	SendWord w(&sender, sleeptime, &outfile);
+	SendWord w(&sender, sleeptime);
 	WordSplitter splitter(&f);
 	splitter.process(&w);
     
-	outfile << "finished." << endl;
+	BOOST_LOG_TRIVIAL(info) << "finished.";
 
     return 0;
 }

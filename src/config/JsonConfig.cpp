@@ -8,7 +8,7 @@ using namespace std;
 using namespace boost;
 using namespace json_spirit;
 
-bool JsonConfig::read(JsonObject *root, std::ostream *outfile) {
+bool JsonConfig::read(JsonObject *root) {
 
 	return root->read(jsonstream);
 	

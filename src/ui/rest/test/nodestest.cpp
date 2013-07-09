@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 "}\n");
 
 	JsonConfig c(&json);
-	BOOST_CHECK(c.read(RestContext::getContext()->getRoot(), &std::cout));
+	BOOST_CHECK(c.read(RestContext::getContext()->getRoot()));
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
 	

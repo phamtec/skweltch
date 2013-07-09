@@ -7,26 +7,31 @@
 
 #include <iostream>
 #include <fstream>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
+using namespace boost;
 
 int main (int argc, char *argv[])
 {
-
 	if (argc != 4) {
-		cerr << "usage: " << argv[0] << " taskId pipes config" << endl;
+		log::add_file_log(log::keywords::file_name = "work.log", log::keywords::auto_flush = true);
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " taskId pipes config";
 		return 1;
 	}
 	
 	stringstream outfn;
-	outfn << "task" << argv[1] << ".out";
-	ofstream outfile(outfn.str().c_str());
+	outfn << "work" << argv[1] << ".log";
+	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
 	
 	JsonObject pipes;
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&pipes, &outfile)) {
+		if (!json.read(&pipes)) {
 			return 1;
 		}
  	}
@@ -34,7 +39,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[3]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &outfile)) {
+		if (!json.read(&root)) {
 			return 1;
 		}
  	}
@@ -60,6 +65,11 @@ int main (int argc, char *argv[])
 		string word;
 		std::istringstream iss(static_cast<char*>(message.data()));
 		iss >> word;
+		
+         if ((n % 100) == 0)
+           BOOST_LOG_TRIVIAL(info) << "..." << word << "...";
+        n++;
+        
 		int count = word.length();
 
         // Send results to sink
@@ -68,9 +78,6 @@ int main (int argc, char *argv[])
 		sprintf((char *)message.data(), "%d", count);
         sender.send(message);
 
-        if ((n / 10) * 10 == n)
-            outfile << "." << std::flush;
-        n++;
     }
     
     return 0;

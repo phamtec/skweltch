@@ -4,23 +4,28 @@
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
+using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	ofstream outfile("sink.out");
-
+	log::add_file_log(log::keywords::file_name = "sink.log", log::keywords::auto_flush = true);
+	
  	if (argc != 3) {
-		outfile << "usage: " << argv[0] << " pipes config" << endl;
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config";
 		return 1;
 	}
-
+	
  	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&pipes, &outfile)) {
+		if (!json.read(&pipes)) {
 			return 1;
 		}
  	}
@@ -28,7 +33,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &outfile)) {
+		if (!json.read(&root)) {
 			return 1;
 		}
  	}
@@ -42,6 +47,7 @@ int main (int argc, char *argv[])
     receiver.bind(pullfrom.c_str());
 
  	int expect = root.getInt("expect", 100);
+    BOOST_LOG_TRIVIAL(info) << "Expecting: " << expect;
 
     //  Wait for start of batch
     zmq::message_t message;
@@ -52,16 +58,10 @@ int main (int argc, char *argv[])
     gettimeofday (&tstart, NULL);
 
     //  Process expected confirmations
-    int task_nbr;
-    int total_msec = 0;     //  Total calculated cost in msecs
-    for (task_nbr = 0; task_nbr < expect; task_nbr++) {
-
-    	receiver.recv(&message);
-        if ((task_nbr / 10) * 10 == task_nbr)
-            outfile << ":" << std::flush;
-        else
-            outfile << "." << std::flush;
+    for (int i = 0; i < expect; i++) {
+    	receiver.recv(&message);	
     }
+    BOOST_LOG_TRIVIAL(info) << "Finished.";
     
     //  Calculate and report duration of batch
     struct timeval tend, tdiff;
@@ -75,7 +75,13 @@ int main (int argc, char *argv[])
         tdiff.tv_sec = tend.tv_sec - tstart.tv_sec;
         tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
     }
-    total_msec = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
-    outfile << "\nTotal elapsed time: " << total_msec << " msec\n" << std::endl;
+    int total_msec = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
 
+	// get results.
+	JsonObject result;
+	result.add("elapsed", total_msec);
+	{
+		ofstream results("results.json");
+		result.write(true, &results);
+    }
 }

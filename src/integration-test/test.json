@@ -22,6 +22,7 @@
 			"count": 3, // need 3 of these. first arg to the program is the id.
 			"name": "WorkSleep",
 			"exe": "dist/worksleep",
+			"sighup": true,
 			"config" : {
 				"connections": {
 					"pullFrom": {

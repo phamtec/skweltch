@@ -19,6 +19,7 @@ exe ventrandomnum : VentRandomNum.cpp
 		czmq
 		/core//core
 		/config//config
+		/boost/log//boost_log
 	:   <include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -31,6 +32,7 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 		czmq
 		/core//core
 		/config//config
+		/boost/log//boost_log
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core

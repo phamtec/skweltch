@@ -22,7 +22,7 @@ bool RestContext::load(const std::string &config) {
 
 	ifstream jsonfile(config.c_str());
 	JsonConfig c(&jsonfile);
-	if (c.read(&root, &std::cout)) {
+	if (c.read(&root)) {
 		loaded = true;
 	}
 	return loaded;

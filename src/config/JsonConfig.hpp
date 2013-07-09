@@ -17,8 +17,7 @@ class JsonConfig {
 public:
 	JsonConfig(std::istream *s) : jsonstream(s) {}
 
-	bool read(JsonObject *root, std::ostream *outfile);
-	std::string getChildAsString(const JsonObject &obj, const std::string &key);
+	bool read(JsonObject *root);
 	
 };
 

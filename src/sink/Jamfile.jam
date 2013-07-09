@@ -14,6 +14,7 @@ lib zmq : : <name>zmq ;
 exe sinkelapsed : SinkElapsed.cpp
 		/core//core
 		/config//config
+		/boost/log//boost_log
 		zmq
 	:	<include>../cppzmq-master
 		<include>../config
@@ -25,9 +26,9 @@ exe sinkelapsed : SinkElapsed.cpp
 exe sinkavg : sinkavg.cpp
 		/core//core
 		/config//config
+		/boost/log//boost_log
 		zmq
-	:	<link>static
-        <include>../cppzmq-master
+	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
 		<include>../json_spirit_v4.06/json_spirit

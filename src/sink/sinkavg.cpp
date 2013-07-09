@@ -4,23 +4,28 @@
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
+using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	ofstream outfile("sink.out");
-
+	log::add_file_log(log::keywords::file_name = "sink.log", log::keywords::auto_flush = true);
+	
  	if (argc != 3) {
-		outfile << "usage: " << argv[0] << " pipes config" << endl;
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config";
 		return 1;
 	}
-
+	
  	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
-		if (!json.read(&pipes, &outfile)) {
+		if (!json.read(&pipes)) {
 			return 1;
 		}
  	}
@@ -28,7 +33,7 @@ int main (int argc, char *argv[])
  	{
  		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
-		if (!json.read(&root, &outfile)) {
+		if (!json.read(&root)) {
 			return 1;
 		}
  	}
@@ -43,7 +48,7 @@ int main (int argc, char *argv[])
 
 	// expected number of messages.
  	int expect = root.getInt("expect", 100);
-    outfile << "Expecting: " << expect << endl;
+    BOOST_LOG_TRIVIAL(info) << "Expecting: " << expect;
 
     //  Wait for start of batch
     zmq::message_t message;
@@ -62,7 +67,7 @@ int main (int argc, char *argv[])
 		iss >> n;
     	total += n;
     }
-    outfile << "Finished." << endl;
+    BOOST_LOG_TRIVIAL(info) << "Finished.";
 
     //  Calculate and report duration of batch
     struct timeval tend, tdiff;

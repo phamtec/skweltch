@@ -19,7 +19,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 6,
+			"count": 3,
 			"name": "WorkCharCount",
 			"exe": "dist/workcharcount",
 			"config" : {
@@ -83,7 +83,7 @@
 				}
 			},
 			"pidFile": "tasks.pid",
-			"totalTime": 5000
+			"totalTime": 2000
 		}
 	}
 		
