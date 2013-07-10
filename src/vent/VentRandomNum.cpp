@@ -47,19 +47,16 @@ int main (int argc, char *argv[])
 		}
  	}
 
- 	Ports ports;
- 	string syncto = ports.getConnectSocket(pipes, root, "syncTo");
- 	string pushto = ports.getBindSocket(pipes, root, "pushTo");
-
 	int low = root.getInt("low", 1);
  	int high = root.getInt("high", 100);
 	
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
-    sender.bind(pushto.c_str());
-
 	zmq::socket_t sink(context, ZMQ_PUSH);
-	sink.connect(syncto.c_str());
+
+ 	Ports ports;
+    ports.join(&sender, pipes, root, "pushTo");
+    ports.join(&sink, pipes, root, "syncTo");
 
 	// pack the number up and send it.
     zmq::message_t message(2);

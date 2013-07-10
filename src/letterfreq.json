@@ -13,26 +13,51 @@
 		"pipe3": {
 			"node": "localhost",
 			"port": 5559
+		},
+		"pipe4": {
+			"node": "localhost",
+			"port": 5560
 		}
 	},
 	
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 6,
+			"count": 3,
 			"name": "WorkCharCount",
 			"exe": "dist/workcharcount",
 			"config" : {
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe2",
-						"direction": "from" 
+						"direction": "from",
+						"mode":"connect"
 					},
 					"pushTo": {
 						"pipe": "pipe1",
-						"direction": "to" 
+						"direction": "to",
+						"mode":"connect"
 					}
 				}
+			}
+		},
+		{
+			"name": "PipeDumpIntoSink",
+			"exe": "dist/pipedump",
+			"config" : {
+				"connections": {
+					"pipeFrom": {
+						"pipe": "pipe1",
+						"direction": "from" ,
+						"mode": "bind"
+					},
+					"pipeTo": {
+						"pipe": "pipe4",
+						"direction": "to",
+						"mode": "connect"
+					}
+				},
+				"every": 1000
 			}
 		},
 		{
@@ -41,8 +66,9 @@
 			"config" : {
 				"connections": {
 					"pullFrom": {
-						"pipe": "pipe1",
-						"direction": "from" 
+						"pipe": "pipe4",
+						"direction": "from",
+						"mode":"bind"
 					}
 				},
 				// this needs to be derived by sending a "finished" message.
@@ -59,11 +85,13 @@
 			"connections": {
 				"pushTo": {
 					"pipe": "pipe2",
-					"direction": "to" 
+					"direction": "to",
+					"mode":"bind"
 				},
 				"syncTo": {
 					"pipe": "pipe1",
-					"direction": "to" 
+					"direction": "to",
+					"mode":"connect"
 				}
 			},
 			"filename": "data/words.txt",
@@ -79,11 +107,12 @@
 			"connections": {
 				"pullFrom": {
 					"pipe": "pipe3",
-					"direction": "from" 
+					"direction": "from",
+					"mode":"bind"
 				}
 			},
 			"pidFile": "tasks.pid",
-			"totalTime": 5000
+			"totalTime": 2000
 		}
 	}
 		

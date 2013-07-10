@@ -17,11 +17,57 @@
 		"pipe4": {
 			"node": "localhost",
 			"port": 5560
+		},
+		"pipe5": {
+			"node": "localhost",
+			"port": 5561
+		}
+	},
+	
+	// this is what is used to feed the machine.
+	// always one of them.
+	"vent" : {
+		"name": "VentWords",
+		"exe": "dist/ventwords",
+		"config" : {
+			"connections": {
+				"pushTo": {
+					"pipe": "pipe2",
+					"direction": "to",
+					"mode":"bind"
+				},
+				"syncTo": {
+					"pipe": "pipe1",
+					"direction": "to",
+					"mode":"connect"
+				}
+			},
+			"filename": "data/words.txt",
+			"sleep": 0
 		}
 	},
 	
 	// these are all run in the background and remembered.
 	"background": [
+		{
+			"name": "PipeDumpFromVent",
+			"exe": "dist/pipedump",
+			"config" : {
+				"connections": {
+					"pipeFrom": {
+						"pipe": "pipe2",
+						"direction": "from" ,
+						"mode": "connect"
+					},
+					"pipeTo": {
+						"pipe": "pipe5",
+						"direction": "to",
+						"mode": "bind"
+					}
+				},
+				"every": 100
+			}
+		},
 		{
 			"count": 3,
 			"name": "WorkCharCount",
@@ -29,12 +75,14 @@
 			"config" : {
 				"connections": {
 					"pullFrom": {
-						"pipe": "pipe2",
-						"direction": "from" 
+						"pipe": "pipe5",
+						"direction": "from",
+						"mode":"connect"
 					},
 					"pushTo": {
 						"pipe": "pipe1",
-						"direction": "to" 
+						"direction": "to",
+						"mode":"connect"
 					}
 				}
 			}
@@ -46,11 +94,13 @@
 				"connections": {
 					"pipeFrom": {
 						"pipe": "pipe1",
-						"direction": "from" 
+						"direction": "from" ,
+						"mode": "bind"
 					},
 					"pipeTo": {
 						"pipe": "pipe4",
-						"direction": "to" 
+						"direction": "to",
+						"mode": "connect"
 					}
 				},
 				"every": 1000
@@ -63,7 +113,8 @@
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe4",
-						"direction": "from" 
+						"direction": "from",
+						"mode":"bind"
 					}
 				},
 				// this needs to be derived by sending a "finished" message.
@@ -72,27 +123,7 @@
 		}
 	],
 	
-	// this is what is used to feed the machine.
-	"vent" : {
-		"name": "VentWords",
-		"exe": "dist/ventwords",
-		"config" : {
-			"connections": {
-				"pushTo": {
-					"pipe": "pipe2",
-					"direction": "to" 
-				},
-				"syncTo": {
-					"pipe": "pipe1",
-					"direction": "to" 
-				}
-			},
-			"filename": "data/words.txt",
-			"sleep": 0
-		}
-	},
-	
-	// and this is what is used to reap.
+	// and this is what is used to reap. Always one of them.
 	"reap": {
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",
@@ -100,7 +131,8 @@
 			"connections": {
 				"pullFrom": {
 					"pipe": "pipe3",
-					"direction": "from" 
+					"direction": "from",
+					"mode":"bind"
 				}
 			},
 			"pidFile": "tasks.pid",

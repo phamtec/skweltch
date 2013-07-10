@@ -45,16 +45,13 @@ int main (int argc, char *argv[])
 		}
  	}
 
- 	Ports ports;
- 	string pullfrom = ports.getConnectSocket(pipes, root, "pullFrom");
- 	string pushto = ports.getConnectSocket(pipes, root, "pushTo");
-
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
-    receiver.connect(pullfrom.c_str());
-    
     zmq::socket_t sender(context, ZMQ_PUSH);
-    sender.connect(pushto.c_str());
+    
+ 	Ports ports;
+    ports.join(&receiver, pipes, root, "pullFrom");
+    ports.join(&sender, pipes, root, "pushTo");
 
     //  Process tasks forever
     int n=0;

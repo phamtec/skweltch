@@ -15,5 +15,6 @@ lib core : FileProcessor.cpp ExeRunner.cpp StopTasksFileTask.cpp Ports.cpp Elaps
 	:	<link>static
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
+		<include>../cppzmq-master
 	: 
 	;

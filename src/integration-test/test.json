@@ -27,11 +27,13 @@
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe2",
-						"direction": "from"
+						"direction": "from",
+						"mode":"connect"
 					},
 					"pushTo": {
 						"pipe": "pipe1",
-						"direction": "to"
+						"direction": "to",
+						"mode":"connect"
 					}
 				}
 			}
@@ -44,7 +46,8 @@
 				"connections": {
 					"pullFrom": {
 						"pipe": "pipe1",
-						"direction": "from"
+						"direction": "from",
+						"mode":"bind"
 					}
 				},
 				"expect": 50
@@ -60,11 +63,13 @@
 			"connections": {
 				"pushTo": {
 					"pipe": "pipe2",
-					"direction": "to"
+					"direction": "to",
+					"mode":"bind"
 				},
 				"syncTo": {
 					"pipe": "pipe1",
-					"direction": "to"
+					"direction": "to",
+					"mode":"connect"
 				}
 			},
 			"count": 100,
@@ -82,7 +87,8 @@
 			"connections": {
 				"pullFrom": {
 					"pipe": "pipe3",
-					"direction": "from"
+					"direction": "from",
+					"mode":"bind"
 				}
 			},
 			"pidFile": "tasks.pid",

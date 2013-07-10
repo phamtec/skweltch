@@ -42,13 +42,12 @@ int main (int argc, char *argv[])
 		}
  	}
  	
- 	Ports ports;
- 	string pullfrom = ports.getBindSocket(pipes, root, "pullFrom");
-	
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
-    receiver.bind(pullfrom.c_str());
+    
+ 	Ports ports;
+    ports.join(&receiver, pipes, root, "pullFrom");
 
  	int expect = root.getInt("expect", 100);
     BOOST_LOG_TRIVIAL(info) << "Expecting: " << expect;

@@ -45,18 +45,16 @@ int main (int argc, char *argv[])
 		}
  	}
 
- 	Ports ports;
- 	string pipeFrom = ports.getBindSocket(pipes, root, "pipeFrom");
- 	string pipeTo = ports.getConnectSocket(pipes, root, "pipeTo");
 
  	int count = root.getInt("every", 100);
 
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
-    receiver.bind(pipeFrom.c_str());
-    
     zmq::socket_t sender(context, ZMQ_PUSH);
-    sender.connect(pipeTo.c_str());
+
+ 	Ports ports;
+    ports.join(&receiver, pipes, root, "pipeFrom");
+    ports.join(&sender, pipes, root, "pipeTo");
 
 	BOOST_LOG_TRIVIAL(info) << "start...";
 	
