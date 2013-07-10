@@ -18,19 +18,19 @@ using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 5) {
-		log::add_file_log(log::keywords::file_name = "work.log", log::keywords::auto_flush = true);
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " taskId pipes config name";
+ 	if (argc != 4) {
+		log::add_file_log(log::keywords::file_name = "pipe.log", log::keywords::auto_flush = true);
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
 		return 1;
 	}
 	
 	stringstream outfn;
-	outfn << argv[4] << ".log";
+	outfn << argv[3] << ".log";
 	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
 	
 	JsonObject pipes;
  	{
- 		stringstream ss(argv[2]);
+ 		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
 		if (!json.read(&pipes)) {
 			return 1;
@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
  	}
 	JsonObject root;
  	{
- 		stringstream ss(argv[3]);
+ 		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
 		if (!json.read(&root)) {
 			return 1;
@@ -46,43 +46,38 @@ int main (int argc, char *argv[])
  	}
 
  	Ports ports;
- 	string pullfrom = ports.getConnectSocket(pipes, root, "pullFrom");
- 	string pushto = ports.getConnectSocket(pipes, root, "pushTo");
+ 	string pipeFrom = ports.getBindSocket(pipes, root, "pipeFrom");
+ 	string pipeTo = ports.getConnectSocket(pipes, root, "pipeTo");
+
+ 	int count = root.getInt("every", 100);
 
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
-    receiver.connect(pullfrom.c_str());
+    receiver.bind(pipeFrom.c_str());
     
     zmq::socket_t sender(context, ZMQ_PUSH);
-    sender.connect(pushto.c_str());
+    sender.connect(pipeTo.c_str());
 
-    //  Process tasks forever
+	BOOST_LOG_TRIVIAL(info) << "start...";
+	
+    //  Process messages forever
     int n=0;
     while (1) {
 
         zmq::message_t message;
         receiver.recv(&message);
-
-        msgpack::unpacked msg;
-        msgpack::unpack(&msg, (const char *)message.data(), message.size());
-        msgpack::object obj = msg.get();
         
-        if ((n % 10) == 0)
+        if ((n % count) == 0) {
+			msgpack::unpacked msg;
+			msgpack::unpack(&msg, (const char *)message.data(), message.size());
+			msgpack::object obj = msg.get();
             BOOST_LOG_TRIVIAL(info) << "..." << obj << "...";
+        }
         n++;
         
- 		string word;
-       	obj.convert(&word);
-
-		int count = word.length();
-
-        // Send results to sink
-		msgpack::sbuffer sbuf;
-		msgpack::pack(sbuf, count);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-        sender.send(message);
-    }
+		sender.send(message);
+		
+     }
     
     return 0;
 

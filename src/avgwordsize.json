@@ -13,6 +13,10 @@
 		"pipe3": {
 			"node": "localhost",
 			"port": 5559
+		},
+		"pipe4": {
+			"node": "localhost",
+			"port": 5560
 		}
 	},
 	
@@ -36,12 +40,29 @@
 			}
 		},
 		{
+			"name": "PipeDumpIntoSink",
+			"exe": "dist/pipedump",
+			"config" : {
+				"connections": {
+					"pipeFrom": {
+						"pipe": "pipe1",
+						"direction": "from" 
+					},
+					"pipeTo": {
+						"pipe": "pipe4",
+						"direction": "to" 
+					}
+				},
+				"every": 1000
+			}
+		},
+		{
 			"name": "SinkAvg",
 			"exe": "dist/sinkavg",
 			"config" : {
 				"connections": {
 					"pullFrom": {
-						"pipe": "pipe1",
+						"pipe": "pipe4",
 						"direction": "from" 
 					}
 				},

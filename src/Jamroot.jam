@@ -13,6 +13,7 @@ build-project sink ;
 build-project vent ;
 build-project work ;
 build-project reap ;
+build-project pipe ;
 build-project ui ;
 
-install dist : monitor sink vent work reap ;
+install dist : monitor sink vent work reap pipe ;

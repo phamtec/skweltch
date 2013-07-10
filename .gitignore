@@ -31,6 +31,8 @@ src/work/bin/*
 
 src/reap/bin/*
 
+src/pipe/bin/*
+
 src/skweltch.bbprojectd/*
 
 src/ui/bin/*

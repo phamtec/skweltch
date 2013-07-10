@@ -1,0 +1,42 @@
+
+project pipe
+    : requirements
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+        <link>static
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+lib msgpack : : <name>msgpack ;
+
+exe pipecount : pipecount.cpp
+		zmq
+		czmq
+		msgpack
+		/core//core
+		/config//config
+		/boost/log//boost_log
+	: 	<include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;
+
+exe pipedump : pipedump.cpp
+		zmq
+		czmq
+		msgpack
+		/core//core
+		/config//config
+		/boost/log//boost_log
+	: 	<include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;

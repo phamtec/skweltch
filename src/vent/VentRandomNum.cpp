@@ -19,12 +19,16 @@ using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	log::add_file_log(log::keywords::file_name = "vent.log", log::keywords::auto_flush = true);
 	
- 	if (argc != 3) {
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config";
+ 	if (argc != 4) {
+		log::add_file_log(log::keywords::file_name = "vent.log", log::keywords::auto_flush = true);
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
 		return 1;
 	}
+	
+	stringstream outfn;
+	outfn << argv[3] << ".log";
+	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
 	
 	JsonObject pipes;
  	{

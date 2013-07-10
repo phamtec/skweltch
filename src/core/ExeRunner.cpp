@@ -60,6 +60,5 @@ pid_t ExeRunner::run(const std::string &exe) {
 }
 
 void ExeRunner::kill(int pid) {
-//	::kill(pid, SIGKILL);
-	::kill(pid, SIGHUP);
+	::kill(pid, SIGKILL);
 }
