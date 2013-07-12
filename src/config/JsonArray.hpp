@@ -13,11 +13,13 @@ class JsonObject;
 class JsonArray {
 
 private:
-
+	friend class JsonObject;
+	
 	json_spirit::Array _array;
 	
 public:
 	JsonArray(const json_spirit::Array &array) : _array(array) {}
+	JsonArray() {}
 
 	typedef std::vector<json_spirit::Value>::iterator iterator;
 	
@@ -28,8 +30,9 @@ public:
 	std::string getString(iterator i, const std::string &name) const;
 	JsonObject getValue(iterator i) const;
 	std::string getChildAsString(iterator it, const std::string &key) const;
-	bool empty() const { return _array.empty(); }
-	
+	bool empty() const { return _array.empty(); }	
+	void add(JsonObject *o);
+
 };
 
 #endif // __JSONARRAY_HPP_INCLUDED__

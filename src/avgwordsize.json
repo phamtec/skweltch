@@ -1,43 +1,22 @@
 {
 	"pidFile": "tasks.pid",
 	
-	"pipes": {
-		"pipe1": {
-			"node": "localhost",
-			"port": 5558
-		},
-		"pipe2": {
-			"node": "localhost",
-			"port": 5557
-		},
-		"pipe3": {
-			"node": "localhost",
-			"port": 5559
-		},
-		"pipe4": {
-			"node": "localhost",
-			"port": 5560
-		},
-		"pipe5": {
-			"node": "localhost",
-			"port": 5561
-		}
-	},
-	
 	// this is what is used to feed the machine.
 	// always one of them.
 	"vent" : {
 		"name": "VentWords",
 		"exe": "dist/ventwords",
+		"node": "localhost",
+		"port": 5556,
 		"config" : {
 			"connections": {
 				"pushTo": {
-					"pipe": "pipe2",
+					"block": "PipeDumpFromVent",
 					"direction": "to",
 					"mode":"bind"
 				},
 				"syncTo": {
-					"pipe": "pipe1",
+					"block": "PipeDumpIntoSink",
 					"direction": "to",
 					"mode":"connect"
 				}
@@ -52,15 +31,16 @@
 		{
 			"name": "PipeDumpFromVent",
 			"exe": "dist/pipedump",
+			"node": "localhost",
+			"port": 5557,
 			"config" : {
 				"connections": {
 					"pipeFrom": {
-						"pipe": "pipe2",
 						"direction": "from" ,
 						"mode": "connect"
 					},
 					"pipeTo": {
-						"pipe": "pipe5",
+						"block": "WorkCharCount",
 						"direction": "to",
 						"mode": "bind"
 					}
@@ -72,15 +52,16 @@
 			"count": 3,
 			"name": "WorkCharCount",
 			"exe": "dist/workcharcount",
+			"node": "localhost",
+			"port": 5561,
 			"config" : {
 				"connections": {
 					"pullFrom": {
-						"pipe": "pipe5",
 						"direction": "from",
 						"mode":"connect"
 					},
 					"pushTo": {
-						"pipe": "pipe1",
+						"block": "PipeDumpIntoSink",
 						"direction": "to",
 						"mode":"connect"
 					}
@@ -90,15 +71,16 @@
 		{
 			"name": "PipeDumpIntoSink",
 			"exe": "dist/pipedump",
+			"node": "localhost",
+			"port": 5558,
 			"config" : {
 				"connections": {
 					"pipeFrom": {
-						"pipe": "pipe1",
 						"direction": "from" ,
 						"mode": "bind"
 					},
 					"pipeTo": {
-						"pipe": "pipe4",
+						"block": "SinkAvg",
 						"direction": "to",
 						"mode": "connect"
 					}
@@ -109,10 +91,11 @@
 		{
 			"name": "SinkAvg",
 			"exe": "dist/sinkavg",
+			"node": "localhost",
+			"port": 5560,
 			"config" : {
 				"connections": {
 					"pullFrom": {
-						"pipe": "pipe4",
 						"direction": "from",
 						"mode":"bind"
 					}
@@ -127,10 +110,11 @@
 	"reap": {
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",
+		"node": "localhost",
+		"port": 5559,
 		"config" : {
 			"connections": {
 				"pullFrom": {
-					"pipe": "pipe3",
 					"direction": "from",
 					"mode":"bind"
 				}

@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "JsonConfig.hpp"
+#include "JsonArray.hpp"
 #include "../nodesHandler.hpp"
 #include "../../RestContext.hpp"
 
@@ -17,81 +18,95 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 
 	stringstream json(
 "{\n"
-"	\"pipes\": {\n"
-"		\"pipe1\": {\n"
-"			\"node\": \"localhost\",\n"
-"			\"port\": 5558\n"
-"		},\n"
-"		\"pipe2\": {\n"
-"			\"node\": \"localhost\",\n"
-"			\"port\": 5557\n"
+"	\"vent\" : {\n"
+"		\"name\": \"xxx\",\n"
+"		\"config\" : {\n"
+"			\"connections\": {\n"
+"				\"pushTo\": {\n"
+"					\"direction\": \"to\",\n"
+"					\"block\": \"yyy\"\n"
+"				},\n"
+"				\"syncTo\": {\n"
+"					\"direction\": \"to\",\n"
+"					\"block\": \"zzz\"\n"
+"				}\n"
+"			}\n"
 "		}\n"
 "	},\n"
 "	\"background\": [\n"
 "		{\n"
-"			\"count\": 10,\n"
-"			\"name\": \"xxx\",\n"
-"			\"exe\": \"xxx\",\n"
+"			\"count\": 3,\n"
+"			\"name\": \"yyy\",\n"
 "			\"config\" : {\n"
 "				\"connections\": {\n"
 "					\"pullFrom\": {\n"
-"						\"pipe\": \"pipe2\",\n"
-"						\"direction\": \"from\" \n"
+"						\"direction\": \"from\"\n"
+"					},\n"
+"					\"pushTo\": {\n"
+"						\"direction\": \"to\",\n"
+"						\"block\": \"zzz\"\n"
 "					}\n"
 "				}\n"
 "			}\n"
 "		},\n"
 "		{\n"
-"			\"name\": \"yyy\",\n"
-"			\"exe\": \"yyy\",\n"
+"			\"name\": \"zzz\",\n"
 "			\"config\" : {\n"
 "				\"connections\": {\n"
-"					\"pushTo\": {\n"
-"						\"pipe\": \"pipe2\",\n"
-"						\"direction\": \"to\" \n"
+"					\"pullFrom\": {\n"
+"						\"direction\": \"from\"\n"
 "					}\n"
 "				}\n"
 "			}\n"
 "		}\n"
 "	],\n"
-"	\"vent\" : {\n"
-"		\"name\": \"zzzz\",\n"
-"		\"exe\": \"zzzz\",\n"
-"		\"config\" : {\n"
-"		}\n"
-"	},\n"
+"	// and this is what is used to reap.\n"
 "	\"reap\": {\n"
 "		\"name\": \"aaa\",\n"
-"		\"exe\": \"aaa\",\n"
 "		\"config\" : {\n"
+"			\"connections\": {\n"
+"				\"pullFrom\": {\n"
+"					\"direction\": \"from\"\n"
+"				}\n"
+"			}\n"
 "		}\n"
 "	}\n"
-"}\n");
+"}\n"
+);
 
 	JsonConfig c(&json);
 	BOOST_CHECK(c.read(RestContext::getContext()->getRoot()));
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
 	
-//	cout << content << endl;
 	{
 		JsonObject pt;
   		BOOST_CHECK(pt.read(content));
-  		JsonObject xxx = pt.getChild("xxx");
-  		BOOST_CHECK(xxx.getInt("count", 0) == 10);
-  		BOOST_CHECK(xxx.getString("type") == "background");
-  		JsonObject rect = xxx.getChild("rect");
+  		JsonObject yyy = pt.getChild("yyy");
+  		BOOST_CHECK(yyy.getInt("count", 0) == 3);
+  		BOOST_CHECK(yyy.getString("type") == "background");
+  		JsonObject rect = yyy.getChild("rect");
   		BOOST_CHECK(rect.getInt("left", 0) > 0);
   		BOOST_CHECK(rect.getInt("top", 0) > 0);
   		BOOST_CHECK(rect.getInt("width", 0) > 0);
   		BOOST_CHECK(rect.getInt("height", 0) > 0);
   		
-  		JsonObject conn = pt.getChild("connections");
+  		JsonArray conn = pt.getArray("connections");
   		BOOST_CHECK(!conn.empty());
-  		JsonObject pipe = conn.getChild("pipe2");
-  		BOOST_CHECK(!pipe.empty());
- 		BOOST_CHECK(pipe.getString("from") == "yyy");
- 		BOOST_CHECK(pipe.getString("to") == "xxx");
- 	}
+  		JsonArray::iterator i = conn.begin();
+  		BOOST_CHECK(i != conn.end());
+		BOOST_CHECK(conn.getString(i, "from") == "xxx");
+		BOOST_CHECK(conn.getString(i, "to") == "yyy");
+		i++;
+  		BOOST_CHECK(i != conn.end());
+		BOOST_CHECK(conn.getString(i, "from") == "xxx");
+		BOOST_CHECK(conn.getString(i, "to") == "zzz");
+		i++;
+  		BOOST_CHECK(i != conn.end());
+		BOOST_CHECK(conn.getString(i, "from") == "yyy");
+		BOOST_CHECK(conn.getString(i, "to") == "zzz");
+		i++;
+   		BOOST_CHECK(i == conn.end());
+	}
 	
 }

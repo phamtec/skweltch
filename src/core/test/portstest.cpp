@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE smoke-tests
+#define BOOST_TEST_MODULE ports-tests
 #include <boost/test/unit_test.hpp>
 
 #include "JsonConfig.hpp"
@@ -22,36 +22,19 @@ MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 	MOCK_METHOD( connect, 1 )
 };
 
-BOOST_AUTO_TEST_CASE( pidFileExistsTest )
+BOOST_AUTO_TEST_CASE( calcPortsTest )
 {
 	string configjson = "{" 
 		"\"connections\":{" 
 			"\"pullFrom\":{" 
-				"\"pipe\":\"pipe2\"," 
-				"\"direction\":\"from\","
 				"\"mode\":\"bind\""
 			"}," 
 			"\"pushTo\":{" 
-				"\"pipe\":\"pipe1\"," 
-				"\"direction\":\"to\","
 				"\"mode\":\"connect\""
 			"}"
 		"}"
 	"}";
-	string pipesjson = "{"
-		"\"pipe1\":{"
-			"\"node\":\"192.168.0.1\","
-			"\"port\":5558"
-		"},"
-		"\"pipe2\":{"
-			"\"node\":\"192.168.0.1\","
-			"\"port\":5557"
-		"},"
-		"\"pipe3\":{"
-			"\"node\":\"192.168.0.1\","
-			"\"port\":5559"
-		"}"
-	"}";
+	string pipesjson = "{\"pullFrom\":{\"node\":\"192.168.0.1\",\"port\":5557},\"pushTo\":{\"node\":\"192.168.0.1\",\"port\":5559}}";
 
   	JsonObject pipes;
  	{
@@ -69,11 +52,9 @@ BOOST_AUTO_TEST_CASE( pidFileExistsTest )
  	mock_socket s1, s2;
  	
 	MOCK_EXPECT(s1.bind).with("tcp://*:5557");
-	MOCK_EXPECT(s2.connect).with("tcp://192.168.0.1:5558");
+	MOCK_EXPECT(s2.connect).with("tcp://192.168.0.1:5559");
  	
 	Ports p;
-//	p.bind(&s1, pipes, config, "pullFrom");
-//	p.connect(&s2, pipes, config, "pushTo");
 	p.join(&s1, pipes, config, "pullFrom");
 	p.join(&s2, pipes, config, "pushTo");
 }

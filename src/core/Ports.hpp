@@ -18,7 +18,7 @@ class Ports {
 public:
 
 	void join(zmq::i_socket_t *socket, const JsonObject &pipes, const JsonObject &config, const std::string &name);
-	
+
 };
 
 #endif // __PORTS_HPP_INCLUDED__

@@ -9,9 +9,11 @@ project monitor
     :
     ;
 
+build-project test ;
+
 lib zmq : : <name>zmq ;
 
-exe monitor : monitor.cpp
+exe monitor : monitor.cpp PipeBuilder.cpp
 		/config//config
 		/core//core
 		/boost/log//boost_log

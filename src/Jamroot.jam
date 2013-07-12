@@ -16,4 +16,4 @@ build-project reap ;
 build-project pipe ;
 build-project ui ;
 
-install dist : monitor sink vent work reap pipe ;
+install dist : monitor sink vent work reap pipe ui ;

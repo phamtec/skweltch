@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE smoke-tests
+#define BOOST_TEST_MODULE fileprocessor-tests
 #include <boost/test/unit_test.hpp>
 
 #include "../FileProcessor.hpp"

@@ -1,0 +1,75 @@
+<html>
+<head>
+	<title>Skwletch</title>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<link rel="stylesheet" href="main.css" />
+	<script>
+	$(function() {
+		$( "#load" )
+			.button()
+			.click(function( event ) {
+				$.ajax({
+				  url: "/rest/load?file=avgwordsize.json",
+				  cache: false
+				}).done(function( html ) {
+				});
+				event.preventDefault();
+			});
+		$( "#nodes" )
+			.button()
+			.click(function( event ) {
+				$.ajax({
+				  url: "/rest/nodes",
+				  cache: false
+				}).done(function( html ) {
+					var nodes = jQuery.parseJSON(html);
+					var canvas = $("#graph")[0];
+					var ctx = canvas.getContext("2d");
+					
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					
+					// place nodes
+					for (n in nodes) {
+						if (n  != "connections") {
+							ctx.strokeRect(nodes[n].rect.left, nodes[n].rect.top, nodes[n].rect.width, nodes[n].rect.height);
+							ctx.fillText(n, nodes[n].rect.left+16, nodes[n].rect.top+16);
+							if ((typeof nodes[n].count) == "string" && nodes[n].count != 0) {
+								ctx.fillText(nodes[n].count, nodes[n].rect.left + nodes[n].rect.width - 10, 
+									nodes[n].rect.top - 5);
+							}
+						}
+					}
+					
+					// draw connections
+					var conn = nodes["connections"];
+					for (n in conn) {
+						var from = nodes[conn[n].from];
+						var to = nodes[conn[n].to];
+						console.log(from);
+						console.log(to);
+						if ((typeof to) == "object") {
+							ctx.moveTo(from.rect.left + 50, from.rect.top + 50);
+  							ctx.lineTo(to.rect.left, to.rect.top);
+  							ctx.stroke();			
+  							ctx.beginPath();
+							ctx.arc(to.rect.left, to.rect.top, 5, 0, 2*Math.PI);
+							ctx.stroke();
+  						}
+					}
+				});
+				event.preventDefault();
+			});
+	});
+	</script>
+</head>
+<body>
+<h3>Skweltch</h3>
+<div>
+	<button id="load">Load</button>
+	<button id="nodes">Nodes</button>
+</div>
+<canvas id="graph" width="600px" height="340px"></canvas>
+</body>
+</html>

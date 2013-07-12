@@ -2,36 +2,62 @@
 #include "JsonObject.hpp"
 
 #include "JsonArray.hpp"
+#include "JsonPredicate.hpp"
 
 #include "json_spirit.h"
 #include "json_spirit_stream_reader.h"
 #include "json_spirit_writer_template.h"
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+
 using namespace std;
 using namespace boost;
 using namespace json_spirit;
 
+bool JsonObject::isObject() const {
+
+	return _value.type() == obj_type;
+}
+
 bool JsonObject::read(istream *istream) {
 
-	return read_stream(*istream, _value);
-
+	try {
+		read_stream_or_throw(*istream, _value);
+	}
+	catch (Error_position &p) {
+		BOOST_LOG_TRIVIAL(error) << p.reason_ << " (" << p.line_ << ", " << p.column_ << ")";
+		return false;
+	}
+	return true;
 }
 
 bool JsonObject::read(const string &s) {
 
-	return read_string(s, _value);
+	try {
+		read_string_or_throw(s, _value);
+	}
+	catch (Error_position &p) {
+		BOOST_LOG_TRIVIAL(error) << p.reason_ << " (" << p.line_ << ", " << p.column_ << ")";
+		return false;
+	}
+	return true;
 
 }
 
 void  JsonObject::write(bool pp, ostream *ostream) const {
 
-	if (pp) {
-    	write_stream(_value, *ostream, pretty_print || remove_trailing_zeros);
-    }
-    else {
-    	write_stream(_value, *ostream, remove_trailing_zeros);
-    }
-
+	if (_value.type() == null_type) {
+		*ostream << "{}";
+	}
+	else {
+		if (pp) {
+			write_stream(_value, *ostream, pretty_print || remove_trailing_zeros);
+		}
+		else {
+			write_stream(_value, *ostream, remove_trailing_zeros);
+		}
+	}
 }
 
 string JsonObject::getChildAsString(const string &key) const {
@@ -85,7 +111,7 @@ void JsonObject::set(json_spirit::Object *o, const string &name, Value v) {
 
 }
 
-void JsonObject::replace(const std::string &name, const JsonObject &o) {
+void JsonObject::replace(const string &name, const JsonObject &o) {
 
 	set(&_value.get_obj(), name, o._value);
 
@@ -159,6 +185,16 @@ void JsonObject::add(const string &name, const JsonObject &o) {
 
 }
 
+void JsonObject::add(const std::string &name, const JsonArray &a) {
+
+	if (_value.type() != obj_type) {
+		_value = Object();
+	}
+	
+	_value.get_obj().push_back(Pair(name, a._array)); 
+
+}
+
 string JsonObject::getKey(iterator it) {
 
 	return it->name_;
@@ -173,4 +209,37 @@ JsonObject JsonObject::getValue(iterator it) {
 	
 }
 
+bool JsonObject::isValueArray(iterator it) {
+	return it->value_.type() == array_type;
+}
 
+JsonArray JsonObject::getValueArray(iterator it) {
+	return JsonArray(it->value_.get_array());
+}
+
+string JsonObject::getValueString(iterator it) {
+	return it->value_.get_value<string>();
+}
+
+JsonObject JsonObject::findObj(const JsonPredicate &pred) {
+
+	for (JsonObject::iterator i = begin(); i != end(); i++) {
+		if (isValueArray(i)) {
+			JsonArray a = getValueArray(i);
+			for (JsonArray::iterator j = a.begin(); j != a.end(); j++) {
+				JsonObject o = a.getValue(j);
+				if (pred.match(o)) {
+					return o;
+				}
+			}
+		}
+		else {
+			JsonObject o = getValue(i);
+			if (pred.match(o)) {
+				return o;
+			}
+		}
+	}
+	return JsonObject();
+
+}

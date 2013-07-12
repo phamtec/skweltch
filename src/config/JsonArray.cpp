@@ -49,3 +49,10 @@ JsonObject JsonArray::getValue(iterator it) const {
 
 }
 
+void JsonArray::add(JsonObject *o) {
+
+	_array.push_back(*o->getValue());
+	
+}
+
+

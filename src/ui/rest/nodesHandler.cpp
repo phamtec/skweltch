@@ -46,7 +46,7 @@ void addConnection(JsonObject *info, const JsonObject &connection, const string 
 }
 
 void addNode(JsonObject *pt, const JsonObject &node, 
-		const string &type, int *x, int *y, JsonObject *connections) {
+		const string &type, int *x, int *y, JsonArray *connections) {
 		
 	int count = node.getInt("count", 0);
 	string name(node.getString("name"));
@@ -63,25 +63,13 @@ void addNode(JsonObject *pt, const JsonObject &node,
 	JsonObject config = node.getChild("config");
 	JsonObject confconn = config.getChild("connections");
 	if (!confconn.empty()) {
-	
 		for (JsonObject::iterator i = confconn.begin(); i != confconn.end(); i++) {
-			string pipename = confconn.getValue(i).getString("pipe"); 
-			if (connections->empty()) {
-				JsonObject info;
-				addConnection(&info, confconn.getValue(i), name);
-				connections->add(pipename, info);
-			}
-			else {
-				JsonObject j = connections->getChild(pipename);
-				if (j.empty()) {
-					JsonObject info;
-					addConnection(&info, confconn.getValue(i), name);
-					connections->add(pipename, info);
-				}
-				else {
-					addConnection(&j, confconn.getValue(i), name);
-					connections->replace(pipename, j);
-				}
+			JsonObject o = confconn.getValue(i);
+			if (o.getString("direction") == "to") {
+				JsonObject c;
+				c.add("from", name);
+				c.add("to", o.getString("block"));
+				connections->add(&c);
 			}
 		}
 	}
@@ -96,10 +84,7 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 	JsonObject pt;
 	JsonObject *root = context->getRoot();
 
-	// we need the pipes for below.
-	JsonObject pipes = root->getChild("pipes");
-
-	JsonObject connections;
+	JsonArray connections;
 	
 	int x = ((GRAPH_WIDTH - NODE_WIDTH)/2);
 	int y = NODE_GAP;

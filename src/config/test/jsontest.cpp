@@ -3,6 +3,7 @@
 
 #include "../JsonObject.hpp"
 #include "../JsonArray.hpp"
+#include "../JsonNamePredicate.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -163,3 +164,47 @@ BOOST_AUTO_TEST_CASE( arrayTest )
 
 }
 
+BOOST_AUTO_TEST_CASE( findByNameTest )
+{
+	string json = "{\n"
+"	\"aaa\": [\n"
+"		{\n"
+"			\"name\": \"Block1\",\n"
+"			\"value\": 1\n"
+"		},\n"
+"		{\n"
+"			\"name\": \"Block2\",\n"
+"			\"value\": \"xxx\"\n"
+"		}\n"
+"	],\n"
+"	\"bbb\": {\n"
+"		\"name\": \"Block3\",\n"
+"		\"value\": \"yyy\"\n"
+"	}\n"
+"}\n";
+
+	JsonObject obj;
+	BOOST_CHECK(obj.read(json));
+	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block2")).getString("value") == "xxx");
+	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block1")).getInt("value", -1) == 1);
+	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block3")).getString("value") == "yyy");
+}
+
+BOOST_AUTO_TEST_CASE( writeArrayTest )
+{
+	JsonObject obj;
+	JsonArray aaa;
+	JsonObject o;
+	o.add("x", "y");
+	aaa.add(&o);
+	JsonObject p;
+	p.add("a", "b");
+	aaa.add(&p);
+	obj.add("aaa", aaa);
+	
+	ostringstream ss;
+	obj.write(false, &ss);
+
+	BOOST_CHECK(ss.str() == "{\"aaa\":[{\"x\":\"y\"},{\"a\":\"b\"}]}");
+
+}

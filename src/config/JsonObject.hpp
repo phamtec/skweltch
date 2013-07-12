@@ -7,6 +7,7 @@
 #include <string>
 
 class JsonArray;
+class JsonPredicate;
 
 /**
 	A JSON Object.
@@ -29,6 +30,12 @@ public:
 	
 	std::string getKey(iterator it);
 	JsonObject getValue(iterator it);
+	JsonArray getValueArray(iterator it);
+	std::string getValueString(iterator it);
+	bool isValueArray(iterator it);
+	
+	// what is this thing?
+	bool isObject() const;
 	
 	// reading and writing.
 	bool read(std::istream *istream);
@@ -52,12 +59,16 @@ public:
 	void add(const std::string &name, int n);
 	void add(const std::string &name, double n);
 	void add(const std::string &name, const JsonObject &o);
+	void add(const std::string &name, const JsonArray &a);
 	void replace(const std::string &name, const JsonObject &o);
 
 	// utility class.
 	static json_spirit::Value get(const json_spirit::Object &o, const std::string &name);
 	static void set(json_spirit::Object *o, const std::string &name, json_spirit::Value v);
 
+	// find an object where the "name" is name. This relies on the "object" having a field with that name.
+	// it also only handles 1 deep heirarchies.
+	JsonObject findObj(const JsonPredicate &pred);
 };
 
 #endif // __JSONOBJECT_HPP_INCLUDED__

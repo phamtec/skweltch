@@ -6,19 +6,23 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <fstream>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 using namespace std;
 using namespace boost;
 
 int main(int argc, char* argv[])
 {
-     // Check command line arguments.
-    if (argc != 4)
-    {
-      std::cerr << "Usage: rest <address> <port> <doc_root>\n";
-      return 1;
-    }
-
+	log::add_file_log(log::keywords::file_name = "ui.log", log::keywords::auto_flush = true);
+	
+	if (argc != 4) {
+		BOOST_LOG_TRIVIAL(error) << "Usage: rest <address> <port> <doc_root>\n";
+		return 1;
+	}
+	
 	try
 	{
 	
@@ -31,7 +35,7 @@ int main(int argc, char* argv[])
 	}
 	catch (std::exception& e)
 	{
-		std::cerr << "exception: " << e.what() << "\n";
+		BOOST_LOG_TRIVIAL(error) << "exception: " << e.what();
 	}
 
 	return 0;

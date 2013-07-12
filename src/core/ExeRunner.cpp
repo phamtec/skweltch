@@ -17,7 +17,7 @@ using namespace boost;
 
 pid_t ExeRunner::run(const std::string &exe) {
 
-	BOOST_LOG_TRIVIAL(info) << "run: " << exe;
+	BOOST_LOG_TRIVIAL(debug) << exe;
 	
     int fdset[2], nullfd;
     if (pipe(fdset) != 0) {
