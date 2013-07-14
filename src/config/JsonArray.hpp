@@ -29,9 +29,10 @@ public:
 	int getInt(iterator i, const std::string &name) const;
 	std::string getString(iterator i, const std::string &name) const;
 	JsonObject getValue(iterator i) const;
+	JsonObject getValue(int i) const;
 	std::string getChildAsString(iterator it, const std::string &key) const;
 	bool empty() const { return _array.empty(); }	
-	void add(JsonObject *o);
+	void add(const JsonObject &o);
 
 };
 

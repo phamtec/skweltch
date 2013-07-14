@@ -20,8 +20,11 @@ private:
 	json_spirit::Value _value;
 	
 public:
-
+	JsonObject() {}
+	JsonObject(json_spirit::Value v) : _value(v) {}
+	
 	json_spirit::Value *getValue() { return &_value; }
+	const json_spirit::Value &getConstValue() const { return _value; }
 	
 	typedef std::vector<json_spirit::Pair>::iterator iterator;
 	
@@ -36,6 +39,10 @@ public:
 	
 	// what is this thing?
 	bool isObject() const;
+	bool isArray() const;
+	
+	// this might actually be an array.
+	JsonArray asArray();
 	
 	// reading and writing.
 	bool read(std::istream *istream);
@@ -69,6 +76,12 @@ public:
 	// find an object where the "name" is name. This relies on the "object" having a field with that name.
 	// it also only handles 1 deep heirarchies.
 	JsonObject findObj(const JsonPredicate &pred);
+	
+	// does the thing at the key match the value after correct type conversion.
+	bool valueMatches(const std::string &key, const std::string &value) const;
+	
+	void dump() const;
+	
 };
 
 #endif // __JSONOBJECT_HPP_INCLUDED__

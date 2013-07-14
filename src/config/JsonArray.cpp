@@ -49,9 +49,15 @@ JsonObject JsonArray::getValue(iterator it) const {
 
 }
 
-void JsonArray::add(JsonObject *o) {
+void JsonArray::add(const JsonObject &o) {
 
-	_array.push_back(*o->getValue());
+	_array.push_back(o.getConstValue());
+	
+}
+
+JsonObject JsonArray::getValue(int i) const {
+
+	return JsonObject(_array[i]);
 	
 }
 

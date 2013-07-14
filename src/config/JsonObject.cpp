@@ -10,7 +10,9 @@
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
-
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+ 
 using namespace std;
 using namespace boost;
 using namespace json_spirit;
@@ -18,6 +20,19 @@ using namespace json_spirit;
 bool JsonObject::isObject() const {
 
 	return _value.type() == obj_type;
+	
+}
+
+bool JsonObject::isArray() const {
+
+	return _value.type() == array_type;
+	
+}
+	
+JsonArray JsonObject::asArray() {
+
+	return JsonArray(_value.get_array());
+	
 }
 
 bool JsonObject::read(istream *istream) {
@@ -185,7 +200,7 @@ void JsonObject::add(const string &name, const JsonObject &o) {
 
 }
 
-void JsonObject::add(const std::string &name, const JsonArray &a) {
+void JsonObject::add(const string &name, const JsonArray &a) {
 
 	if (_value.type() != obj_type) {
 		_value = Object();
@@ -243,3 +258,26 @@ JsonObject JsonObject::findObj(const JsonPredicate &pred) {
 	return JsonObject();
 
 }
+
+bool JsonObject::valueMatches(const std::string &key, const std::string &value) const {
+
+	Value v = get(_value.get_obj(), key);
+	if (v.type() == int_type) {
+   		int val = lexical_cast<int>(value);
+		return v.get_value<int>() == val;
+	}
+	else if (v.type() == str_type) {
+		return v.get_value<string>() == value;
+	}
+	return false;
+
+}
+
+void JsonObject::dump() const {
+
+	stringstream s;
+	write(false, &s);
+	BOOST_LOG_TRIVIAL(debug) << s.str();
+	
+}
+

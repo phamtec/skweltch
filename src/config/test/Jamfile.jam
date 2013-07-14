@@ -35,3 +35,12 @@ unit-test json.test
 		<include>../../json_spirit_v4.06/json_spirit
 	:
 	;
+
+unit-test path.test
+	: pathtest.cpp
+		/config//config
+		/boost/test
+	:   <include>../../turtle-1.2.2/include
+		<include>../../json_spirit_v4.06/json_spirit
+	:
+	;

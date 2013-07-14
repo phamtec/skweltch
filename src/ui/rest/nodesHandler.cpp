@@ -3,6 +3,7 @@
 #include "../RestContext.hpp"
 #include "JsonObject.hpp"
 #include "JsonArray.hpp"
+#include "JsonPath.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -36,32 +37,24 @@ void addRect(JsonObject *info, int *x, int *y) {
 
 }
 
-void addConnection(JsonObject *info, const JsonObject &connection, const string &name) {
-	if (connection.getString("direction") == "from") {
-		info->add("to", name);
-	}
-	else {
-		info->add("from", name);
-	}
-}
-
 void addNode(JsonObject *pt, const JsonObject &node, 
 		const string &type, int *x, int *y, JsonArray *connections) {
 		
-	int count = node.getInt("count", 0);
-	string name(node.getString("name"));
+	string name = node.getString("name");
 	
 	JsonObject info;
 	info.add("type", type);
+	
+	int count = node.getInt("count", 0);
 	if (count > 0) {
 		info.add("count", count);
 	}
 	addRect(&info, x, y);
+	
 	pt->add(name, info);
 	
 	// and a connection.
-	JsonObject config = node.getChild("config");
-	JsonObject confconn = config.getChild("connections");
+	JsonObject confconn = JsonPath().getPath(node, "config.connections");
 	if (!confconn.empty()) {
 		for (JsonObject::iterator i = confconn.begin(); i != confconn.end(); i++) {
 			JsonObject o = confconn.getValue(i);
@@ -69,7 +62,7 @@ void addNode(JsonObject *pt, const JsonObject &node,
 				JsonObject c;
 				c.add("from", name);
 				c.add("to", o.getString("block"));
-				connections->add(&c);
+				connections->add(c);
 			}
 		}
 	}
@@ -88,10 +81,8 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 	
 	int x = ((GRAPH_WIDTH - NODE_WIDTH)/2);
 	int y = NODE_GAP;
-	{
-		JsonObject vent = root->getChild("vent");
-		addNode(&pt, vent, "vent", &x, &y, &connections);
-	}
+	addNode(&pt, root->getChild("vent"), "vent", &x, &y, &connections);
+
 	x = NODE_GAP;
 	y = (NODE_GAP*2) + NODE_HEIGHT;
 	{
@@ -102,10 +93,7 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 	}
 	y += NODE_GAP + NODE_HEIGHT;
 	x = ((GRAPH_WIDTH - NODE_WIDTH)/2);
-	{
-		JsonObject reap = root->getChild("reap");
-		addNode(&pt, reap, "reap", &x, &y, &connections);
-	}
+	addNode(&pt, root->getChild("reap"), "reap", &x, &y, &connections);
 	
 	// now put the connections in.
 	if (!connections.empty()) {

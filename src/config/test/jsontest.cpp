@@ -3,6 +3,7 @@
 
 #include "../JsonObject.hpp"
 #include "../JsonArray.hpp"
+#include "../JsonPath.hpp"
 #include "../JsonNamePredicate.hpp"
 
 #include <turtle/mock.hpp>
@@ -196,10 +197,10 @@ BOOST_AUTO_TEST_CASE( writeArrayTest )
 	JsonArray aaa;
 	JsonObject o;
 	o.add("x", "y");
-	aaa.add(&o);
+	aaa.add(o);
 	JsonObject p;
 	p.add("a", "b");
-	aaa.add(&p);
+	aaa.add(p);
 	obj.add("aaa", aaa);
 	
 	ostringstream ss;

@@ -50,7 +50,7 @@ int main (int argc, char *argv[])
 		
 			int count = bg.getInt(i, "count");
 			string name = bg.getString(i, "name");
-			string exe(bg.getString(i, "exe"));
+			string exe = bg.getString(i, "exe");
 			
 			// build pipes for this node.
 			JsonObject pipesjson = PipeBuilder().collect(&r, bg.getValue(i));
@@ -76,12 +76,12 @@ int main (int argc, char *argv[])
 		}
 	}
 	catch (runtime_error &e) {
-		BOOST_LOG_TRIVIAL(error) << e.what();
+		BOOST_LOG_TRIVIAL(error) << "error: " << e.what() << " running up backgrounds";
 		return 1;
 	}
 	
 	// something to vent.
-	{
+	try {
 		JsonObject vent = r.getChild("vent");
 		
 		// build pipes for this node.
@@ -93,9 +93,13 @@ int main (int argc, char *argv[])
 		exe << vent.getString("exe") << " '" << pipes.str() << "' '" << vent.getChildAsString("config") << "' " << vent.getString("name");
 		er.run(exe.str());
 	}
+	catch (runtime_error &e) {
+		BOOST_LOG_TRIVIAL(error) << "error: " << e.what() << " running up vent";
+		return 1;
+	}
 	
 	// something to reap.
-	{
+	try {
 		JsonObject reap = r.getChild("reap");
 		
 		// build pipes for this node.
@@ -106,6 +110,10 @@ int main (int argc, char *argv[])
 		stringstream exe;
 		exe << reap.getString("exe") << " '" << pipes.str() << "' '" << reap.getChildAsString("config") << "' " << reap.getString("name");
 		er.run(exe.str());
+	}
+	catch (runtime_error &e) {
+		BOOST_LOG_TRIVIAL(error) << "error: " << e.what() << " running up reap";
+		return 1;
 	}
 
 	return 0;
