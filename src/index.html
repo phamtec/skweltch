@@ -21,7 +21,7 @@
 			.button()
 			.click(function( event ) {
 				$.ajax({
-				  url: "/rest/nodes",
+				  url: "/rest/nodes?size=300&centerx=300&centery=100",
 				  cache: false
 				}).done(function( html ) {
 					var nodes = jQuery.parseJSON(html);
@@ -51,10 +51,10 @@
 						console.log(to);
 						if ((typeof to) == "object") {
 							ctx.moveTo(from.rect.left + 50, from.rect.top + 50);
-  							ctx.lineTo(to.rect.left, to.rect.top);
+  							ctx.lineTo(to.rect.left + 60, to.rect.top + 60);
   							ctx.stroke();			
   							ctx.beginPath();
-							ctx.arc(to.rect.left, to.rect.top, 5, 0, 2*Math.PI);
+							ctx.arc(to.rect.left + 60, to.rect.top + 60, 5, 0, 2*Math.PI);
 							ctx.stroke();
   						}
 					}

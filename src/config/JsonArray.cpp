@@ -61,4 +61,10 @@ JsonObject JsonArray::getValue(int i) const {
 	
 }
 
+int JsonArray::size() {
+
+	return _array.size();
+	
+}
+
 

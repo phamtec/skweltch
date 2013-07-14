@@ -33,7 +33,8 @@ public:
 	std::string getChildAsString(iterator it, const std::string &key) const;
 	bool empty() const { return _array.empty(); }	
 	void add(const JsonObject &o);
-
+	int size();
+	
 };
 
 #endif // __JSONARRAY_HPP_INCLUDED__

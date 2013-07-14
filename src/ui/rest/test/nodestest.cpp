@@ -55,6 +55,10 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 "				\"connections\": {\n"
 "					\"pullFrom\": {\n"
 "						\"direction\": \"from\"\n"
+"					},\n"
+"					\"pushTo\": {\n"
+"						\"direction\": \"to\",\n"
+"						\"block\": \"aaa\"\n"
 "					}\n"
 "				}\n"
 "			}\n"
@@ -105,6 +109,10 @@ BOOST_AUTO_TEST_CASE( nodesTest )
   		BOOST_CHECK(i != conn.end());
 		BOOST_CHECK(conn.getString(i, "from") == "yyy");
 		BOOST_CHECK(conn.getString(i, "to") == "zzz");
+		i++;
+  		BOOST_CHECK(i != conn.end());
+		BOOST_CHECK(conn.getString(i, "from") == "zzz");
+		BOOST_CHECK(conn.getString(i, "to") == "aaa");
 		i++;
    		BOOST_CHECK(i == conn.end());
 	}
