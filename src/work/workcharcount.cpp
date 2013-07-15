@@ -18,19 +18,19 @@ using namespace boost;
 
 int main (int argc, char *argv[])
 {
-	if (argc != 5) {
-		log::add_file_log(log::keywords::file_name = "work.log", log::keywords::auto_flush = true);
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " taskId pipes config name";
+	if (argc != 4) {
+		log::add_file_log(log::keywords::file_name = "log/work.log", log::keywords::auto_flush = true);
+		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
 		return 1;
 	}
 	
 	stringstream outfn;
-	outfn << argv[4] << ".log";
+	outfn << "log/" << argv[3] << ".log";
 	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
 	
 	JsonObject pipes;
  	{
- 		stringstream ss(argv[2]);
+ 		stringstream ss(argv[1]);
  		JsonConfig json(&ss);
 		if (!json.read(&pipes)) {
 			return 1;
@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
  	}
 	JsonObject root;
  	{
- 		stringstream ss(argv[3]);
+ 		stringstream ss(argv[2]);
  		JsonConfig json(&ss);
 		if (!json.read(&root)) {
 			return 1;

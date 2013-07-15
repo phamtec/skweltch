@@ -1,7 +1,4 @@
 #include "JsonConfig.hpp"
-#include "StopTasksFileTask.hpp"
-#include "FileProcessor.hpp"
-#include "ExeRunner.hpp"
 #include "Ports.hpp"
 #include <zmq.hpp>
 #include <iostream>
@@ -19,13 +16,13 @@ using namespace boost;
 int main (int argc, char *argv[])
 {
  	if (argc != 4) {
-		log::add_file_log(log::keywords::file_name = "reap.log", log::keywords::auto_flush = true);
+		log::add_file_log(log::keywords::file_name = "log/reap.log", log::keywords::auto_flush = true);
 		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
 		return 1;
 	}
 	
 	stringstream outfn;
-	outfn << argv[3] << ".log";
+	outfn << "log/" << argv[3] << ".log";
 	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
 	
 	JsonObject pipes;
@@ -56,9 +53,16 @@ int main (int argc, char *argv[])
  	zclock_sleep(totaltime);
  	BOOST_LOG_TRIVIAL(info) << "waited " << totaltime << "ms, killing everything.";
  	
-   	ExeRunner er;
-	StopTasksFileTask t(&er);
-	FileProcessor fp(&t);
-	fp.processFileIfExistsThenDelete(root.getString("pidFile"));
+	string filename(root.getString("pidFile"));
+	ifstream pidfile(filename.c_str());	
+	if (pidfile.is_open()) {
+		string line;
+		while (getline(pidfile, line)) {
+			pid_t pid = lexical_cast<int>(line);
+			::kill(pid, SIGKILL);
+		}
+		pidfile.close();
+		remove(filename.c_str());
+	}
 
 }

@@ -45,6 +45,10 @@ src/ui/rest/test/bin/*
 
 src/dist/*
 
+src/temp/*
+
+src/tune/bin/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*
@@ -56,3 +60,7 @@ Skweltch/*
 arbor-v0.92/*
 
 Skweltch/Skweltch.xcodeproj/project.pbxproj
+
+src/tasks.pid
+
+src/results.json

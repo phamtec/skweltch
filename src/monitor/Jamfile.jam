@@ -13,7 +13,20 @@ build-project test ;
 
 lib zmq : : <name>zmq ;
 
-exe monitor : monitor.cpp PipeBuilder.cpp
+lib monlib : PipeBuilder.cpp TaskMonitor.cpp
+		/config//config
+		/core//core
+		/boost/log//boost_log
+		zmq
+	:	<include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	: 
+	;
+
+exe monitor : monitor.cpp
+		monlib
 		/config//config
 		/core//core
 		/boost/log//boost_log

@@ -13,7 +13,6 @@ class ExeRunner : public IExeRunner {
 public:
 
 	virtual int run(const std::string &exe);
-	virtual void kill(int pid);
 
 };
 

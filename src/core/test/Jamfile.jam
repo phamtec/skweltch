@@ -20,18 +20,6 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 
-unit-test fileprocessor.test
-	: fileprocessortest.cpp
-		zmq
-		/core//core
-		/config//config
-		/boost/test
-	:   <include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-	:
-	;
-
 unit-test ports.test
 	: portstest.cpp
 		zmq

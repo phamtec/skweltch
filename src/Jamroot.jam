@@ -9,6 +9,7 @@ use-project /boost : /opt/boost_1_54_0  ;
 build-project config ;
 build-project core ;
 build-project monitor ;
+build-project tune ;
 build-project sink ;
 build-project vent ;
 build-project work ;
@@ -16,4 +17,4 @@ build-project reap ;
 build-project pipe ;
 build-project ui ;
 
-install dist : monitor sink vent work reap pipe ui ;
+install dist : monitor sink vent work reap pipe ui tune ;

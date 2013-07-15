@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm -rf *.log
+rm -rf log/*.log
 rm -rf results.json
 dist/monitor integration-test/test.json
 sleep 3
@@ -14,19 +14,19 @@ then
 fi
 
 # at least a little work for each task.
-cat WorkSleep[0].log | grep "...." > /dev/null
+cat log/WorkSleep[0].log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work0)"
 	exit 1
 fi
-cat WorkSleep[1].log | grep "...." > /dev/null
+cat log/WorkSleep[1].log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work1)"
 	exit 1
 fi
-cat WorkSleep[2].log | grep "...." > /dev/null
+cat log/WorkSleep[2].log | grep "...." > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work2)"
