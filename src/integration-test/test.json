@@ -81,7 +81,7 @@
 				}
 			},
 			"pidFile": "tasks.pid",
-			"totalTime": 2000
+			"totalTime": 800
 		}
 	}
 

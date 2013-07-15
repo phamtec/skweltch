@@ -16,6 +16,7 @@ class JsonObject {
 
 private:
 	friend class JsonArray;
+	friend class JsonPath;
 	
 	json_spirit::Value _value;
 	
@@ -56,6 +57,9 @@ public:
 	int getInt(const std::string &key, int def) const;
 	void setInt(const std::string &key, int n);
 	
+	bool getBool(const std::string &key) const;
+	void setBool(const std::string &key, bool n);
+	
 	JsonArray getArray(const std::string &key) const;
 	JsonObject getChild(const std::string &key) const;
 	std::string getChildAsString(const std::string &key) const;
@@ -76,9 +80,6 @@ public:
 	// find an object where the "name" is name. This relies on the "object" having a field with that name.
 	// it also only handles 1 deep heirarchies.
 	JsonObject findObj(const JsonPredicate &pred);
-	
-	// does the thing at the key match the value after correct type conversion.
-	bool valueMatches(const std::string &key, const std::string &value) const;
 	
 	void dump() const;
 	

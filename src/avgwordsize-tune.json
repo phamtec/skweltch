@@ -1,22 +1,35 @@
 {
-	"mutations": 50,
-	"iterations": 10,
-	"vent.config.sleep" : {
+	"mutations": 20,
+	"iterations": 30,
+	"groups": 2,
+	"success": {
+    	"average" : 5.6082130965593784
+    },
+	"reap.config" : { 
+		"group": 1,
+		"var": "totalTime",
+		"type": "int",
+		"select": "hightolow",
+		"low": 50,
+		"high": 200,
+		"enabled": false
+	},
+	"vent.config" : {
+		"group": 2,
+		"var": "sleep",
+		"type": "int",
+		"select": "random",
 		"low": 0,
 		"high": 100,
-		"group": 1,
-		"select": "random"
+		"enabled": true
 	},
-	"background[name=WorkCharCount].count" : {
+	"background[name=\"WorkCharCount\"]" : {
+		"group": 2,
+		"var": "count",
+		"type": "int",
+		"select": "random",
 		"low": 3,
 		"high": 20,
-		"group": 1,
-		"select": "random"
-	},
-	"reap.config.totalTime" : { 
-		"low": 100,
-		"high": 4000,
-		"group": 2,
-		"select": "hightolow"
+		"enabled": true
 	}
 }

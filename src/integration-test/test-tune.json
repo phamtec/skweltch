@@ -1,0 +1,17 @@
+{
+	"mutations": 20,
+	"iterations": 30,
+	"groups": 1,
+	"success": {
+    },
+	"reap.config" : { 
+		"group": 1,
+		"var": "totalTime",
+		"type": "int",
+		"select": "hightolow",
+		"low": 50,
+		"high": 1000,
+		"enabled": false
+	}
+}
+

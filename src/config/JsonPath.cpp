@@ -4,6 +4,9 @@
 #include "JsonObject.hpp"
 #include "JsonArray.hpp"
 
+#include "json_spirit.h"
+#include "json_spirit_writer_template.h"
+
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/algorithm/string.hpp>
@@ -11,6 +14,7 @@
  
 using namespace std;
 using namespace boost;
+using namespace json_spirit;
 
 string nextToken(string *remain) {
 
@@ -40,7 +44,35 @@ string getCondition(string *remain) {
 	}
 }
 
-bool childMatches(const JsonObject &obj, const string &condition) {
+Value *get(Object *obj, const string &name) {
+
+	for (vector<Pair>::iterator i=obj->begin(); i != obj->end(); i++) {
+		if (name == i->name_) {
+			return &i->value_;
+		}
+	}
+	return NULL;
+
+}
+
+bool valueMatches(Value *obj, const string &key, const string &value) {
+
+	Value *v = get(&obj->get_obj(), key);
+	if (v == NULL) {
+		return false;
+	}
+	if (v->type() == int_type) {
+   		int val = lexical_cast<int>(value);
+		return v->get_value<int>() == val;
+	}
+	else if (v->type() == str_type) {
+		return v->get_value<string>() == value;
+	}
+	return false;
+
+}
+
+bool childMatches(Value *obj, const string &condition) {
 
 	// nvp
 	vector<string> s;
@@ -50,28 +82,35 @@ bool childMatches(const JsonObject &obj, const string &condition) {
     string key = (s[0][0] == '"') ? s[0].substr(1, s[0].length()-2) : s[0];
     
     // and does it match?
-    return obj.valueMatches(key, s[1]);
+    return valueMatches(obj, key, s[1]);
 
 }
 
-JsonObject getChildWithCondition(JsonObject *obj, const string &condition) {
+Value *getChildWithCondition(Object *obj, const string &condition) {
 
-	for (JsonObject::iterator i=obj->begin(); i != obj->end(); i++) {
-    	BOOST_LOG_TRIVIAL(debug) << "searching: " << obj->getKey(i) << " for " << condition;
-		JsonObject o = obj->getValue(i);
-		if (childMatches(o, condition)) {
+	for (vector<Pair>::iterator i=obj->begin(); i != obj->end(); i++) {
+    	BOOST_LOG_TRIVIAL(debug) << "searching: " << i->name_ << " for " << condition;
+		if (childMatches(&i->value_, condition)) {
     		BOOST_LOG_TRIVIAL(debug) << "found.";
-			return o;
+			return &i->value_;
 		}
 	}
-	return JsonObject();	
+	return NULL;	
 
 }
 
-JsonObject JsonPath::getPath(const JsonObject &obj, const string &path) const {
+void dump(Value *v) {
+
+	stringstream s;
+	write_stream(*v, s, remove_trailing_zeros);
+	BOOST_LOG_TRIVIAL(debug) << s.str();
+
+}
+
+Value *JsonPath::getPath(Value *obj, const string &path) {
 
 	string remain = path;
-	JsonObject o = obj;
+	Value *o = obj;
 	while (!remain.empty()) {
 	
 		switch (remain[0]) {
@@ -79,8 +118,8 @@ JsonObject JsonPath::getPath(const JsonObject &obj, const string &path) const {
 			{
 				remain = remain.substr(1);
 				string token = nextToken(&remain);
-				o = o.getChild(token);
-				if (!o.isObject()) {
+				o = get(&o->get_obj(), token);
+				if (o == NULL || o->type() != obj_type) {
 					throw runtime_error("token returned a non-object '" + token + "'");
 				}
 			}
@@ -91,19 +130,19 @@ JsonObject JsonPath::getPath(const JsonObject &obj, const string &path) const {
 				remain = remain.substr(1);
 				string condition = getCondition(&remain);
 				if (condition.find_first_of("=") == string::npos) {
-					if (!o.isArray()) {
+					if (o->type() != array_type) {
 						throw runtime_error("tried to take index of non-array");
 					}
 					else {
 						int index = lexical_cast<int>(condition);
-						JsonArray a = o.asArray();
-						o = a.getValue(index);
+						Array *a = &o->get_array();
+						o = &a->at(index);
     					BOOST_LOG_TRIVIAL(debug) << "got array object";
-						o.dump();
+						dump(o);
 					}
 				}
 				else {
-					o = getChildWithCondition(&o, condition);
+					o = getChildWithCondition(&o->get_obj(), condition);
 				}
 			}
 			break;
@@ -111,21 +150,31 @@ JsonObject JsonPath::getPath(const JsonObject &obj, const string &path) const {
 		default:
 			{
 				string token = nextToken(&remain);
-				o = o.getChild(token);
+				o = get(&o->get_obj(), token);
 			}
 		}
 	}
+	
 	return o;
-
-/*	
-	vector<string> s;
-    split(s, path, is_any_of("."));
-    
-    JsonObject o = obj;
-    for (vector<string>::iterator i=s.begin(); i != s.end(); i++) {
-    	o = o.getChild(*i);
-    }
-	return o;
-*/
 
 }
+
+JsonObject JsonPath::getPath(const JsonObject &obj, const string &path) const {
+
+	Value *o = const_cast<JsonPath *>(this)->getPath(const_cast<Value *>(&obj._value), path);
+	return JsonObject(*o);
+
+}
+
+void JsonPath::setPathInt(JsonObject *obj, const string &path, const string &var, int n) {
+
+	Value *o = getPath(&obj->_value, path);
+	Object *vo = &o->get_obj();
+	for (vector<Pair>::iterator i=vo->begin(); i != vo->end(); i++) {
+		if (var == i->name_) {
+			i->value_ = Value(n);
+		}
+	}
+	
+}
+

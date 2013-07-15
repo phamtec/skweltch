@@ -110,12 +110,6 @@ void JsonObject::setString(const string &key, const string &s) {
 	
 }
 
-void JsonObject::setInt(const string &key, int n) {
-
-	set(&_value.get_obj(), key, Value(n));
-	
-}
-
 void JsonObject::set(json_spirit::Object *o, const string &name, Value v) {
 
 	for (vector<Pair>::iterator i=o->begin(); i != o->end(); i++) {
@@ -139,6 +133,12 @@ string JsonObject::getString(const string &key) const {
 
 }
 
+void JsonObject::setInt(const string &key, int n) {
+
+	set(&_value.get_obj(), key, Value(n));
+	
+}
+
 int JsonObject::getInt(const string &key, int def) const {
 
 	Value v = get(_value.get_obj(), key);
@@ -146,6 +146,22 @@ int JsonObject::getInt(const string &key, int def) const {
 		return v.get_value<int>();
 	}
 	return def;
+
+}
+
+void JsonObject::setBool(const string &key, bool n) {
+
+	set(&_value.get_obj(), key, Value(n));
+	
+}
+
+bool JsonObject::getBool(const string &key) const {
+
+	Value v = get(_value.get_obj(), key);
+	if (v.type() == bool_type) {
+		return v.get_value<bool>();
+	}
+	return false;
 
 }
 
@@ -256,20 +272,6 @@ JsonObject JsonObject::findObj(const JsonPredicate &pred) {
 		}
 	}
 	return JsonObject();
-
-}
-
-bool JsonObject::valueMatches(const std::string &key, const std::string &value) const {
-
-	Value v = get(_value.get_obj(), key);
-	if (v.type() == int_type) {
-   		int val = lexical_cast<int>(value);
-		return v.get_value<int>() == val;
-	}
-	else if (v.type() == str_type) {
-		return v.get_value<string>() == value;
-	}
-	return false;
 
 }
 
