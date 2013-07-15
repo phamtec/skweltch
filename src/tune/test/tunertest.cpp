@@ -14,6 +14,7 @@
 using namespace std;
 using namespace boost;
 
+/*
 BOOST_AUTO_TEST_CASE( tunerTest )
 {
 	stringstream configjson(
@@ -125,4 +126,72 @@ BOOST_AUTO_TEST_CASE( tuner2Test )
 	tuner.tune(1, 0);
 	tuner.tune(1, 5);
 	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 125);
+}
+*/
+BOOST_AUTO_TEST_CASE( tuner3Test )
+{
+	stringstream configjson(
+"{\n"
+"	\"vent\" : {\n"
+"	},\n"
+"	\"background\": [\n"
+"		{\n"
+"			\"count\": 3,\n"
+"			\"name\": \"WorkCharCount\",\n"
+"			\"exe\": \"dist/workcharcount\",\n"
+"			\"node\": \"localhost\",\n"
+"			\"port\": 5561,\n"
+"			\"config\" : {\n"
+"				\"connections\": {\n"
+"					\"pullFrom\": {\n"
+"						\"direction\": \"from\",\n"
+"						\"mode\":\"connect\"\n"
+"					},\n"
+"					\"pushTo\": {\n"
+"						\"block\": \"PipeDumpIntoSink\",\n"
+"						\"direction\": \"to\",\n"
+"						\"mode\":\"connect\"\n"
+"					}\n"
+"				}\n"
+"			}\n"
+"		}\n"
+"	]\n"
+"}\n"
+);
+
+	stringstream tunerconfigjson(
+"{\n"
+"	\"mutations\": 6,\n"
+"	\"iterations\": 30,\n"
+"	\"success\": {\n"
+"    	\"average\" : 5.6082130965593784\n"
+"    },\n"
+"	\"background[0]\" : {\n"
+"		\"group\": 1,\n"
+"		\"var\": \"count\",\n"
+"		\"type\": \"int\",\n"
+"		\"select\": \"random\",\n"
+"		\"low\": 3,\n"
+"		\"high\": 20,\n"
+"		\"enabled\": true\n"
+"	}\n"
+"}\n"
+);
+
+	JsonObject config;
+ 	{
+ 		JsonConfig json(&configjson);
+		BOOST_CHECK(json.read(&config));
+ 	}
+	JsonObject tunerconfig;
+ 	{
+ 		JsonConfig json(&tunerconfigjson);
+		BOOST_CHECK(json.read(&tunerconfig));
+ 	}
+
+	MachineTuner tuner(&config, &tunerconfig);
+	tuner.tune(1, 0, 0);
+	tuner.tune(1, 5, 0);
+	config.dump();
+	BOOST_CHECK(JsonPath().getPath(config, "background[0]").getInt("count", -1) == 5);
 }

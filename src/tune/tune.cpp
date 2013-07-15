@@ -69,24 +69,31 @@ int main (int argc, char *argv[])
 
    	// tune it.
    	try {
-		BOOST_LOG_TRIVIAL(info) << "machine\t\t\t\titerations\tlow\thigh\tfail\tavg\tmed";
+		BOOST_LOG_TRIVIAL(info) << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed";
 		for (int i=1; i<groups+1; i++) {
+		
+			// default to fail for each group.
+			tuner.resetFail();
+			
 			for (int j=0; j<mutations; j++) {
 	
-				stringstream newconfig;
-				newconfig << "temp/run" << j << ".json";
-				if (!tuner.tune(i, j)) {
-					BOOST_LOG_TRIVIAL(info) << "all ready to go.";
+				string vars;
+				if (!tuner.tune(i, j, &vars)) {
 					break; // next group.
 				}
+				
+				stringstream newconfig;
+				newconfig << "temp/run" << j << ".json";
 				{
 					ofstream of(newconfig.str().c_str());
 					config.write(true, &of);
 					of.close();
 				}
 		
-				if (!tuner.runOne(newconfig.str(), iterations)) {
-					break; // next group.
+				if (!tuner.runOne(newconfig.str(), iterations, i, j, vars)) {
+					if (tuner.failOnError()) {
+						break; // next group.
+					}
 				}
 			}
 		}

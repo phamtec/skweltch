@@ -137,8 +137,8 @@ Value *JsonPath::getPath(Value *obj, const string &path) {
 						int index = lexical_cast<int>(condition);
 						Array *a = &o->get_array();
 						o = &a->at(index);
-    					BOOST_LOG_TRIVIAL(debug) << "got array object";
-						dump(o);
+//    					BOOST_LOG_TRIVIAL(debug) << "got array object";
+//						dump(o);
 					}
 				}
 				else {

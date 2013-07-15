@@ -1,6 +1,6 @@
 {
-	"mutations": 20,
-	"iterations": 30,
+	"mutations": 100,
+	"iterations": 100,
 	"groups": 2,
 	"success": {
     	"average" : 5.6082130965593784
@@ -20,15 +20,24 @@
 		"type": "int",
 		"select": "random",
 		"low": 0,
-		"high": 100,
+		"high": 5,
 		"enabled": true
 	},
-	"background[name=\"WorkCharCount\"]" : {
+	"vent.config" : {
+		"group": 2,
+		"var": "every",
+		"type": "int",
+		"select": "random",
+		"low": 500,
+		"high": 2000,
+		"enabled": true
+	},
+	"background[1]" : {
 		"group": 2,
 		"var": "count",
 		"type": "int",
 		"select": "random",
-		"low": 3,
+		"low": 2,
 		"high": 20,
 		"enabled": true
 	}

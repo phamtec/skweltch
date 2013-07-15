@@ -10,11 +10,13 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 using namespace std;
 using namespace boost;
 
-bool MachineTuner::tune(int group, int mutation) {
+bool MachineTuner::tune(int group, int mutation, string *varstring) {
 
 	int mutations = tunerconfig->getInt("mutations", -1);
 	if (mutations < 0) {
@@ -54,8 +56,25 @@ bool MachineTuner::tune(int group, int mutation) {
 							int val = (int)(unit*sel) + low;
 							p.setPathInt(config, key, var, val);
 							vars++;
+							if (varstring) {
+								if (!varstring->empty()) {
+									*varstring += ";";
+								}
+								*varstring += lexical_cast<string>(val);
+							}
 						}
 						else if (select == "random") {
+							boost::random::uniform_int_distribution<> dist(low, high);
+							int val = dist(gen);
+							p.setPathInt(config, key, var, val);
+							vars++;
+							failonerror = false; // any random vars, loop till the end.
+							if (varstring) {
+								if (!varstring->empty()) {
+									*varstring += ";";
+								}
+								*varstring += lexical_cast<string>(val);
+							}
 						}
 						else {
 							BOOST_LOG_TRIVIAL(error) << " don't know how to select " << select;
@@ -75,7 +94,7 @@ bool MachineTuner::tune(int group, int mutation) {
 		
 }
 
-bool MachineTuner::runOne(const string &machine, int iterations) {
+bool MachineTuner::runOne(const string &machine, int iterations, int group, int iter, const string &vars) {
 
 	TaskMonitor mon;
 	int fail = 0;
@@ -116,7 +135,7 @@ bool MachineTuner::runOne(const string &machine, int iterations) {
 	double avg = (double)sum / (double)iterations;
 	double med = (double)(high - low) / 2.0;
 
-	BOOST_LOG_TRIVIAL(info) << machine << "\t\t\t" << iterations << "\t" << low << "\t" << high << 
+	BOOST_LOG_TRIVIAL(info) << group << "\t" << iter << "\t" << vars << "\t" << iterations << "\t" << low << "\t" << high << 
 		"\t" << fail << "\t" << avg << "\t" << med;
 
 	return fail == 0;

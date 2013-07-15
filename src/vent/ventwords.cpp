@@ -21,9 +21,11 @@ class SendWord : public IWord {
 private:
 	zmq::socket_t *sender;
 	int sleeptime;
+	int sleepevery;
+	int count;
 	
 public:
-	SendWord(zmq::socket_t *s, int slp) : sender(s), sleeptime(slp) {}
+	SendWord(zmq::socket_t *s, int slp, int ev) : sender(s), sleeptime(slp), sleepevery(ev), count(0) {}
 	
 	virtual void word(const std::string &s);
 };
@@ -39,12 +41,13 @@ void SendWord::word(const std::string &s) {
 	memcpy(message.data(), sbuf.data(), sbuf.size());
  
 	sender->send(message);
-     	
-	if (sleeptime > 0) {
-		//  Do the work
-		zclock_sleep(sleeptime);
-	}
+	count++;
 	
+	if (sleeptime > 0) {
+		if ((count % sleepevery) == 0) {
+			zclock_sleep(sleeptime);	
+		}
+	}
 }
 
 int main (int argc, char *argv[])
@@ -77,7 +80,11 @@ int main (int argc, char *argv[])
  	}
 
 	string filename = root.getString("filename");
+	
  	int sleeptime = root.getInt("sleep", 0);
+	int sleepevery = root.getInt("every", 0);
+	
+	BOOST_LOG_TRIVIAL(debug) << "sleeping " << sleeptime << " every " << sleepevery;
 	
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -101,7 +108,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
-	SendWord w(&sender, sleeptime);
+	SendWord w(&sender, sleeptime, sleepevery);
 	WordSplitter splitter(&f);
 	splitter.process(&w);
     

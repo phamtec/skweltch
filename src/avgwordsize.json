@@ -27,7 +27,8 @@
 				}
 			},
 			"filename": "data/words.txt",
-			"sleep": 0
+			"sleep": 20,
+			"every": 500
 		}
 	},
 	
@@ -125,7 +126,8 @@
 				}
 			},
 			"pidFile": "tasks.pid",
-			"totalTime": 200
+//			"totalTime": 200
+			"totalTime": 500 // while tuning...
 		}
 	}
 		

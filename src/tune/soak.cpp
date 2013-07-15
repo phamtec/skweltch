@@ -31,9 +31,9 @@ int main (int argc, char *argv[])
 	int iterations = lexical_cast<int>(argv[3]);
 		
  	MachineTuner tuner(0, 0);
- 	BOOST_LOG_TRIVIAL(info) << "machine\t\t\t\titerations\tlow\thigh\tfail\tavg\tmed";
+ 	BOOST_LOG_TRIVIAL(info) << "g\ti\tv\tn\tlow\thigh\tfail\tavg\tmed";
  	for (int i=0; i<count; i++) {
-		tuner.runOne(argv[1], iterations);
+		tuner.runOne(argv[1], iterations, 0, 0, "");
 	}
 	
 	return 0;
