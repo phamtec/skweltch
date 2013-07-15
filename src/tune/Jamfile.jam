@@ -1,0 +1,27 @@
+
+project tune
+    : requirements
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+        <link>static
+    :
+    :
+    ;
+
+lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+
+exe tune : tune.cpp
+		/config//config
+		/core//core
+		/monitor//monlib
+		/boost/log//boost_log
+		zmq czmq
+	:	<include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../monitor
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;
