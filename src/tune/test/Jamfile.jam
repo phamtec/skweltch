@@ -19,6 +19,7 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
+lib log4cxx : : <name>log4cxx ;
 
 unit-test tuner.test
 	: tunertest.cpp ../MachineTuner.cpp
@@ -26,6 +27,7 @@ unit-test tuner.test
 		/monitor//monlib
 		/config//config
 		/boost/test
+		log4cxx
 	:   <include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config

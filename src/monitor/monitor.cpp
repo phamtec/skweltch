@@ -1,24 +1,25 @@
 
 #include "TaskMonitor.hpp"
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 
 using namespace std;
-using namespace boost;
+//using namespace boost;
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.monitor"));
 
 int main (int argc, char *argv[])
 {
-	log::add_file_log(log::keywords::file_name = "monitor.log", log::keywords::auto_flush = true);
-	
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+
 	if (argc != 2) {
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " jsonConfig";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig")
 		return 1;
 	}
 	
-	TaskMonitor mon;
+	TaskMonitor mon(logger);
 	return mon.start(argv[1]);
 	
 }

@@ -2,30 +2,52 @@
 #include "Ports.hpp"
 #include "Elapsed.hpp"
 #include <zmq.hpp>
+#include <czmq.h>
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
+
 #include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
 
+static int s_interrupted = 0;
+static void s_signal_handler (int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals (void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkavg"));
+
 int main (int argc, char *argv[])
 {
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+
  	if (argc != 4) {
-		log::add_file_log(log::keywords::file_name = "log/sink.log", log::keywords::auto_flush = true);
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
 		return 1;
 	}
-	
-	stringstream outfn;
-	outfn << "log/" << argv[3] << ".log";
-	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
-	
+	    
+	{
+		stringstream outfn;
+		outfn << "org.skweltch." << argv[3];
+		logger = log4cxx::Logger::getLogger(outfn.str());
+	}
+		
  	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
@@ -47,46 +69,96 @@ int main (int argc, char *argv[])
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     
- 	Ports ports;
-    ports.join(&receiver, pipes, root, "pullFrom");
+	try {
+		int linger = -1;
+		receiver.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+ 	}
+	catch (zmq::error_t &e) {
+		LOG4CXX_ERROR(logger, e.what())
+		return 1;
+	}  
+ 
+ 	Ports ports(logger);
+    if (!ports.join(&receiver, pipes, "pullFrom")) {
+    	return 1;
+    }
 
-	// expected number of messages.
- 	int expect = root.getInt("expect", 100);
-    BOOST_LOG_TRIVIAL(info) << "Expecting: " << expect;
-
-    //  Wait for start of batch
-    zmq::message_t message;
-    receiver.recv(&message);
-
-    //  Start our clock now
-    Elapsed elapsed;
-
-    //  Process expected confirmations
+	Elapsed elapsed;
+	int count = 0;
+	int expect = 0;
     int total = 0;
-    for (int i = 0; i < expect; i++) {
-    	receiver.recv(&message);
-    		
-        msgpack::unpacked msg;
-        msgpack::unpack(&msg, (const char *)message.data(), message.size());
-        msgpack::object obj = msg.get();
-         
-		int n;
-       	obj.convert(&n);
+   	s_catch_signals ();
+	while (!s_interrupted) {
+	
+		zmq::message_t message;
+ 		try {
+       		receiver.recv(&message);
+		}
+		catch (zmq::error_t &e) {
+			if (string(e.what()) != "Interrupted system call") {
+				LOG4CXX_ERROR(logger, "recv failed." << e.what())
+			}
+		}
+		
+		if (s_interrupted) {
+			LOG4CXX_INFO(logger, "interrupt received, killing server")
+			break;
+		}
 
-    	total += n;
-    }
-    BOOST_LOG_TRIVIAL(info) << "Finished.";
+		msgpack::unpacked msg;
+		msgpack::unpack(&msg, (const char *)message.data(), message.size());
+		msgpack::object obj = msg.get();
+		pair<int, int> sinkmsg;
+		obj.convert(&sinkmsg);
 
-    //  Calculate and report duration of batch
-    int total_msec = elapsed.getTotal();
+		switch (sinkmsg.first) {
+		case 1:
+			expect = sinkmsg.second;
+			count = 0;
+			total = 0;
+ 			LOG4CXX_INFO(logger, "Expecting: " << expect)
+			elapsed.start();
+			break;
+			
+		case 2:
+			if (expect == 0) {
+  				LOG4CXX_ERROR(logger, "Didn't get an expect message yet. got " << obj)
+   				return 1;
+			}
+    		total += sinkmsg.second;
+			count++;
+  			LOG4CXX_DEBUG(logger, "count: " << count)
+			if (count == expect) {
+			
+  				LOG4CXX_INFO(logger, "Finished.")
 
-	// get results.
-	JsonObject result;
-	result.add("average", ((double)total / (double)expect));
-	result.add("elapsed", total_msec);
-	{
-		ofstream results("results.json");
-		result.write(true, &results);
-    }
-    
+				 //  Calculate and report duration of batch
+				int total_msec = elapsed.getTotal();
+
+				// get results.
+				JsonObject result;
+				result.add("average", ((double)total / (double)expect));
+				result.add("elapsed", total_msec);
+				{
+					ofstream results("results.json");
+					result.write(true, &results);
+				}
+				
+   				LOG4CXX_INFO(logger, "Results written.")
+    			
+				count = 0;
+				total = 0;
+				
+			}
+			break;
+			
+		default:
+  			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.first)
+   			return 1;
+		}
+	}
+	
+   	LOG4CXX_INFO(logger, "finished.")
+
+	return 0;
 }

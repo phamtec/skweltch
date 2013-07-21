@@ -10,6 +10,8 @@
 #include <fstream>
 #include <iomanip>
 #include <zmq.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/basicconfigurator.h>
 
 using namespace std;
 using namespace boost;
@@ -24,17 +26,10 @@ MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 
 BOOST_AUTO_TEST_CASE( calcPortsTest )
 {
-	string configjson = "{" 
-		"\"connections\":{" 
-			"\"pullFrom\":{" 
-				"\"mode\":\"bind\""
-			"}," 
-			"\"pushTo\":{" 
-				"\"mode\":\"connect\""
-			"}"
-		"}"
-	"}";
-	string pipesjson = "{\"pullFrom\":{\"node\":\"192.168.0.1\",\"port\":5557},\"pushTo\":{\"node\":\"192.168.0.1\",\"port\":5559}}";
+	log4cxx::BasicConfigurator::configure();
+
+	string pipesjson = "{\"pullFrom\":{\"address\":\"*\",\"port\":5557,\"mode\":\"bind\"},"
+		"\"pushTo\":{\"node\":\"192.168.0.1\",\"port\":5558,\"mode\":\"connect\"}}";
 
   	JsonObject pipes;
  	{
@@ -42,19 +37,13 @@ BOOST_AUTO_TEST_CASE( calcPortsTest )
  		JsonConfig json(&ss);
 		BOOST_CHECK(json.read(&pipes));
  	}
-	JsonObject config;
- 	{
- 		stringstream ss(configjson);
- 		JsonConfig json(&ss);
-		BOOST_CHECK(json.read(&config));
- 	}
  	
  	mock_socket s1, s2;
  	
 	MOCK_EXPECT(s1.bind).with("tcp://*:5557");
-	MOCK_EXPECT(s2.connect).with("tcp://192.168.0.1:5559");
+	MOCK_EXPECT(s2.connect).with("tcp://192.168.0.1:5558");
  	
-	Ports p;
-	p.join(&s1, pipes, config, "pullFrom");
-	p.join(&s2, pipes, config, "pushTo");
+	Ports p(log4cxx::Logger::getRootLogger());
+	p.join(&s1, pipes, "pullFrom");
+	p.join(&s2, pipes, "pushTo");
 }

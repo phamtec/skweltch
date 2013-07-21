@@ -12,11 +12,12 @@ project monitor
 build-project test ;
 
 lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+lib log4cxx : : <name>log4cxx ;
 
 lib monlib : PipeBuilder.cpp TaskMonitor.cpp
 		/config//config
 		/core//core
-		/boost/log//boost_log
 		zmq
 	:	<include>../cppzmq-master
 		<include>../core
@@ -29,8 +30,9 @@ exe monitor : monitor.cpp
 		monlib
 		/config//config
 		/core//core
-		/boost/log//boost_log
 		zmq
+		czmq
+		log4cxx
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config

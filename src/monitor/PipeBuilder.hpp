@@ -4,10 +4,14 @@
 
 #include "JsonObject.hpp"
 #include <string>
+#include <log4cxx/logger.h>
 
 class PipeBuilder {
 
+	log4cxx::LoggerPtr logger;
+
 public:
+	PipeBuilder(log4cxx::LoggerPtr l) : logger(l) {}
 
 	JsonObject collect(JsonObject *config, const JsonObject &block);
 

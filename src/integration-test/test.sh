@@ -14,19 +14,19 @@ then
 fi
 
 # at least a little work for each task.
-cat log/WorkSleep[0].log | grep "...." > /dev/null
+cat log/run.log | grep "WorkSleep\[0\]" > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work0)"
 	exit 1
 fi
-cat log/WorkSleep[1].log | grep "...." > /dev/null
+cat log/run.log | grep "WorkSleep\[1\]" > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work1)"
 	exit 1
 fi
-cat log/WorkSleep[2].log | grep "...." > /dev/null
+cat log/run.log | grep "WorkSleep\[2\]" > /dev/null
 if [ "$?" != "0" ]
 then
 	echo "FAILED (work2)"

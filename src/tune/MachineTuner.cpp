@@ -35,6 +35,7 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 				}
 				if (target.getInt("group", -1) == group) {
 					string type = target.getString("type");
+					failonerror = target.getBool("fail");
 					if (type == "int") {
 						int low = target.getInt("low", -1);
 						if (low < 0) {
@@ -68,7 +69,6 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 							int val = dist(gen);
 							p.setPathInt(config, key, var, val);
 							vars++;
-							failonerror = false; // any random vars, loop till the end.
 							if (varstring) {
 								if (!varstring->empty()) {
 									*varstring += ";";
@@ -92,52 +92,4 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 
 	return vars > 0;
 		
-}
-
-bool MachineTuner::runOne(const string &machine, int iterations, int group, int iter, const string &vars) {
-
-	TaskMonitor mon;
-	int fail = 0;
-	int low = -1;
-	int high = -1;
-	int sum = 0;
-	for (int i=0; i<iterations; i++) {
-	
-		filesystem::remove("log/monitor.log");
-		filesystem::remove("results.json");
-		if (mon.start(machine) != 0) {
-			BOOST_LOG_TRIVIAL(error) << "couldn't run the machine.";
-			return false;
-		}
-	
-		if (filesystem::exists("tasks.pid")) {
-			BOOST_LOG_TRIVIAL(error) << "reap didn't do it's thing.";
-			return false;
-		}
-		
-		JsonObject results;
-		ifstream s("results.json");
-		if (s.is_open()) {
-			results.read(&s);
-			int elapsed = results.getInt("elapsed", -1);
-			if (low < 0 || elapsed < low) {
-				low = elapsed;
-			}
-			if (high < 0 || elapsed > high) {
-				high = elapsed;
-			}
-			sum += elapsed;
-		}
-		else {
-			fail++;
-		}
-	}
-	double avg = (double)sum / (double)iterations;
-	double med = (double)(high - low) / 2.0;
-
-	BOOST_LOG_TRIVIAL(info) << group << "\t" << iter << "\t" << vars << "\t" << iterations << "\t" << low << "\t" << high << 
-		"\t" << fail << "\t" << avg << "\t" << med;
-
-	return fail == 0;
-
 }

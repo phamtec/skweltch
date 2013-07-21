@@ -6,24 +6,42 @@
 		"name": "VentRandomNum",
 		"exe": "dist/ventrandomnum",
 		"node": "localhost",
-		"port": 5557,
-		"config" : {
-			"connections": {
-				"pushTo": {
-					"direction": "to",
-					"block": "WorkSleep",
-					"mode":"bind"
-				},
-				"syncTo": {
-					"direction": "to",
-					"block": "SinkElapsed",
-					"mode":"connect"
-				}
+		"connections": {
+			"pushTo": {
+				"direction": "to",
+				"mode":"bind",
+				"address": "*",
+				"port": 5557
 			},
+			"syncTo": {
+				"direction": "to",
+				"mode":"connect",
+				"block": "SinkElapsed",
+				"connection": "pullFrom"
+			}
+		},
+		"config" : {
 			"count": 100,
 			"low": 1,
 			"high": 50,
-			"sleep": 5
+			"sleep": 5,
+			"expect": 50
+		}
+	},
+
+	"sink" : {
+		"name": "SinkElapsed",
+		"exe": "dist/sinkelapsed",
+		"node": "localhost",
+		"connections": {
+			"pullFrom": {
+				"direction": "from",
+				"mode":"bind",
+				"address": "*",
+				"port": 5559
+			}
+		},
+		"config" : {
 		}
 	},
 
@@ -34,35 +52,21 @@
 			"name": "WorkSleep",
 			"exe": "dist/worksleep",
 			"node": "localhost",
-			"port": 5558,
-			"config" : {
-				"connections": {
-					"pullFrom": {
-						"direction": "from",
-						"mode":"connect"
-					},
-					"pushTo": {
-						"direction": "to",
-						"block": "SinkElapsed",
-						"mode":"connect"
-					}
-				}
-			}
-		},
-		{
-			// only 1 of these, we sample 100 messages that can come through.
-			"name": "SinkElapsed",
-			"exe": "dist/sinkelapsed",
-			"node": "localhost",
-			"port": 5559,
-			"config" : {
-				"connections": {
-					"pullFrom": {
-						"direction": "from",
-						"mode":"bind"
-					}
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"connect",
+					"block": "VentRandomNum",
+					"connection": "pushTo"
 				},
-				"expect": 50
+				"pushTo": {
+					"direction": "to",
+					"block": "SinkElapsed",
+					"mode":"connect",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
 			}
 		}
 	],
@@ -71,15 +75,7 @@
 	"reap": {
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",
-		"node": "localhost",
-		"port": 5560,
 		"config" : {
-			"connections": {
-				"pullFrom": {
-					"direction": "from",
-					"mode":"bind"
-				}
-			},
 			"pidFile": "tasks.pid",
 			"totalTime": 800
 		}

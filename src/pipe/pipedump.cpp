@@ -7,27 +7,31 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 #include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
 
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.pipedump"));
+
 int main (int argc, char *argv[])
 {
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+
  	if (argc != 4) {
-		log::add_file_log(log::keywords::file_name = "log/pipe.log", log::keywords::auto_flush = true);
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
 		return 1;
 	}
 	
-	stringstream outfn;
-	outfn << "log/" << argv[3] << ".log";
-	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
-	
+	{
+		stringstream outfn;
+		outfn << "org.skweltch." << argv[3];
+		logger = log4cxx::Logger::getLogger(outfn.str());
+	}
+		
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
@@ -51,11 +55,25 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
 
- 	Ports ports;
-    ports.join(&receiver, pipes, root, "pipeFrom");
-    ports.join(&sender, pipes, root, "pipeTo");
+	try {
+		int linger = -1;
+		receiver.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+		sender.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+ 	}
+	catch (zmq::error_t &e) {
+		LOG4CXX_ERROR(logger, e.what())
+		return 1;
+	}  
+  
+ 	Ports ports(logger);
+    if (!ports.join(&receiver, pipes, "pipeFrom")) {
+    	return 1;
+    }
+    if (!ports.join(&sender, pipes, "pipeTo")) {
+    	return 1;
+    }
 
-	BOOST_LOG_TRIVIAL(info) << "start...";
+	LOG4CXX_INFO(logger, "start...")
 	
     //  Process messages forever
     int n=0;
@@ -68,7 +86,7 @@ int main (int argc, char *argv[])
 			msgpack::unpacked msg;
 			msgpack::unpack(&msg, (const char *)message.data(), message.size());
 			msgpack::object obj = msg.get();
-            BOOST_LOG_TRIVIAL(info) << "..." << obj << "...";
+ 			LOG4CXX_INFO(logger, "..." << obj << "...")
         }
         n++;
         

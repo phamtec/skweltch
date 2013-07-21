@@ -4,37 +4,70 @@
 #include "JsonObject.hpp";
 
 #include <zmq.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
+#include <log4cxx/logger.h>
 
 using namespace std;
 using namespace boost;
 
-void Ports::join(zmq::i_socket_t *socket, const JsonObject &pipes, const JsonObject &config, const string &name) {
+/**
+	A port looks like:
+	
+	"name": {
+		"mode": "bind",
+		"address": "*"
+		"port": 9000
+	}
+	
+	or
 
-	JsonObject conn = config.getChild("connections").getChild(name);
-	JsonObject pipe = pipes.getChild(name);
+	"name": {
+		"mode": "connect",
+		"node": "localhost"
+		"port": 9000
+	}
+	
+*/
+bool Ports::join(zmq::i_socket_t *socket, const JsonObject &ports, const string &name) {
+
+	JsonObject pipe = ports.getChild(name);
 	
 	// if there is no pipe, simply don't join
 	if (!pipe.isObject()) {
-		BOOST_LOG_TRIVIAL(warning) << "no pipe " << name << " so not joining.";
-		return;
+		LOG4CXX_WARN(logger, "no pipe " << name << " so not joining.")
+		return true;
 	}
 	
 	int port = pipe.getInt("port", -1);
-	
-	if (conn.getString("mode") == "bind") {
+	string mode = pipe.getString("mode");
+	if (mode == "bind") {
+		string address = pipe.getString("address");
 		stringstream ss;
-		ss << "tcp://*:" << port;
-    	socket->bind(ss.str().c_str());
-		BOOST_LOG_TRIVIAL(debug) << name << " bound to " << ss.str();
+		ss << "tcp://" << address << ":" << port;
+ 		try {
+			socket->bind(ss.str().c_str());
+		}
+		catch (zmq::error_t &e) {  	
+			LOG4CXX_ERROR(logger, "couldn't bind should be: tcp://address:port")
+			return false;
+		}
+		LOG4CXX_INFO(logger, name << " bound to " << ss.str())
 	}
-	else {
+	else if (mode == "connect") {
 		string node = pipe.getString("node");
 		stringstream ss;
 		ss << "tcp://" << node << ":" << port;
-    	socket->connect(ss.str().c_str());
-		BOOST_LOG_TRIVIAL(debug) << name << " connected to " << ss.str();
+ 		try {
+    		socket->connect(ss.str().c_str());
+    	}
+		catch (zmq::error_t &e) {  	
+			LOG4CXX_ERROR(logger, "couldn't connect should be: tcp://localhost:port")
+			return false;
+		}
+		LOG4CXX_INFO(logger, name << " connected to " << ss.str())
 	}
-	
+	else {
+		LOG4CXX_ERROR(logger, "for " << name << ", bind or connect. Pick one.")
+		return false;
+	}
+	return true;
 }

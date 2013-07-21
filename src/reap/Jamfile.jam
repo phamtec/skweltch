@@ -11,12 +11,13 @@ project reap
 
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
+lib log4cxx : : <name>log4cxx ;
 
 exe grimreaper : GrimReaper.cpp
 		/core//core
 		/config//config
-		/boost/log//boost_log
 		zmq czmq
+		log4cxx
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config

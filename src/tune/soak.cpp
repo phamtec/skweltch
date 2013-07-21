@@ -2,38 +2,71 @@
 #include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "JsonPath.hpp"
-#include "MachineTuner.hpp"
+#include "MachineRunner.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <czmq.h>
 #include <zclock.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace boost;
 
+static int s_interrupted = 0;
+static void s_signal_handler (int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals (void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.soak"));
+
 int main (int argc, char *argv[])
 {
-	log::add_file_log(log::keywords::file_name = "log/soak.log", log::keywords::auto_flush = true);
-	
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+
 	if (argc != 4) {
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " jsonConfig count iterations";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig count iterations")
 		return 1;
 	}
 	
 	int count = lexical_cast<int>(argv[2]);
 	int iterations = lexical_cast<int>(argv[3]);
 		
- 	MachineTuner tuner(0, 0);
- 	BOOST_LOG_TRIVIAL(info) << "g\ti\tv\tn\tlow\thigh\tfail\tavg\tmed";
+    s_catch_signals ();
+ 	MachineRunner runner(logger, &s_interrupted);
+	cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
+	runner.setFail(true);
  	for (int i=0; i<count; i++) {
-		tuner.runOne(argv[1], iterations, 0, 0, "");
+ 		LOG4CXX_INFO(logger, "soak start run.")
+		try {
+			if (!runner.runOne(argv[1], iterations, 0, 0, "")) {
+				LOG4CXX_ERROR(logger, "failed, returning")
+				break;
+			}
+		}
+		catch (runtime_error &e) {
+			LOG4CXX_ERROR(logger, e.what())
+			return 1;
+		}
+ 		LOG4CXX_INFO(logger, "soak end run.")
+		if (s_interrupted) {
+			break;
+		}
 	}
 	
 	return 0;

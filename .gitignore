@@ -51,6 +51,8 @@ src/tune/bin/*
 
 src/tune/test/bin/*
 
+src/util/bin/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*

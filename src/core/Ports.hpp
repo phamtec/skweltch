@@ -4,6 +4,7 @@
 
 #include "JsonObject.hpp"
 #include <string>
+#include <log4cxx/logger.h>
 
 namespace zmq {
 	class i_socket_t;
@@ -15,9 +16,12 @@ namespace zmq {
 
 class Ports {
 
-public:
+	log4cxx::LoggerPtr logger;
 
-	void join(zmq::i_socket_t *socket, const JsonObject &pipes, const JsonObject &config, const std::string &name);
+public:
+	Ports(log4cxx::LoggerPtr l) : logger(l) {}
+
+	bool join(zmq::i_socket_t *socket, const JsonObject &ports, const std::string &name);
 
 };
 

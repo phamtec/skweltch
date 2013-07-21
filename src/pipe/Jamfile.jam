@@ -12,6 +12,7 @@ project pipe
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
+lib log4cxx : : <name>log4cxx ;
 
 exe pipecount : pipecount.cpp
 		zmq
@@ -19,7 +20,7 @@ exe pipecount : pipecount.cpp
 		msgpack
 		/core//core
 		/config//config
-		/boost/log//boost_log
+		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config
@@ -33,7 +34,7 @@ exe pipedump : pipedump.cpp
 		msgpack
 		/core//core
 		/config//config
-		/boost/log//boost_log
+		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config

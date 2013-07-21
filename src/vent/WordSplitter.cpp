@@ -6,7 +6,7 @@
 using namespace std;
 using namespace boost::algorithm;
 
-void WordSplitter::process(IWord *w) {
+bool WordSplitter::process(IWord *w) {
 
 	while (!input->eof()) {
 		string s;
@@ -15,8 +15,10 @@ void WordSplitter::process(IWord *w) {
 			s = s.substr(0, s.length()-1);
 		}
 		to_lower(s);
-		w->word(s);
+		if (!w->word(s)) {
+			return false;
+		}
 	}
-
+	return true;
 }
 

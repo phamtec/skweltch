@@ -13,12 +13,14 @@ build-project test ;
 
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
+lib log4cxx : : <name>log4cxx ;
 
-exe tune : tune.cpp MachineTuner.cpp
+exe tune : tune.cpp MachineTuner.cpp MachineRunner.cpp
 		/config//config
 		/core//core
 		/monitor//monlib
-		/boost/log//boost_log
+		czmq
+		log4cxx
 	:	<include>../core
 		<include>../config
 		<include>../monitor
@@ -26,11 +28,12 @@ exe tune : tune.cpp MachineTuner.cpp
 	:
 	;
 
-exe soak : soak.cpp MachineTuner.cpp
+exe soak : soak.cpp MachineRunner.cpp
 		/config//config
 		/core//core
 		/monitor//monlib
-		/boost/log//boost_log
+		czmq
+		log4cxx
 	:	<include>../core
 		<include>../config
 		<include>../monitor

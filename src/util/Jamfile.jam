@@ -1,5 +1,5 @@
 
-project vent
+project util
     : requirements
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -9,37 +9,32 @@ project vent
     :
     ;
 
-build-project test ;
-
 lib zmq : : <name>zmq ;
-lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
 
-exe ventrandomnum : VentRandomNum.cpp
-		zmq
-		czmq
-		/core//core
+exe listen : listen.cpp
 		/config//config
+		/core//core
+		zmq
 		msgpack
 		log4cxx
-	:   <include>../cppzmq-master
-		<include>../config
+	:	<include>../cppzmq-master
 		<include>../core
+		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;
 
-exe ventwords : ventwords.cpp WordSplitter.cpp
-		zmq
-		czmq
-		/core//core
+exe send : send.cpp
 		/config//config
+		/core//core
+		zmq
 		msgpack
 		log4cxx
 	:	<include>../cppzmq-master
-		<include>../config
 		<include>../core
+		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;

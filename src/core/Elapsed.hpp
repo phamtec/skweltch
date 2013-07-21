@@ -16,6 +16,7 @@ private:
 public:
 	Elapsed();
 	
+	void start();
 	int getTotal();
 	
 };

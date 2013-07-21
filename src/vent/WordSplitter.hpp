@@ -8,7 +8,7 @@
 class IWord {
 
 public:
-	virtual void word(const std::string &s) = 0;
+	virtual bool word(const std::string &s) = 0;
 };
 
 class WordSplitter {
@@ -19,7 +19,7 @@ private:
 public:
 	WordSplitter(std::istream *i) : input(i) {}
 	
-	void process(IWord *processor);
+	bool process(IWord *processor);
 	
 };
 

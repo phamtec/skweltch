@@ -4,27 +4,45 @@
 #include "JsonPath.hpp"
 #include "TaskMonitor.hpp"
 #include "MachineTuner.hpp"
+#include "MachineRunner.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <czmq.h>
 #include <zclock.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace boost;
 
+static int s_interrupted = 0;
+static void s_signal_handler (int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals (void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.tune"));
+
 int main (int argc, char *argv[])
 {
-	log::add_file_log(log::keywords::file_name = "log/tune.log", log::keywords::auto_flush = true);
-	
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+
 	if (argc != 3) {
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " jsonConfig jsonTuneConfig";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig jsonTuneConfig")
 		return 1;
 	}
 	
@@ -48,34 +66,37 @@ int main (int argc, char *argv[])
 		
     int iterations = tuneconfig.getInt("iterations", -1);
     if (iterations < 0) {
-		BOOST_LOG_TRIVIAL(error) << "no iterations in tuneconfig";
+		LOG4CXX_ERROR(logger, "no iterations in tuneconfig")
 		return 1;
     }
     int mutations = tuneconfig.getInt("mutations", -1);
     if (mutations < 0) {
-		BOOST_LOG_TRIVIAL(error) << "no mutations in tuneconfig";
+		LOG4CXX_ERROR(logger, "no mutations in tuneconfig")
 		return 1;
     }
     int groups = tuneconfig.getInt("groups", -1);
     if (groups < 0) {
-		BOOST_LOG_TRIVIAL(error) << "no groups in tuneconfig";
+		LOG4CXX_ERROR(logger, "no groups in tuneconfig")
 		return 1;
     }
     
    	filesystem::remove_all("temp");
     filesystem::create_directory("temp");
     
- 	MachineTuner tuner(&config, &tuneconfig);
+    s_catch_signals ();
+
+ 	MachineTuner tuner(&config, &tuneconfig, &s_interrupted);
+ 	MachineRunner runner(logger, &s_interrupted);
 
    	// tune it.
    	try {
-		BOOST_LOG_TRIVIAL(info) << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed";
-		for (int i=1; i<groups+1; i++) {
+		cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
+		for (int i=1; !s_interrupted && i<groups+1; i++) {
 		
 			// default to fail for each group.
 			tuner.resetFail();
 			
-			for (int j=0; j<mutations; j++) {
+			for (int j=0; !s_interrupted && j<mutations; j++) {
 	
 				string vars;
 				if (!tuner.tune(i, j, &vars)) {
@@ -89,8 +110,8 @@ int main (int argc, char *argv[])
 					config.write(true, &of);
 					of.close();
 				}
-		
-				if (!tuner.runOne(newconfig.str(), iterations, i, j, vars)) {
+				runner.setFail(tuner.failOnError());
+				if (!runner.runOne(newconfig.str(), iterations, i, j, vars)) {
 					if (tuner.failOnError()) {
 						break; // next group.
 					}
@@ -99,7 +120,7 @@ int main (int argc, char *argv[])
 		}
 	}
 	catch (runtime_error &e) {
-		BOOST_LOG_TRIVIAL(error) << e.what();
+		LOG4CXX_ERROR(logger, e.what())
 	}
 	
 	return 0;

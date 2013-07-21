@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_CASE( startTest )
 	istringstream ss(words);
 	mock_word w;
 
-	MOCK_EXPECT(w.word).exactly(27).with(mock::any);
+	MOCK_EXPECT(w.word).exactly(27).with(mock::any).returns(true);
 	
 	WordSplitter splitter(&ss);
-	splitter.process(&w);
+	BOOST_CHECK(splitter.process(&w));
 
 }

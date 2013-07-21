@@ -7,28 +7,47 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 #include <msgpack.hpp>
 
 using namespace std;
 using namespace boost;
 
+static int s_interrupted = 0;
+static void s_signal_handler (int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals (void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.worksleep"));
+
 int main (int argc, char *argv[])
 {
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
 
 	if (argc != 4) {
-		log::add_file_log(log::keywords::file_name = "log/work.log", log::keywords::auto_flush = true);
-		BOOST_LOG_TRIVIAL(error) << "usage: " << argv[0] << " pipes config name";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
 		return 1;
 	}
 	
-	stringstream outfn;
-	outfn << "log/" << argv[3] << ".log";
-	log::add_file_log(log::keywords::file_name = outfn.str(), log::keywords::auto_flush = true);
-	
+	{
+		stringstream outfn;
+		outfn << "org.skweltch." << argv[3];
+		logger = log4cxx::Logger::getLogger(outfn.str());
+	}
+		
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
@@ -50,23 +69,51 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
     
- 	Ports ports;
-    ports.join(&receiver, pipes, root, "pullFrom");
-    ports.join(&sender, pipes, root, "pushTo");
+	try {
+		int linger = -1;
+		receiver.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+		sender.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+ 	}
+	catch (zmq::error_t &e) {
+		LOG4CXX_ERROR(logger, e.what())
+		return 1;
+	}
+  
+ 
+ 	Ports ports(logger);
+    if (!ports.join(&receiver, pipes, "pullFrom")) {
+    	return 1;
+    }
+    if (!ports.join(&sender, pipes, "pushTo")) {
+    	return 1;
+    }
 
    	//  Process tasks forever
     int n=0;
-    while (1) {
+    s_catch_signals ();
+    while (!s_interrupted) {
 
        	zmq::message_t message;
-        receiver.recv(&message);
+ 		try {
+       		receiver.recv(&message);
+		}
+		catch (zmq::error_t &e) {
+			if (string(e.what()) != "Interrupted system call") {
+				LOG4CXX_ERROR(logger, "recv failed." << e.what())
+			}
+		}
+		if (s_interrupted) {
+			LOG4CXX_INFO(logger,  "interrupt received, killing server")
+			break;
+		}
 
         msgpack::unpacked msg;
         msgpack::unpack(&msg, (const char *)message.data(), message.size());
         msgpack::object obj = msg.get();
         
-        if ((n % 10) == 0)
-            BOOST_LOG_TRIVIAL(info) << "..." << obj << "...";
+        if ((n % 10) == 0) {
+			LOG4CXX_DEBUG(logger,  "..." << obj << "...")
+        }
         n++;
         
        	int workload;
@@ -76,11 +123,26 @@ int main (int argc, char *argv[])
  		zclock_sleep(workload);
 
        //  Send results to sink (just an empty message).
-        message.rebuild();
-        sender.send(message);
+		msgpack::sbuffer sbuf;
+		pair<int, int> resultsmsg(2, 0);
+		msgpack::pack(sbuf, resultsmsg);
+		message.rebuild(sbuf.size());
+		memcpy(message.data(), sbuf.data(), sbuf.size());
+		try {
+ 			sender.send(message);
+ 		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger,  "send failed." << e.what())
+		}
+		if (s_interrupted) {
+			LOG4CXX_INFO(logger,  "interrupt sender, killing server")
+			break;
+		}
 
-    }
+   	}
     
+	LOG4CXX_INFO(logger, "finished.")
+
     return 0;
 
 }

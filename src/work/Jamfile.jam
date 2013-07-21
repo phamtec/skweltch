@@ -12,6 +12,7 @@ project work
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
+lib log4cxx : : <name>log4cxx ;
 
 exe worksleep : WorkSleep.cpp
 		zmq
@@ -19,7 +20,7 @@ exe worksleep : WorkSleep.cpp
 		msgpack
 		/core//core
 		/config//config
-		/boost/log//boost_log
+		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config
@@ -33,7 +34,7 @@ exe workcharcount : workcharcount.cpp
 		msgpack
 		/core//core
 		/config//config
-		/boost/log//boost_log
+		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config

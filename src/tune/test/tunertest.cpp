@@ -189,7 +189,8 @@ BOOST_AUTO_TEST_CASE( tuner3Test )
 		BOOST_CHECK(json.read(&tunerconfig));
  	}
 
-	MachineTuner tuner(&config, &tunerconfig);
+	int interupted = 0;
+	MachineTuner tuner(&config, &tunerconfig, &interupted);
 	tuner.tune(1, 0, 0);
 	tuner.tune(1, 5, 0);
 	config.dump();

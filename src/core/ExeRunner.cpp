@@ -17,6 +17,8 @@ using namespace boost;
 
 pid_t ExeRunner::run(const std::string &exe) {
 
+//    BOOST_LOG_TRIVIAL(debug) << exe;
+	
 	pid_t pid = fork();
     switch (pid) {
     case -1: /* error */
@@ -30,9 +32,7 @@ pid_t ExeRunner::run(const std::string &exe) {
         args[2] = exe.c_str();
         args[3] = NULL;
         execvp(args[0], (char* const*)args);
-    	// The execvp function returns only if an error occurs.
-    	BOOST_LOG_TRIVIAL(error) << "an error occurred in execvp";
-    	abort();
+        _exit(0);
         break;
     
     default: /* parent */

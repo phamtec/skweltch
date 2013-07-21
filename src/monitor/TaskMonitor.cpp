@@ -8,10 +8,10 @@
 #include "PipeBuilder.hpp"
 
 #include <sys/wait.h>
+#include <czmq.h>
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
+#include <log4cxx/logger.h>
 
 using namespace std;
 using namespace boost;
@@ -25,13 +25,56 @@ int TaskMonitor::start(const string &jsonconfig) {
 		return 1;
 	}
     
-    string pidfilename = r.getString("pidFile");
+   	string pidfilename = r.getString("pidFile");
    	ExeRunner er;
 	vector<int> pids;
 	
 	// now run up the workers.
 	try {
 		ofstream pidfile(pidfilename.c_str());
+		
+		// sink.
+		{
+			JsonObject sink = r.getChild("sink");
+		
+			// build pipes for this node.
+			JsonObject pipesjson = PipeBuilder(logger).collect(&r, sink);
+			stringstream pipes;
+			pipesjson.write(false, &pipes);
+
+			stringstream exe;
+			exe << sink.getString("exe") << " '" << pipes.str() << "' '" << sink.getChildAsString("config") << "' " << sink.getString("name");
+			pid_t pid = er.run(exe.str());
+			if (pid == 0) {
+				return 1;
+			}
+			pidfile << pid << endl;
+			pids.push_back(pid);
+		}
+
+		// vent
+		{
+			JsonObject vent = r.getChild("vent");
+		
+			// build pipes for this node.
+			JsonObject pipesjson = PipeBuilder(logger).collect(&r, vent);
+			stringstream pipes;
+			pipesjson.write(false, &pipes);
+
+			stringstream exe;
+			exe << vent.getString("exe") << " '" << pipes.str() << "' '" << vent.getChildAsString("config") << "' " << vent.getString("name");
+			pid_t pid = er.run(exe.str());
+			if (pid == 0) {
+				return 1;
+			}
+			pidfile << pid << endl;
+			pids.push_back(pid);
+		}
+		
+		// allow the sockets to be created.
+		zclock_sleep(100);
+		
+		// the workers.
 		JsonArray bg = r.getArray("background");
 		for (JsonArray::iterator i=bg.begin(); i != bg.end(); i++) {
 		
@@ -40,7 +83,7 @@ int TaskMonitor::start(const string &jsonconfig) {
 			string exe = bg.getString(i, "exe");
 			
 			// build pipes for this node.
-			JsonObject pipesjson = PipeBuilder().collect(&r, bg.getValue(i));
+			JsonObject pipesjson = PipeBuilder(logger).collect(&r, bg.getValue(i));
 			stringstream pipes;
 			pipesjson.write(false, &pipes);
 			
@@ -70,24 +113,9 @@ int TaskMonitor::start(const string &jsonconfig) {
 			}
 		}
 
-		JsonObject vent = r.getChild("vent");
-		
-		// build pipes for this node.
-		JsonObject pipesjson = PipeBuilder().collect(&r, vent);
-		stringstream pipes;
-		pipesjson.write(false, &pipes);
-
-		stringstream exe;
-		exe << vent.getString("exe") << " '" << pipes.str() << "' '" << vent.getChildAsString("config") << "' " << vent.getString("name");
-		pid_t pid = er.run(exe.str());
-		if (pid == 0) {
-			return 1;
-		}
-		pidfile << pid << endl;
-		pids.push_back(pid);
 	}
 	catch (runtime_error &e) {
-		BOOST_LOG_TRIVIAL(error) << "error: " << e.what() << " running up backgrounds";
+		LOG4CXX_ERROR(logger, "error: " << e.what() << " running up backgrounds")
 		return 1;
 	}
 	
@@ -95,13 +123,8 @@ int TaskMonitor::start(const string &jsonconfig) {
 	try {
 		JsonObject reap = r.getChild("reap");
 		
-		// build pipes for this node.
-		JsonObject pipesjson = PipeBuilder().collect(&r, reap);
-		stringstream pipes;
-		pipesjson.write(false, &pipes);
-
 		stringstream exe;
-		exe << reap.getString("exe") << " '" << pipes.str() << "' '" << reap.getChildAsString("config") << "' " << reap.getString("name");
+		exe << reap.getString("exe") << " '"<< reap.getChildAsString("config") << "' " << reap.getString("name");
 		pid_t pid = er.run(exe.str());
 		if (pid == 0) {
 			return 1;
@@ -109,15 +132,16 @@ int TaskMonitor::start(const string &jsonconfig) {
 		pids.push_back(pid);
 	}
 	catch (runtime_error &e) {
-		BOOST_LOG_TRIVIAL(error) << "error: " << e.what() << " running up reap";
+		LOG4CXX_ERROR(logger, "error: " << e.what() << " running up reap")
 		return 1;
 	}
-
+	
 	// make sure we ack all the children.
 	for (vector<int>::iterator i=pids.begin(); i != pids.end(); i++) {
+		zclock_sleep(5);
 		::waitpid(*i, NULL, 0);	
 	}
-	
+
 	return 0;
 
 }

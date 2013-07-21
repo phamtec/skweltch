@@ -7,7 +7,14 @@ Elapsed::Elapsed() {
     gettimeofday (&tstart, NULL);
 
 }
-	
+
+void Elapsed::start() {
+
+    //  Start our clock now
+    gettimeofday (&tstart, NULL);
+
+}
+
 int Elapsed::getTotal() {
 
     //  Calculate and report duration of batch
