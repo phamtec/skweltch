@@ -10,10 +10,22 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <log4cxx/basicconfigurator.h>
 
 using namespace std;
 using namespace boost;
 using namespace json_spirit;
+
+struct SetupLogging
+{
+    SetupLogging() {
+		log4cxx::BasicConfigurator::configure();
+    }
+};
+
+BOOST_AUTO_TEST_SUITE( jsonTests )
+
+BOOST_GLOBAL_FIXTURE( SetupLogging )
 
 JsonObject createObject() {
 
@@ -75,7 +87,7 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 {
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "y");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getChild("d").getInt("e", -1) == 2);
 
@@ -85,7 +97,7 @@ BOOST_AUTO_TEST_CASE( dotTest )
 {
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "y.d");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y.d");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getInt("e", -1) == 2);
 
@@ -96,7 +108,7 @@ BOOST_AUTO_TEST_CASE( badDotTest )
 	JsonObject o = createObject();
 
 	try {
-		JsonPath().getPath(o, "y.");
+		JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y.");
 		BOOST_CHECK(false);
 	}
 	catch (runtime_error &e) {
@@ -110,7 +122,7 @@ BOOST_AUTO_TEST_CASE( objNotFoundTest )
 	JsonObject o = createObject();
 
 	try {
-		JsonPath().getPath(o, "y.aa");
+		JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y.aa");
 		BOOST_CHECK(false);
 	}
 	catch (runtime_error &e) {
@@ -123,7 +135,7 @@ BOOST_AUTO_TEST_CASE( conditionTest )
 {	
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "y[\"h\"=3]");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y[\"h\"=3]");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getInt("h", -1) == 3);
 	
@@ -134,7 +146,7 @@ BOOST_AUTO_TEST_CASE( badConditionTest )
 	JsonObject o = createObject();
 
 	try {
-		JsonPath().getPath(o, "z[1");
+		JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "z[1");
 		BOOST_CHECK(false);
 	}
 	catch (runtime_error &e) {
@@ -147,7 +159,7 @@ BOOST_AUTO_TEST_CASE( conditionSubObjTest )
 {	
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "y[\"h\"=3].o");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y[\"h\"=3].o");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getInt("p", -1) == 9);
 	
@@ -157,7 +169,7 @@ BOOST_AUTO_TEST_CASE( arrayTest )
 {	
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "z[1]");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "z[1]");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getInt("j", -1) == 6);
 	
@@ -168,7 +180,7 @@ BOOST_AUTO_TEST_CASE( badArrayTest )
 	JsonObject o = createObject();
 
 	try {
-		JsonPath().getPath(o, "y[1]");
+		JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "y[1]");
 		BOOST_CHECK(false);
 	}
 	catch (runtime_error &e) {
@@ -181,9 +193,11 @@ BOOST_AUTO_TEST_CASE( arraySubObjTest )
 {	
 	JsonObject o = createObject();
 
-	JsonObject p = JsonPath().getPath(o, "z[2].l");
+	JsonObject p = JsonPath(log4cxx::Logger::getRootLogger()).getPath(o, "z[2].l");
 	BOOST_CHECK(p.isObject());
 	BOOST_CHECK(p.getInt("m", -1) == 7);
 	
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 

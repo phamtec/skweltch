@@ -9,6 +9,8 @@ project sink
     :
     ;
 
+build-project test ;
+
 lib zmq : : <name>zmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;

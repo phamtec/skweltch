@@ -1,7 +1,6 @@
 
 #include "TaskMonitor.hpp"
 
-#include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "JsonArray.hpp"
 #include "ExeRunner.hpp"
@@ -19,14 +18,13 @@ using namespace boost;
 int TaskMonitor::start(const string &jsonconfig) {
 
 	ifstream jsonfile(jsonconfig.c_str());
-	JsonConfig c(&jsonfile);
 	JsonObject r;
-	if (!c.read(&r)) {
+	if (!r.read(logger, &jsonfile)) {
 		return 1;
 	}
     
    	string pidfilename = r.getString("pidFile");
-   	ExeRunner er;
+   	ExeRunner er(logger);
 	vector<int> pids;
 	
 	// now run up the workers.
@@ -72,7 +70,7 @@ int TaskMonitor::start(const string &jsonconfig) {
 		}
 		
 		// allow the sockets to be created.
-		zclock_sleep(100);
+		zclock_sleep(50);
 		
 		// the workers.
 		JsonArray bg = r.getArray("background");

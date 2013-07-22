@@ -7,8 +7,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -43,7 +41,7 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		JsonObject results;
 		ifstream s("results.json");
 		if (s.is_open()) {
-			results.read(&s);
+			results.read(logger, &s);
 			int elapsed = results.getInt("elapsed", -1);
 			if (low < 0 || elapsed < low) {
 				low = elapsed;

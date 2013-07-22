@@ -1,8 +1,5 @@
-#define BOOST_TEST_MODULE tune-tests
 #include <boost/test/unit_test.hpp>
 
-#include "JsonObject.hpp"
-#include "JsonConfig.hpp"
 #include "JsonPath.hpp"
 #include "../MachineTuner.hpp"
 
@@ -10,11 +7,21 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <log4cxx/basicconfigurator.h>
 
 using namespace std;
 using namespace boost;
 
-/*
+unit_test::test_suite*
+init_unit_test_suite( int argc, char* argv[] ) 
+{
+    unit_test::framework::master_test_suite().p_name.value = "tune-tests";
+
+	log4cxx::BasicConfigurator::configure();
+
+    return 0;
+}
+
 BOOST_AUTO_TEST_CASE( tunerTest )
 {
 	stringstream configjson(
@@ -53,25 +60,20 @@ BOOST_AUTO_TEST_CASE( tunerTest )
 );
 
 	JsonObject config;
- 	{
- 		JsonConfig json(&configjson);
-		BOOST_CHECK(json.read(&config));
- 	}
+	BOOST_CHECK(config.read(log4cxx::Logger::getRootLogger(), &configjson));
 	JsonObject tunerconfig;
- 	{
- 		JsonConfig json(&tunerconfigjson);
-		BOOST_CHECK(json.read(&tunerconfig));
- 	}
+	BOOST_CHECK(tunerconfig.read(log4cxx::Logger::getRootLogger(), &tunerconfigjson));
 
-	MachineTuner tuner(&config, &tunerconfig);
-	tuner.tune(1, 0);
-	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 2000);
-	tuner.tune(1, 1);
-	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 1805);
-	tuner.tune(1, 2);
-	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 1610);
-	tuner.tune(1, 3);
-	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 1415);
+	int interupted = 0;
+	MachineTuner tuner(log4cxx::Logger::getRootLogger(), &config, &tunerconfig, &interupted);
+	tuner.tune(1, 0, 0);
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "reap.config").getInt("totalTime", -1) == 2000);
+	tuner.tune(1, 1, 0);
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "reap.config").getInt("totalTime", -1) == 1805);
+	tuner.tune(1, 2, 0);
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "reap.config").getInt("totalTime", -1) == 1610);
+	tuner.tune(1, 3, 0);
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "reap.config").getInt("totalTime", -1) == 1415);
 }
 
 BOOST_AUTO_TEST_CASE( tuner2Test )
@@ -112,22 +114,17 @@ BOOST_AUTO_TEST_CASE( tuner2Test )
 );
 
 	JsonObject config;
- 	{
- 		JsonConfig json(&configjson);
-		BOOST_CHECK(json.read(&config));
- 	}
+	BOOST_CHECK(config.read(log4cxx::Logger::getRootLogger(), &configjson));
 	JsonObject tunerconfig;
- 	{
- 		JsonConfig json(&tunerconfigjson);
-		BOOST_CHECK(json.read(&tunerconfig));
- 	}
+	BOOST_CHECK(tunerconfig.read(log4cxx::Logger::getRootLogger(), &tunerconfigjson));
 
-	MachineTuner tuner(&config, &tunerconfig);
-	tuner.tune(1, 0);
-	tuner.tune(1, 5);
-	BOOST_CHECK(JsonPath().getPath(config, "reap.config").getInt("totalTime", -1) == 125);
+	int interupted = 0;
+	MachineTuner tuner(log4cxx::Logger::getRootLogger(), &config, &tunerconfig, &interupted);
+	tuner.tune(1, 0, 0);
+	tuner.tune(1, 5, 0);
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "reap.config").getInt("totalTime", -1) == 125);
 }
-*/
+
 BOOST_AUTO_TEST_CASE( tuner3Test )
 {
 	stringstream configjson(
@@ -179,20 +176,14 @@ BOOST_AUTO_TEST_CASE( tuner3Test )
 );
 
 	JsonObject config;
- 	{
- 		JsonConfig json(&configjson);
-		BOOST_CHECK(json.read(&config));
- 	}
+	BOOST_CHECK(config.read(log4cxx::Logger::getRootLogger(), &configjson));
 	JsonObject tunerconfig;
- 	{
- 		JsonConfig json(&tunerconfigjson);
-		BOOST_CHECK(json.read(&tunerconfig));
- 	}
+	BOOST_CHECK(tunerconfig.read(log4cxx::Logger::getRootLogger(), &tunerconfigjson));
 
 	int interupted = 0;
-	MachineTuner tuner(&config, &tunerconfig, &interupted);
+	MachineTuner tuner(log4cxx::Logger::getRootLogger(), &config, &tunerconfig, &interupted);
 	tuner.tune(1, 0, 0);
 	tuner.tune(1, 5, 0);
-	config.dump();
-	BOOST_CHECK(JsonPath().getPath(config, "background[0]").getInt("count", -1) == 5);
+	config.dump(log4cxx::Logger::getRootLogger());
+	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "background[0]").getInt("count", -1) == 5);
 }

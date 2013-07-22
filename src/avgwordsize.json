@@ -23,8 +23,8 @@
 		},
 		"config" : {
 			"filename": "data/words.txt",
-			"sleep": 0,
-			"every": 1500,
+			"sleep": 3,
+			"every": 2000,
 			// this needs to be derived by sending a "finished" message.
 			"expect": 4505
 		}
@@ -49,7 +49,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 5,
+			"count": 3,
 			"name": "WorkCharCount",
 			"exe": "dist/workcharcount",
 			"node": "localhost",
@@ -78,8 +78,7 @@
 		"exe": "dist/grimreaper",
 		"config" : {
 			"pidFile": "tasks.pid",
-//			"totalTime": 200
-			"totalTime": 500 // while tuning...
+			"totalTime": 700
 		}
 	}
 		

@@ -1,5 +1,4 @@
 
-#include "JsonConfig.hpp"
 #include "Ports.hpp"
 #include <zmq.hpp>
 #include <czmq.h>
@@ -35,16 +34,14 @@ int main (int argc, char *argv[])
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
- 		JsonConfig json(&ss);
-		if (!json.read(&pipes)) {
+		if (!pipes.read(logger, &ss)) {
 			return 1;
 		}
  	}
 	JsonObject root;
  	{
  		stringstream ss(argv[2]);
- 		JsonConfig json(&ss);
-		if (!json.read(&root)) {
+		if (!root.read(logger, &ss)) {
 			return 1;
 		}
  	}
@@ -55,16 +52,6 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
 
-	try {
-		int linger = -1;
-		receiver.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
-		sender.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
- 	}
-	catch (zmq::error_t &e) {
-		LOG4CXX_ERROR(logger, e.what())
-		return 1;
-	}  
-  
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pipeFrom")) {
     	return 1;

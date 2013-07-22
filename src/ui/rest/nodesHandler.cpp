@@ -6,8 +6,6 @@
 #include "JsonPath.hpp"
 #include "GraphLayout.hpp"
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -48,7 +46,7 @@ void addNode(JsonObject *pt, const JsonObject &node,
 	pt->add(name, info);
 	
 	// and a connection.
-	JsonObject confconn = JsonPath().getPath(node, "config.connections");
+	JsonObject confconn = JsonPath(log4cxx::Logger::getRootLogger()).getPath(node, "config.connections");
 	if (!confconn.empty()) {
 		for (JsonObject::iterator i = confconn.begin(); i != confconn.end(); i++) {
 			JsonObject o = confconn.getValue(i);
@@ -67,7 +65,7 @@ void addEdges(GraphLayout *l, const map<string, int> &ids, const JsonObject &nod
 	string name = node.getString("name");
 
 	// and a connection.
-	JsonObject confconn = JsonPath().getPath(node, "config.connections");
+	JsonObject confconn = JsonPath(log4cxx::Logger::getRootLogger()).getPath(node, "config.connections");
 	if (!confconn.empty()) {
 		for (JsonObject::iterator i = confconn.begin(); i != confconn.end(); i++) {
 			JsonObject o = confconn.getValue(i);
@@ -145,7 +143,7 @@ reply::status_type nodesHandler(RestContext *context, const std::string &args, v
 		l.layout(&centers, size, centerx, centery);
 	}
 	catch (runtime_error &e) {
-		BOOST_LOG_TRIVIAL(error) << e.what();
+		LOG4CXX_ERROR(log4cxx::Logger::getRootLogger(), e.what())
 		return reply::bad_request;
 	}
 	

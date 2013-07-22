@@ -16,7 +16,6 @@ MOCK_BASE_CLASS( mock_word, IWord )
 	MOCK_METHOD( word, 1 )
 };
 
-
 BOOST_AUTO_TEST_CASE( startTest )
 {
 	string words = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et "

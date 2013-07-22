@@ -69,5 +69,16 @@ bool Ports::join(zmq::i_socket_t *socket, const JsonObject &ports, const string 
 		LOG4CXX_ERROR(logger, "for " << name << ", bind or connect. Pick one.")
 		return false;
 	}
+
+	// this might be from a setting at some point, at the moment it's just global.
+	try {
+		int linger = -1;
+		socket->setsockopt(ZMQ_LINGER, &linger, sizeof linger);
+ 	}
+	catch (zmq::error_t &e) {
+		LOG4CXX_ERROR(logger, e.what())
+		return false;
+	}  
+ 
 	return true;
 }

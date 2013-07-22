@@ -1,8 +1,8 @@
 
-#include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "JsonPath.hpp"
 #include "MachineRunner.hpp"
+#include "Interrupt.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -16,22 +16,6 @@
 
 using namespace std;
 using namespace boost;
-
-static int s_interrupted = 0;
-static void s_signal_handler (int signal_value)
-{
-    s_interrupted = 1;
-}
-
-static void s_catch_signals (void)
-{
-    struct sigaction action;
-    action.sa_handler = s_signal_handler;
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
-}
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.soak"));
 
@@ -50,13 +34,13 @@ int main (int argc, char *argv[])
     s_catch_signals ();
  	MachineRunner runner(logger, &s_interrupted);
 	cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
-	runner.setFail(true);
+//	runner.setFail(true);
  	for (int i=0; i<count; i++) {
  		LOG4CXX_INFO(logger, "soak start run.")
 		try {
 			if (!runner.runOne(argv[1], iterations, 0, 0, "")) {
-				LOG4CXX_ERROR(logger, "failed, returning")
-				break;
+//				LOG4CXX_ERROR(logger, "failed, returning")
+//				break;
 			}
 		}
 		catch (runtime_error &e) {

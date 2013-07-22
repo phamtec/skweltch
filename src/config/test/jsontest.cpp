@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 	BOOST_CHECK(ss.str() == "{\"x\":\"y\"}");
 	
 	JsonObject v;
-	BOOST_CHECK(v.read(ss.str()));
+	BOOST_CHECK(v.read(log4cxx::Logger::getRootLogger(), ss.str()));
 	BOOST_CHECK(v.getString("x") == "y");	
 }
 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( simpleIntTest )
 	BOOST_CHECK(ss.str() == "{\"x\":1}");
 	
 	JsonObject v;
-	BOOST_CHECK(v.read(ss.str()));
+	BOOST_CHECK(v.read(log4cxx::Logger::getRootLogger(), ss.str()));
 	BOOST_CHECK(v.getInt("x", 0) == 1);
 	
 }
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( arrayTest )
 {
 	string json = "{\"data\":[{\"x\": 1},{\"x\":2}]}";
 	JsonObject o;
-	BOOST_CHECK(o.read(json));
+	BOOST_CHECK(o.read(log4cxx::Logger::getRootLogger(), json));
 	JsonArray a = o.getArray("data");
 	JsonArray::iterator i = a.begin();
 	BOOST_CHECK(i != a.end());
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( findByNameTest )
 "}\n";
 
 	JsonObject obj;
-	BOOST_CHECK(obj.read(json));
+	BOOST_CHECK(obj.read(log4cxx::Logger::getRootLogger(), json));
 	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block2")).getString("value") == "xxx");
 	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block1")).getInt("value", -1) == 1);
 	BOOST_CHECK(obj.findObj(JsonNamePredicate("Block3")).getString("value") == "yyy");

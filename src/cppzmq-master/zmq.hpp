@@ -293,6 +293,7 @@ namespace zmq
         virtual bool recv (message_t *msg_, int flags_ = 0) = 0;
        	virtual void bind (const char *addr_) = 0;
        	virtual void connect (const char *addr_) = 0;
+       	virtual void setsockopt (int option_, const void *optval_, size_t optvallen_) = 0;
   	};
 	
     class socket_t : public i_socket_t

@@ -7,11 +7,10 @@
 #include "json_spirit.h"
 #include "json_spirit_writer_template.h"
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
- 
+#include <log4cxx/logger.h>
+
 using namespace std;
 using namespace boost;
 using namespace json_spirit;
@@ -86,12 +85,12 @@ bool childMatches(Value *obj, const string &condition) {
 
 }
 
-Value *getChildWithCondition(Object *obj, const string &condition) {
+Value *JsonPath::getChildWithCondition(Object *obj, const string &condition) {
 
 	for (vector<Pair>::iterator i=obj->begin(); i != obj->end(); i++) {
-    	BOOST_LOG_TRIVIAL(debug) << "searching: " << i->name_ << " for " << condition;
+		LOG4CXX_DEBUG(logger, "searching: " << i->name_ << " for " << condition)
 		if (childMatches(&i->value_, condition)) {
-    		BOOST_LOG_TRIVIAL(debug) << "found.";
+			LOG4CXX_DEBUG(logger, "found.")
 			return &i->value_;
 		}
 	}
@@ -99,11 +98,11 @@ Value *getChildWithCondition(Object *obj, const string &condition) {
 
 }
 
-void dump(Value *v) {
+void JsonPath::dump(Value *v) {
 
 	stringstream s;
 	write_stream(*v, s, remove_trailing_zeros);
-	BOOST_LOG_TRIVIAL(debug) << s.str();
+	LOG4CXX_DEBUG(logger, s.str())
 
 }
 
@@ -137,8 +136,8 @@ Value *JsonPath::getPath(Value *obj, const string &path) {
 						int index = lexical_cast<int>(condition);
 						Array *a = &o->get_array();
 						o = &a->at(index);
-//    					BOOST_LOG_TRIVIAL(debug) << "got array object";
-//						dump(o);
+						LOG4CXX_DEBUG(logger, "got array object")
+						dump(o);
 					}
 				}
 				else {

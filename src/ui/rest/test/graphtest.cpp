@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE graph-tests
 #include <boost/test/unit_test.hpp>
 
-#include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "../GraphLayout.hpp"
 

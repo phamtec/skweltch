@@ -7,8 +7,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -48,7 +46,7 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 					
 						string var = target.getString("var");
 						string select = target.getString("select");
-						JsonPath p;
+						JsonPath p(logger);
 						JsonObject o = p.getPath(*config, key);
 						if (select == "hightolow") {
 							double range = high - low;
@@ -77,12 +75,12 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 							}
 						}
 						else {
-							BOOST_LOG_TRIVIAL(error) << " don't know how to select " << select;
+							LOG4CXX_ERROR(logger, " don't know how to select " << select)
 							throw new runtime_error("don't know how to select");
 						}
 					}
 					else {
-						BOOST_LOG_TRIVIAL(error) << " don't know how to type " << type;
+						LOG4CXX_ERROR(logger,  "don't know how to type " << type)
 						throw new runtime_error("don't know the type" );
 					}				
 				}

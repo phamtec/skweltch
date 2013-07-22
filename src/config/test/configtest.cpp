@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE config-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../JsonConfig.hpp"
 #include "../JsonObject.hpp"
 #include "../JsonArray.hpp"
 
@@ -9,10 +8,22 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <log4cxx/basicconfigurator.h>
 
 using namespace std;
 using namespace boost;
 using namespace json_spirit;
+
+struct SetupLogging
+{
+    SetupLogging() {
+		log4cxx::BasicConfigurator::configure();
+    }
+};
+
+BOOST_AUTO_TEST_SUITE( configTests )
+
+BOOST_GLOBAL_FIXTURE( SetupLogging )
 
 BOOST_AUTO_TEST_CASE( configTest )
 {
@@ -43,9 +54,8 @@ BOOST_AUTO_TEST_CASE( configTest )
 "}\n"
 );
 
-	JsonConfig c(&json);
 	JsonObject r;
-	BOOST_CHECK(c.read(&r));
+	BOOST_CHECK(r.read(log4cxx::Logger::getRootLogger(), &json));
 
 	BOOST_CHECK(r.getString("pidFile") == "pids.pid");
 	BOOST_CHECK(r.getString("exePath") == "./bin");
@@ -75,8 +85,9 @@ BOOST_AUTO_TEST_CASE( badConfig1Test )
 "}\n"
 );
 
-	JsonConfig c(&json);
 	JsonObject r;
-	BOOST_CHECK(!c.read(&r));
+	BOOST_CHECK(!r.read(log4cxx::Logger::getRootLogger(), &json));
     
 }
+
+BOOST_AUTO_TEST_SUITE_END()

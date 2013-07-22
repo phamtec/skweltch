@@ -1,6 +1,6 @@
 {
 	"mutations": 20,
-	"iterations": 30,
+	"iterations": 100,
 	"groups": 2,
 	"success": {
     	"average" : 5.6082130965593784
@@ -22,7 +22,7 @@
 		"select": "random",
 		"low": 0,
 		"high": 5,
-		"enabled": false,
+		"enabled": true,
 		"fail": false
 	},
 	"vent.config" : {
@@ -32,7 +32,7 @@
 		"select": "random",
 		"low": 500,
 		"high": 2000,
-		"enabled": false,
+		"enabled": true,
 		"fail": false
 	},
 	"background[0]" : {
@@ -42,7 +42,7 @@
 		"select": "random",
 		"low": 2,
 		"high": 10,
-		"enabled": true,
+		"enabled": false,
 		"fail": false
 	}
 }

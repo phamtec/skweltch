@@ -50,7 +50,7 @@ JsonObject PipeBuilder::collect(JsonObject *config, const JsonObject &block) {
 
 	JsonObject pipes;
 	
-	JsonObject connections = JsonPath().getPath(block, "connections");
+	JsonObject connections = JsonPath(logger).getPath(block, "connections");
 	for (JsonObject::iterator i = connections.begin(); i != connections.end(); i++) {
 	
 		JsonObject val = connections.getValue(i);
@@ -67,7 +67,7 @@ JsonObject PipeBuilder::collect(JsonObject *config, const JsonObject &block) {
 				return b;
 			}
 			string conn = val.getString("connection");
-			JsonObject c = JsonPath().getPath(b, "connections." + conn);
+			JsonObject c = JsonPath(logger).getPath(b, "connections." + conn);
 			if (!c.isObject()) {
 				LOG4CXX_ERROR(logger, "syntax error. " << conn << " missing.")
 				return c;

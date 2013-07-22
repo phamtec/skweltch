@@ -10,11 +10,10 @@ project config
 
 build-project test ;
 
-lib config : JsonConfig.cpp JsonObject.cpp JsonArray.cpp JsonNamePredicate.cpp JsonPath.cpp
+lib config : JsonObject.cpp JsonArray.cpp JsonNamePredicate.cpp JsonPath.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_value.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_reader.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_writer.cpp
-		/boost/log//boost_log
 	: 	<link>static
 		<include>../json_spirit_v4.06/json_spirit
 	:

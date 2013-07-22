@@ -1,6 +1,5 @@
 
 #include "RestContext.hpp"
-#include "JsonConfig.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -21,8 +20,7 @@ RestContext *RestContext::getContext() {
 bool RestContext::load(const std::string &config) {
 
 	ifstream jsonfile(config.c_str());
-	JsonConfig c(&jsonfile);
-	if (c.read(&root)) {
+	if (root.read(log4cxx::Logger::getRootLogger(), &jsonfile)) {
 		loaded = true;
 	}
 	return loaded;

@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE pipes-tests
 #include <boost/test/unit_test.hpp>
 
-#include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "JsonArray.hpp"
 #include "../PipeBuilder.hpp"
@@ -78,8 +77,7 @@ BOOST_AUTO_TEST_CASE( pipesTest )
 	JsonObject config;
  	{
  		stringstream ss(configjson);
- 		JsonConfig json(&ss);
-		BOOST_CHECK(json.read(&config));
+		BOOST_CHECK(config.read(log4cxx::Logger::getRootLogger(), &ss));
  	}
  	
  	JsonArray bg = config.getArray("background");

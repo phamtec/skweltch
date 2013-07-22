@@ -21,6 +21,8 @@ exe tune : tune.cpp MachineTuner.cpp MachineRunner.cpp
 		/monitor//monlib
 		czmq
 		log4cxx
+		/boost//filesystem
+		/boost//system
 	:	<include>../core
 		<include>../config
 		<include>../monitor
@@ -34,6 +36,8 @@ exe soak : soak.cpp MachineRunner.cpp
 		/monitor//monlib
 		czmq
 		log4cxx
+		/boost//filesystem
+		/boost//system
 	:	<include>../core
 		<include>../config
 		<include>../monitor

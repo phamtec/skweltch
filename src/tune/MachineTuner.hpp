@@ -5,6 +5,7 @@
 class JsonObject;
 #include <string>
 #include <boost/random/mersenne_twister.hpp>
+#include <log4cxx/logger.h>
 
 /*
 	A machine tuner.
@@ -12,6 +13,7 @@ class JsonObject;
 
 class MachineTuner {
 
+	log4cxx::LoggerPtr logger;
 	JsonObject *config;
 	JsonObject *tunerconfig;
 	boost::random::mt19937 gen;
@@ -19,8 +21,8 @@ class MachineTuner {
 	int *interrupted;
 	
 public:
-	MachineTuner(JsonObject *c, JsonObject *tc, int *i) : 
-		config(c), tunerconfig(tc), failonerror(true), interrupted(i) {};
+	MachineTuner(log4cxx::LoggerPtr l, JsonObject *c, JsonObject *tc, int *i) : 
+		logger(l), config(c), tunerconfig(tc), failonerror(true), interrupted(i) {};
 	
 	void resetFail() { failonerror = true; }
 	bool failOnError() { return failonerror; }

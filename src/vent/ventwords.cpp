@@ -1,7 +1,8 @@
 
-#include "JsonConfig.hpp"
 #include "Ports.hpp"
 #include "WordSplitter.hpp"
+#include "Interrupt.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <zmq.hpp>
@@ -15,34 +16,19 @@
 using namespace std;
 using namespace boost;
 
-static int s_interrupted = 0;
-static void s_signal_handler (int signal_value)
-{
-    s_interrupted = 1;
-}
-
-static void s_catch_signals (void)
-{
-    struct sigaction action;
-    action.sa_handler = s_signal_handler;
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
-}
-
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.ventwords"));
 
 class SendWord : public IWord {
 
 private:
 	zmq::socket_t *sender;
+	int batch;
 	int sleeptime;
 	int sleepevery;
 	int count;
 	
 public:
-	SendWord(zmq::socket_t *s, int slp, int ev) : sender(s), sleeptime(slp), sleepevery(ev), count(0) {}
+	SendWord(zmq::socket_t *s, int b, int slp, int ev) : sender(s), batch(b), sleeptime(slp), sleepevery(ev), count(0) {}
 	
 	virtual bool word(const std::string &s);
 	int getCount() { return count; }
@@ -52,9 +38,12 @@ bool SendWord::word(const std::string &s) {
 
  	zmq::message_t message(2);
 	
+	// build the complete message.
+	msgpack::type::tuple<int, int, string> wmsg(batch, count, s);
+		
 	// pack the number up and send it.
 	msgpack::sbuffer sbuf;
-	msgpack::pack(sbuf, s);
+	msgpack::pack(sbuf, wmsg);
 	message.rebuild(sbuf.size());
 	memcpy(message.data(), sbuf.data(), sbuf.size());
  
@@ -99,16 +88,14 @@ int main (int argc, char *argv[])
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
- 		JsonConfig json(&ss);
-		if (!json.read(&pipes)) {
+		if (!pipes.read(logger, &ss)) {
 			return 1;
 		}
  	}
 	JsonObject root;
  	{
  		stringstream ss(argv[2]);
- 		JsonConfig json(&ss);
-		if (!json.read(&root)) {
+		if (!root.read(logger, &ss)) {
 			return 1;
 		}
  	}
@@ -125,16 +112,6 @@ int main (int argc, char *argv[])
     zmq::socket_t sender(context, ZMQ_PUSH);
 	zmq::socket_t sink(context, ZMQ_PUSH);
 
-	try {
-		int linger = -1;
-		sender.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
-		sink.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
- 	}
-	catch (zmq::error_t &e) {
-		LOG4CXX_ERROR(logger, e.what())
-		return 1;
-	}  
- 
  	Ports ports(logger);
     if (!ports.join(&sender, pipes, "pushTo")) {
     	return 1;
@@ -151,26 +128,48 @@ int main (int argc, char *argv[])
 	
     s_catch_signals ();
 
-	// pack the number up and send it.
-    zmq::message_t message(2);
-	msgpack::sbuffer sbuf;
-	pair<int, int> expectmsg(1, expect);
-	msgpack::pack(sbuf, expectmsg);
-	message.rebuild(sbuf.size());
-	memcpy(message.data(), sbuf.data(), sbuf.size());
-	try {
-    	sink.send(message);
+ 	// let the sink no the first message.
+ 	{
+		zmq::message_t message(2);
+		msgpack::sbuffer sbuf;
+		pair<int, int> expectmsg(1, expect);
+		msgpack::pack(sbuf, expectmsg);
+//		pair<int, int> firstmsg(1, 0);
+//		msgpack::pack(sbuf, firstmsg);
+		message.rebuild(sbuf.size());
+		memcpy(message.data(), sbuf.data(), sbuf.size());
+		try {
+			sink.send(message);
+		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
+			return 1;
+		}
 	}
-	catch (zmq::error_t &e) {
-		LOG4CXX_ERROR(logger, "sink send failed." << e.what())
-		return 1;
-	}
+	
 	LOG4CXX_INFO(logger, "starting... ")
 
-	SendWord w(&sender, sleeptime, sleepevery);
+	SendWord w(&sender, 0, sleeptime, sleepevery);
 	WordSplitter splitter(&f);
 	splitter.process(&w);
     
+ 	// let the sink no the last message was just sent
+ /*	{
+		zmq::message_t message(2);
+		msgpack::sbuffer sbuf;
+		pair<int, int> lastmsg(3, w.getCount());
+		msgpack::pack(sbuf, lastmsg);
+		message.rebuild(sbuf.size());
+		memcpy(message.data(), sbuf.data(), sbuf.size());
+		try {
+			sink.send(message);
+		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
+			return 1;
+		}
+	}*/
+	   
 	LOG4CXX_INFO(logger, "finished (" << w.getCount() << ")")
     
     return 0;

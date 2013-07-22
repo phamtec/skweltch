@@ -1,10 +1,10 @@
 
-#include "JsonConfig.hpp"
 #include "JsonObject.hpp"
 #include "JsonPath.hpp"
 #include "TaskMonitor.hpp"
 #include "MachineTuner.hpp"
 #include "MachineRunner.hpp"
+#include "Interrupt.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -19,22 +19,6 @@
 using namespace std;
 using namespace boost;
 
-static int s_interrupted = 0;
-static void s_signal_handler (int signal_value)
-{
-    s_interrupted = 1;
-}
-
-static void s_catch_signals (void)
-{
-    struct sigaction action;
-    action.sa_handler = s_signal_handler;
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
-}
-
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.tune"));
 
 int main (int argc, char *argv[])
@@ -47,22 +31,19 @@ int main (int argc, char *argv[])
 	}
 	
 	JsonObject config;
-	{
-		ifstream jsonfile(argv[1]);
-		JsonConfig c(&jsonfile);
-		if (!c.read(&config)) {
+ 	{
+ 		stringstream ss(argv[1]);
+		if (!config.read(logger, &ss)) {
 			return 1;
 		}
-	}
-		
+ 	}
 	JsonObject tuneconfig;
-	{
-		ifstream jsonfile(argv[2]);
-		JsonConfig c(&jsonfile);
-		if (!c.read(&tuneconfig)) {
+ 	{
+ 		stringstream ss(argv[2]);
+		if (!tuneconfig.read(logger, &ss)) {
 			return 1;
 		}
-	}
+ 	}
 		
     int iterations = tuneconfig.getInt("iterations", -1);
     if (iterations < 0) {
@@ -85,7 +66,7 @@ int main (int argc, char *argv[])
     
     s_catch_signals ();
 
- 	MachineTuner tuner(&config, &tuneconfig, &s_interrupted);
+ 	MachineTuner tuner(logger, &config, &tuneconfig, &s_interrupted);
  	MachineRunner runner(logger, &s_interrupted);
 
    	// tune it.

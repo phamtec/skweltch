@@ -1,4 +1,3 @@
-#include "JsonConfig.hpp"
 #include "Ports.hpp"
 #include <zmq.hpp>
 #include <iostream>
@@ -33,8 +32,7 @@ int main (int argc, char *argv[])
 	JsonObject root;
  	{
  		stringstream ss(argv[1]);
- 		JsonConfig json(&ss);
-		if (!json.read(&root)) {
+		if (!root.read(logger, &ss)) {
 			return 1;
 		}
  	}

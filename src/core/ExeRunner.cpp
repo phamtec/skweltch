@@ -7,22 +7,19 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
 
 using namespace std;
 using namespace boost;
 
 pid_t ExeRunner::run(const std::string &exe) {
 
-//    BOOST_LOG_TRIVIAL(debug) << exe;
-	
+	LOG4CXX_DEBUG(logger, exe)
+ 	
 	pid_t pid = fork();
     switch (pid) {
     case -1: /* error */
-    	BOOST_LOG_TRIVIAL(error) << "couldn't fork";
+ 		LOG4CXX_ERROR(logger, "couldn't fork")
         return 0;
         
     case 0: /* child */        

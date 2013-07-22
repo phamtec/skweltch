@@ -5,6 +5,7 @@
 #include "json_spirit_value.h"
 #include <iostream>
 #include <string>
+#include <log4cxx/logger.h>
 
 class JsonArray;
 class JsonPredicate;
@@ -46,8 +47,8 @@ public:
 	JsonArray asArray();
 	
 	// reading and writing.
-	bool read(std::istream *istream);
-	bool read(const std::string &s);
+	bool read(log4cxx::LoggerPtr logger, std::istream *istream);
+	bool read(log4cxx::LoggerPtr logger, const std::string &s);
 	void write(bool pp, std::ostream *ostream) const;
 	
 	// get different things from the object.
@@ -81,7 +82,7 @@ public:
 	// it also only handles 1 deep heirarchies.
 	JsonObject findObj(const JsonPredicate &pred);
 	
-	void dump() const;
+	void dump(log4cxx::LoggerPtr logger) const;
 	
 };
 

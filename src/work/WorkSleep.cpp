@@ -1,10 +1,10 @@
 
-#include "JsonConfig.hpp"
 #include "Ports.hpp"
+#include "Interrupt.hpp"
+
 #include <zmq.hpp>
 #include <czmq.h>
 #include <zclock.h>
-
 #include <iostream>
 #include <fstream>
 #include <log4cxx/logger.h>
@@ -14,22 +14,6 @@
 
 using namespace std;
 using namespace boost;
-
-static int s_interrupted = 0;
-static void s_signal_handler (int signal_value)
-{
-    s_interrupted = 1;
-}
-
-static void s_catch_signals (void)
-{
-    struct sigaction action;
-    action.sa_handler = s_signal_handler;
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
-}
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.worksleep"));
 
@@ -51,16 +35,14 @@ int main (int argc, char *argv[])
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
- 		JsonConfig json(&ss);
-		if (!json.read(&pipes)) {
+		if (!pipes.read(logger, &ss)) {
 			return 1;
 		}
  	}
 	JsonObject root;
  	{
  		stringstream ss(argv[2]);
- 		JsonConfig json(&ss);
-		if (!json.read(&root)) {
+		if (!root.read(logger, &ss)) {
 			return 1;
 		}
  	}
@@ -69,17 +51,6 @@ int main (int argc, char *argv[])
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
     
-	try {
-		int linger = -1;
-		receiver.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
-		sender.setsockopt(ZMQ_LINGER, &linger, sizeof linger);
- 	}
-	catch (zmq::error_t &e) {
-		LOG4CXX_ERROR(logger, e.what())
-		return 1;
-	}
-  
- 
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pullFrom")) {
     	return 1;
@@ -116,11 +87,13 @@ int main (int argc, char *argv[])
         }
         n++;
         
-       	int workload;
-        obj.convert(&workload);
+ 		msgpack::type::tuple<int, int, int> wmsg;
+      	obj.convert(&wmsg);
+  
+		LOG4CXX_DEBUG(logger,  "batch " << wmsg.a0 << " msg " << wmsg.a1)
 
 		//  Do the work
- 		zclock_sleep(workload);
+ 		zclock_sleep(wmsg.a2);
 
        //  Send results to sink (just an empty message).
 		msgpack::sbuffer sbuf;

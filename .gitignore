@@ -23,6 +23,8 @@ src/monitor/test/bin/*
 
 src/sink/bin/*
 
+src/sink/test/bin/*
+
 src/vent/bin/*
 
 src/vent/test/bin/*
@@ -52,6 +54,8 @@ src/tune/bin/*
 src/tune/test/bin/*
 
 src/util/bin/*
+
+src/msg/bin/*
 
 turtle-1.2.2.zip
 

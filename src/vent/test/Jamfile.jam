@@ -18,9 +18,31 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
+lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+lib log4cxx : : <name>log4cxx ;
+lib msgpack : : <name>msgpack ;
+
 unit-test words.test
 	: wordstest.cpp ../WordSplitter.cpp
 		/boost/test
 	:  <include>../../turtle-1.2.2/include 
+	:
+	;
+
+unit-test vent.test
+	: venttest.cpp ../Vent.cpp
+		/boost/test
+		/core//core
+		/config//config
+		zmq
+		czmq
+		msgpack
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../cppzmq-master
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../core
 	:
 	;

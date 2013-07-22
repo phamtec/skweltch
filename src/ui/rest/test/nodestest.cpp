@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE config-tests
 #include <boost/test/unit_test.hpp>
 
-#include "JsonConfig.hpp"
 #include "JsonArray.hpp"
 #include "../nodesHandler.hpp"
 #include "../../RestContext.hpp"
@@ -78,14 +77,13 @@ BOOST_AUTO_TEST_CASE( nodesTest )
 "}\n"
 );
 
-	JsonConfig c(&json);
-	BOOST_CHECK(c.read(RestContext::getContext()->getRoot()));
+	BOOST_CHECK(RestContext::getContext()->getRoot()->read(log4cxx::Logger::getRootLogger(), &json));
 	RestContext::getContext()->setLoaded();
 	BOOST_CHECK(nodesHandler(RestContext::getContext(), "", &headers, &content) == reply::ok);
 	
 	{
 		JsonObject pt;
-  		BOOST_CHECK(pt.read(content));
+  		BOOST_CHECK(pt.read(log4cxx::Logger::getRootLogger(), content));
   		JsonObject yyy = pt.getChild("yyy");
   		BOOST_CHECK(yyy.getInt("count", 0) == 3);
   		BOOST_CHECK(yyy.getString("type") == "background");

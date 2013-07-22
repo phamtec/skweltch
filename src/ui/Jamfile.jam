@@ -11,6 +11,8 @@ project ui
 build-project rest ;
 build-project test ;
 
+lib log4cxx : : <name>log4cxx ;
+
 lib httpserver : connection.cpp
     connection_manager.cpp
     mime_types.cpp
@@ -26,6 +28,8 @@ lib httpserver : connection.cpp
  	/config//config
    	/boost/system//boost_system
     /boost/thread//boost_thread
+    /boost//log
+    log4cxx
 	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 
 		<include>../json_spirit_v4.06/json_spirit

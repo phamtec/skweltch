@@ -18,10 +18,13 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
+lib log4cxx : : <name>log4cxx ;
+
 unit-test nodes.test
 	: nodestest.cpp
 		/ui//httpserver
 		/boost/test
+		log4cxx
 	:   <include>../../../turtle-1.2.2/include
 		<include>../../../config
 		<include>../../../json_spirit_v4.06/json_spirit
@@ -33,6 +36,7 @@ unit-test graph.test
 	: graphtest.cpp ../GraphLayout.cpp
 		/ui//httpserver
 		/boost/test
+		log4cxx
 	:   <include>../../../turtle-1.2.2/include
 		<include>../../../config
 		<include>../../../json_spirit_v4.06/json_spirit

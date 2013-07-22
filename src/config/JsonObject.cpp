@@ -8,8 +8,6 @@
 #include "json_spirit_stream_reader.h"
 #include "json_spirit_writer_template.h"
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
  
@@ -35,25 +33,25 @@ JsonArray JsonObject::asArray() {
 	
 }
 
-bool JsonObject::read(istream *istream) {
+bool JsonObject::read(log4cxx::LoggerPtr logger, istream *istream) {
 
 	try {
 		read_stream_or_throw(*istream, _value);
 	}
 	catch (Error_position &p) {
-		BOOST_LOG_TRIVIAL(error) << p.reason_ << " (" << p.line_ << ", " << p.column_ << ")";
+		LOG4CXX_ERROR(logger, p.reason_ << " (" << p.line_ << ", " << p.column_ << ")")
 		return false;
 	}
 	return true;
 }
 
-bool JsonObject::read(const string &s) {
+bool JsonObject::read(log4cxx::LoggerPtr logger, const string &s) {
 
 	try {
 		read_string_or_throw(s, _value);
 	}
 	catch (Error_position &p) {
-		BOOST_LOG_TRIVIAL(error) << p.reason_ << " (" << p.line_ << ", " << p.column_ << ")";
+		LOG4CXX_ERROR(logger, p.reason_ << " (" << p.line_ << ", " << p.column_ << ")")
 		return false;
 	}
 	return true;
@@ -275,11 +273,11 @@ JsonObject JsonObject::findObj(const JsonPredicate &pred) {
 
 }
 
-void JsonObject::dump() const {
+void JsonObject::dump(log4cxx::LoggerPtr logger) const {
 
 	stringstream s;
 	write(false, &s);
-	BOOST_LOG_TRIVIAL(debug) << s.str();
+	LOG4CXX_DEBUG(logger, s.str())
 	
 }
 
