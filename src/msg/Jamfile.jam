@@ -11,6 +11,6 @@ project msg
 
 lib msg : SinkMsg.cpp
 	: 	<link>static
-		<include>../json_spirit_v4.06/json_spirit
+		<include>../cppzmq-master
 	:
 	;

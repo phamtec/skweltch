@@ -3,6 +3,7 @@
 
 #include "ISinkWorker.hpp"
 #include "Elapsed.hpp"
+#include "SinkMsg.hpp"
 
 #include <zmq.hpp>
 #include <msgpack.hpp>
@@ -31,16 +32,12 @@ bool Sink::process(ISinkWorker *worker) {
 			break;
 		}
 
-		msgpack::unpacked msg;
-		msgpack::unpack(&msg, (const char *)message.data(), message.size());
-		msgpack::object obj = msg.get();
-		msgpack::type::tuple<int, int, int> sinkmsg;
-		obj.convert(&sinkmsg);
+		SinkMsg sinkmsg(message);
 
-		switch (sinkmsg.a0) {
+		switch (sinkmsg.getCode()) {
 		case 1:
 			// this one usually comes from a vent.
-			first = sinkmsg.a1;
+			first = sinkmsg.getId();
 			worker->first(first);
 			LOG4CXX_INFO(logger, "First: " << first)
 			elapsed.start();
@@ -48,12 +45,12 @@ bool Sink::process(ISinkWorker *worker) {
 			
 		case 2:
 			if (first == 0) {
-  				LOG4CXX_ERROR(logger, "Don't know the first message yet." << obj)
-   				return 1;
+  				LOG4CXX_ERROR(logger, "Don't know the first message yet.")
+   				return false;
 			}
-			worker->process(sinkmsg.a1, sinkmsg.a2);
+			worker->process(sinkmsg.getId(), sinkmsg.getData());
 
- 			if (last > 0 && sinkmsg.a1 == last) {
+ 			if (last > 0 && sinkmsg.getId() == last) {
 			
   				LOG4CXX_INFO(logger, "Finished.")
 
@@ -72,14 +69,14 @@ bool Sink::process(ISinkWorker *worker) {
 			
 		case 3:
 			// this one usually comes from a vent.
-			last = sinkmsg.a1;
+			last = sinkmsg.getId();
 			worker->last(last);
 			LOG4CXX_INFO(logger, "Last: " << last)
 			break;
 			
 		default:
-  			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.a0)
-   			return 1;
+  			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.getCode())
+   			return false;
 		}
 	}
 	

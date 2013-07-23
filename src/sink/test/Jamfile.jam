@@ -27,6 +27,7 @@ unit-test sink.test
 		/boost/test
 		/core//core
 		/config//config
+		/msg//msg
 		zmq
 		msgpack
 		log4cxx
@@ -35,5 +36,6 @@ unit-test sink.test
 		<include>../../config
 		<include>../../json_spirit_v4.06/json_spirit
 		<include>../../core
+		<include>../../msg
 	:
 	;

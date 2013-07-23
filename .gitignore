@@ -31,6 +31,8 @@ src/vent/test/bin/*
 
 src/work/bin/*
 
+src/work/test/bin/*
+
 src/reap/bin/*
 
 src/pipe/bin/*

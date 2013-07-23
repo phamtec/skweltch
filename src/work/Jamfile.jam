@@ -9,6 +9,8 @@ project work
     :
     ;
 
+build-project test ;
+
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;

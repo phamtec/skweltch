@@ -15,6 +15,17 @@
 using namespace std;
 using namespace boost;
 
+struct SetupLogging
+{
+    SetupLogging() {
+		log4cxx::BasicConfigurator::configure();
+    }
+};
+
+BOOST_AUTO_TEST_SUITE( sinkTests )
+
+BOOST_GLOBAL_FIXTURE( SetupLogging )
+
 MOCK_BASE_CLASS( mock_sink_worker, ISinkWorker )
 {
 	MOCK_METHOD( first, 1 )
@@ -96,8 +107,6 @@ int shouldQuitAfterTimes( int *i, int first, int last )
 
 BOOST_AUTO_TEST_CASE( oneMsgTest )
 {
-	log4cxx::BasicConfigurator::configure();
-
 	mock_sink_worker w;
 	
 	MOCK_EXPECT(w.first).with(20).once();
@@ -116,8 +125,6 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 
 BOOST_AUTO_TEST_CASE( tenMsgTest )
 {
-	log4cxx::BasicConfigurator::configure();
-
 	mock_sink_worker w;
 	
 	MOCK_EXPECT(w.first).with(20).once();
@@ -144,8 +151,6 @@ int shouldQuitAfter2Times( int *i, int first, int last )
 
 BOOST_AUTO_TEST_CASE( restartTest )
 {
-	log4cxx::BasicConfigurator::configure();
-
 	mock_sink_worker w;
 	
 	MOCK_EXPECT(w.first).with(20).once();
@@ -167,3 +172,4 @@ BOOST_AUTO_TEST_CASE( restartTest )
 
 }
 
+BOOST_AUTO_TEST_SUITE_END()

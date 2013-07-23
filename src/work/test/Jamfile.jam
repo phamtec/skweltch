@@ -1,5 +1,5 @@
 
-project vent-test
+project work-test
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -19,25 +19,16 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
-lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
 lib msgpack : : <name>msgpack ;
 
-unit-test words.test
-	: wordstest.cpp ../WordSplitter.cpp
-		/boost/test
-	:  <include>../../turtle-1.2.2/include 
-	:
-	;
-
-unit-test vent.test
-	: venttest.cpp ../Vent.cpp
+unit-test work.test
+	: worktest.cpp ../Work.cpp
 		/boost/test
 		/core//core
 		/config//config
 		/msg//msg
 		zmq
-		czmq
 		msgpack
 		log4cxx
 	:  	<include>../../turtle-1.2.2/include 

@@ -2,6 +2,7 @@
 #include "Vent.hpp"
 
 #include "IVentWorker.hpp"
+#include "SinkMsg.hpp"
 
 #include <zmq.hpp>
 #include <msgpack.hpp>
@@ -14,12 +15,10 @@ bool Vent::process(IVentWorker *worker) {
 
 	// let the sink no the first message.
  	{
+ 		SinkMsg msg;
+ 		msg.firstMsg(0);
 		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-		pair<int, int> firstmsg(1, 0);
-		msgpack::pack(sbuf, firstmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
+ 		msg.set(&message);
 		try {
 			sink->send(message);
 		}
@@ -36,12 +35,10 @@ bool Vent::process(IVentWorker *worker) {
     
  	// let the sink know the last message was just sent
  	{
+ 		SinkMsg msg;
+ 		msg.lastMsg(last);
 		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-		pair<int, int> lastmsg(3, last);
-		msgpack::pack(sbuf, lastmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
+ 		msg.set(&message);
 		try {
 			sink->send(message);
 		}
