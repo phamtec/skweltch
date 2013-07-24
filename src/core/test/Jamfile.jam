@@ -19,6 +19,8 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
+lib czmq : : <name>czmq ;
+lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
 
 unit-test ports.test
@@ -32,5 +34,59 @@ unit-test ports.test
 		<include>../../cppzmq-master
 		<include>../../config
 		<include>../../json_spirit_v4.06/json_spirit
+	:
+	;
+	
+unit-test vent.test
+	: venttest.cpp
+		/boost/test
+		/core//core
+		/config//config
+		zmq
+		czmq
+		msgpack
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../cppzmq-master
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../core
+		<include>../../msg
+	:
+	;
+
+unit-test sink.test
+	: sinktest.cpp
+		/boost/test
+		/core//core
+		/config//config
+		zmq
+		czmq
+		msgpack
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../cppzmq-master
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../core
+		<include>../../msg
+	:
+	;
+
+unit-test work.test
+	: worktest.cpp
+		/boost/test
+		/core//core
+		/config//config
+		zmq
+		czmq
+		msgpack
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../cppzmq-master
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../core
+		<include>../../msg
 	:
 	;

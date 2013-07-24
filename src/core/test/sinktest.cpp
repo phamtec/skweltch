@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE sink-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../Sink.hpp"
-#include "../ISinkWorker.hpp"
+#include "../../core/Sink.hpp"
+#include "../../core/ISinkWorker.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>

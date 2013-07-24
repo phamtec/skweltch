@@ -15,6 +15,17 @@
 using namespace std;
 using namespace boost;
 
+struct SetupLogging
+{
+    SetupLogging() {
+		log4cxx::BasicConfigurator::configure();
+    }
+};
+
+BOOST_AUTO_TEST_SUITE( ventTests )
+
+BOOST_GLOBAL_FIXTURE( SetupLogging )
+
 MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 {
 	MOCK_METHOD( send, 2 )
@@ -33,8 +44,6 @@ MOCK_BASE_CLASS( mock_vent_worker, IVentWorker )
 
 BOOST_AUTO_TEST_CASE( simpleTest )
 {
-	log4cxx::BasicConfigurator::configure();
-
 	mock_socket sink;
 	mock_socket sender;
 	mock_vent_worker w;
@@ -49,8 +58,6 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 
 BOOST_AUTO_TEST_CASE( sendTest )
 {
-	log4cxx::BasicConfigurator::configure();
-
 	mock_socket sink;
 	mock_socket sender;
 	mock_vent_worker w;
@@ -69,3 +76,5 @@ BOOST_AUTO_TEST_CASE( sendTest )
 	BOOST_CHECK(v.sendOne(&w, sbuf, 0));
 	
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE work-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../Work.hpp"
-#include "../IWorkWorker.hpp"
+#include "../../core/Work.hpp"
+#include "../../core/IWorkWorker.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>

@@ -17,25 +17,3 @@ alias unit_test_framework
 
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
-
-lib zmq : : <name>zmq ;
-lib log4cxx : : <name>log4cxx ;
-lib msgpack : : <name>msgpack ;
-
-unit-test sink.test
-	: sinktest.cpp ../Sink.cpp
-		/boost/test
-		/core//core
-		/config//config
-		/msg//msg
-		zmq
-		msgpack
-		log4cxx
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../core
-		<include>../../msg
-	:
-	;

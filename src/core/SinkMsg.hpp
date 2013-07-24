@@ -2,22 +2,17 @@
 #ifndef __SINKMSG_HPP_INCLUDED__
 #define __SINKMSG_HPP_INCLUDED__
 
-#include <msgpack.hpp>
-#include <zmq.hpp>
+#include "Msg.hpp"
 
 /**
-	A message that you send/get from/to a Sink.
+	A message that you send/get to/from a Sink.
 */
 
-class SinkMsg {
+class SinkMsg : public Msg<msgpack::type::tuple<int, int, int> > {
 
-private:
-
-	msgpack::type::tuple<int, int, int> data;
-	
 public:
-	SinkMsg(const zmq::message_t &message);
-	SinkMsg() {}
+	SinkMsg(const zmq::message_t &message) : Msg<msgpack::type::tuple<int, int, int> >(message) {}
+	SinkMsg() : Msg<msgpack::type::tuple<int, int, int> >(msgpack::type::tuple<int, int, int>()) {}
 	
 	// getters.
 	int getCode() { return data.a0; }
@@ -31,9 +26,6 @@ public:
 		{ data.a0 = 3; data.a1 = id; data.a2 = 0; }
 	void dataMsg(int id, int d)
 		{ data.a0 = 2; data.a1 = id; data.a2 = d; }
-		
-	// set the data into a real message.
-	void set(zmq::message_t *message);
 	
 };
 

@@ -1,5 +1,5 @@
 
-project vent-test
+project msg-test
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -18,9 +18,23 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
-unit-test words.test
-	: wordstest.cpp ../WordSplitter.cpp
+lib zmq : : <name>zmq ;
+lib log4cxx : : <name>log4cxx ;
+lib msgpack : : <name>msgpack ;
+
+unit-test msg.test
+	: msgtest.cpp
 		/boost/test
-	:  <include>../../turtle-1.2.2/include 
+		/core//core
+		/config//config
+		zmq
+		msgpack
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../cppzmq-master
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../core
+		<include>../../msg
 	:
 	;
