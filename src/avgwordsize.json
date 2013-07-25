@@ -23,7 +23,7 @@
 		},
 		"config" : {
 			"filename": "data/words.txt",
-			"sleep": 3,
+			"sleep": 5,
 			"every": 2000
 		}
 	},

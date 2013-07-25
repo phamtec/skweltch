@@ -10,8 +10,19 @@
 		"type": "int",
 		"select": "hightolow",
 		"low": 50,
-		"high": 1000,
-		"enabled": false
+		"high": 500,
+		"enabled": true,
+		"fail": false
+	},
+	"background[0]" : {
+		"group": 1,
+		"var": "count",
+		"type": "int",
+		"select": "random",
+		"low": 2,
+		"high": 10,
+		"enabled": false,
+		"fail": false
 	}
 }
 

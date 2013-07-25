@@ -21,11 +21,10 @@
 			}
 		},
 		"config" : {
-			"count": 100,
+			"count": 50,
 			"low": 1,
-			"high": 20,
+			"high": 10,
 			"sleep": 0
-//			"expect": 50
 		}
 	},
 
@@ -48,7 +47,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 3, // need 3 of these. first arg to the program is the id.
+			"count": 3,
 			"name": "WorkSleep",
 			"exe": "dist/worksleep",
 			"node": "localhost",
@@ -77,7 +76,7 @@
 		"exe": "dist/grimreaper",
 		"config" : {
 			"pidFile": "tasks.pid",
-			"totalTime": 3000
+			"totalTime": 400
 		}
 	}
 

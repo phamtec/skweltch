@@ -11,9 +11,9 @@
 		"type": "int",
 		"select": "hightolow",
 		"low": 50,
-		"high": 200,
-		"enabled": false,
-		"fail": true
+		"high": 250,
+		"enabled": true,
+		"fail": false
 	},
 	"vent.config" : {
 		"group": 2,
@@ -22,7 +22,7 @@
 		"select": "random",
 		"low": 0,
 		"high": 5,
-		"enabled": true,
+		"enabled": false,
 		"fail": false
 	},
 	"vent.config" : {
@@ -32,7 +32,7 @@
 		"select": "random",
 		"low": 500,
 		"high": 2000,
-		"enabled": true,
+		"enabled": false,
 		"fail": false
 	},
 	"background[0]" : {
@@ -42,7 +42,7 @@
 		"select": "random",
 		"low": 2,
 		"high": 10,
-		"enabled": true,
+		"enabled": false,
 		"fail": false
 	}
 }
