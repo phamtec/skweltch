@@ -1,6 +1,9 @@
 
 #include "Ports.hpp"
 #include "Interrupt.hpp"
+#include "Vent.hpp"
+#include "IVentWorker.hpp"
+#include "IntMsg.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -16,6 +19,44 @@
 
 using namespace std;
 using namespace boost;
+
+class VWorker : public IVentWorker {
+
+private:
+	int count;
+	int low;
+	int high;
+	int sleeptime;
+	
+public:
+	VWorker(int c, int l, int h, int s) : count(c), low(l), high(h), sleeptime(s) {}
+	
+	virtual int sendAll(Vent *vent);
+	
+	virtual bool shouldQuit() {
+		return s_interrupted;
+	}
+};
+
+int VWorker::sendAll(Vent *vent) {
+
+	int id = 0;
+    for (int i = 0; i < count; i++) {
+    
+		//  Random number from 1 to the range specified
+		int num = within(high) + low;
+
+   		zmq::message_t message(2);
+ 		IntMsg msg(id++, num);
+		msg.set(&message);
+		
+		if (!vent->sendOne(this, message, sleeptime, 1)) {
+			return 0;
+		}
+    }
+    
+	return id-1;
+}
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.ventrandomnum"));
 
@@ -51,7 +92,6 @@ int main (int argc, char *argv[])
 
 	int low = root.getInt("low", 1);
  	int high = root.getInt("high", 100);
-	int expect = root.getInt("expect", -1);
 	
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -73,69 +113,15 @@ int main (int argc, char *argv[])
 
     //  Send count tasks
     s_catch_signals ();
-    int batch = 0;
-    int msg = 0;
-    
- 	// let the sink no the first message.
- 	{
-		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-//		pair<int, int> firstmsg(1, msg);
-//		msgpack::pack(sbuf, firstmsg);
-		pair<int, int> expectmsg(1, expect);
-		msgpack::pack(sbuf, expectmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-		sink.send(message);
-	}
-	   
-    for (int i = 0; i < count; i++) {
-    
-    	zmq::message_t message(2);
-    	
-		//  Random number from 1 to the range specified
-		int num = within(high) + low;
 
-		// build the complete message.
-		msgpack::type::tuple<int, int, int> wmsg(batch, msg++, num);
-		
-		// pack the number up and send it.
-		msgpack::sbuffer sbuf;
-        msgpack::pack(sbuf, wmsg);
- 		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
- 
- 		try {
- 			sender.send(message);
- 		}
-		catch (zmq::error_t &e) {
-			LOG4CXX_ERROR(logger, "send failed." << e.what())
-		}
-    	
- 		if (s_interrupted) {
-			LOG4CXX_INFO(logger, "interrupt received, killing server")
-			break;
-		}
-	
-    	if (sleeptime > 0) {
-			//  Do the work
-			zclock_sleep(sleeptime);
-     	}
-     	
-    }
-    
- 	// let the sink no the last message was just sent
-/* 	{
-		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-		pair<int, int> lastmsg(3, count);
-		msgpack::pack(sbuf, lastmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-		sink.send(message);
-	}*/
-	   
-	LOG4CXX_INFO(logger, "finished.")
-    
-    return 0;
+	// and do the vent.
+	Vent v(logger, &sink, &sender);
+	VWorker w(count, low, high, sleeptime);
+	if (v.process(&w)) {
+		return 0;
+	}
+	else {
+		return 1;
+	}
+
 }

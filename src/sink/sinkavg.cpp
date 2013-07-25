@@ -1,6 +1,8 @@
 #include "Ports.hpp"
 #include "Elapsed.hpp"
 #include "Interrupt.hpp"
+#include "Sink.hpp"
+#include "ISinkWorker.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -15,6 +17,46 @@
 
 using namespace std;
 using namespace boost;
+
+class SWorker : public ISinkWorker {
+
+private:
+	int count;
+	int total;
+	
+public:
+	SWorker() : count(0), total(0) {}
+	
+	virtual void first(int id) {}
+	virtual void last(int id) {}
+	
+	virtual void process(int id, int data);
+	virtual void results(int total_ms);
+	
+	virtual bool shouldQuit() {
+		return s_interrupted;
+	}
+
+};
+
+void SWorker::process(int id, int data) {
+
+	total += data;
+	count++;
+
+}
+
+void SWorker::results(int total_ms) {
+
+	JsonObject result;
+	result.add("elapsed", total_ms);
+	result.add("average", ((double)total / (double)count));
+	{
+		ofstream results("results.json");
+		result.write(true, &results);
+	}
+	
+}
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkavg"));
 
@@ -57,82 +99,17 @@ int main (int argc, char *argv[])
     	return 1;
     }
 
-	Elapsed elapsed;
-	int count = 0;
-	int expect = 0;
-    int total = 0;
-   	s_catch_signals ();
-	while (!s_interrupted) {
-	
-		zmq::message_t message;
- 		try {
-       		receiver.recv(&message);
-		}
-		catch (zmq::error_t &e) {
-			if (string(e.what()) != "Interrupted system call") {
-				LOG4CXX_ERROR(logger, "recv failed." << e.what())
-			}
-		}
-		
-		if (s_interrupted) {
-			LOG4CXX_INFO(logger, "interrupt received, killing server")
-			break;
-		}
+	// turn on interrupts.
+    s_catch_signals ();
 
-		msgpack::unpacked msg;
-		msgpack::unpack(&msg, (const char *)message.data(), message.size());
-		msgpack::object obj = msg.get();
-		pair<int, int> sinkmsg;
-		obj.convert(&sinkmsg);
-
-		switch (sinkmsg.first) {
-		case 1:
-			expect = sinkmsg.second;
-			count = 0;
-			total = 0;
- 			LOG4CXX_INFO(logger, "Expecting: " << expect)
-			elapsed.start();
-			break;
-			
-		case 2:
-			if (expect == 0) {
-  				LOG4CXX_ERROR(logger, "Didn't get an expect message yet. got " << obj)
-   				return 1;
-			}
-    		total += sinkmsg.second;
-			count++;
-  			LOG4CXX_DEBUG(logger, "count: " << count)
-			if (count == expect) {
-			
-  				LOG4CXX_INFO(logger, "Finished.")
-
-				 //  Calculate and report duration of batch
-				int total_msec = elapsed.getTotal();
-
-				// get results.
-				JsonObject result;
-				result.add("average", ((double)total / (double)expect));
-				result.add("elapsed", total_msec);
-				{
-					ofstream results("results.json");
-					result.write(true, &results);
-				}
-				
-   				LOG4CXX_INFO(logger, "Results written.")
-    			
-				count = 0;
-				total = 0;
-				
-			}
-			break;
-			
-		default:
-  			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.first)
-   			return 1;
-		}
+	// and do the sink.
+	Sink s(logger, &receiver);
+	SWorker w;
+	if (s.process(&w)) {
+		return 0;
 	}
-	
-   	LOG4CXX_INFO(logger, "finished.")
+	else {
+		return 1;
+	}
 
-	return 0;
 }

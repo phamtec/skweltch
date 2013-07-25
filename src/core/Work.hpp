@@ -21,9 +21,9 @@ private:
     zmq::i_socket_t *sender;
     
 public:
-	Work(log4cxx::LoggerPtr l, zmq::i_socket_t *r, zmq::i_socket_t *s) : logger(l), receiver(r) , sender(r) {}
+	Work(log4cxx::LoggerPtr l, zmq::i_socket_t *r, zmq::i_socket_t *s) : logger(l), receiver(r) , sender(s) {}
 	
-	bool process(IWorkWorker *worker);
+	void process(IWorkWorker *worker);
 	
 };
 

@@ -24,9 +24,7 @@
 		"config" : {
 			"filename": "data/words.txt",
 			"sleep": 3,
-			"every": 2000,
-			// this needs to be derived by sending a "finished" message.
-			"expect": 4505
+			"every": 2000
 		}
 	},
 	
@@ -78,7 +76,7 @@
 		"exe": "dist/grimreaper",
 		"config" : {
 			"pidFile": "tasks.pid",
-			"totalTime": 700
+			"totalTime": 400
 		}
 	}
 		

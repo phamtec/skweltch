@@ -25,6 +25,7 @@ exe worksleep : WorkSleep.cpp
 		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
+		<include>../msg
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
 	:
@@ -39,6 +40,7 @@ exe workcharcount : workcharcount.cpp
 		log4cxx
 	: 	<include>../cppzmq-master
 		<include>../core
+		<include>../msg
 		<include>../config
 		<include>../json_spirit_v4.06/json_spirit
 	:

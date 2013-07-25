@@ -39,7 +39,6 @@ MOCK_BASE_CLASS( mock_vent_worker, IVentWorker )
 {
 	MOCK_METHOD( sendAll, 1 )
 	MOCK_METHOD( shouldQuit, 0 )
-	
 };
 
 BOOST_AUTO_TEST_CASE( simpleTest )
@@ -69,11 +68,14 @@ BOOST_AUTO_TEST_CASE( sendTest )
 	
 	Vent v(log4cxx::Logger::getRootLogger(), &sink, &sender);
 	
-	msgpack::type::tuple<int, int, int> wmsg(0, 1, 2);
+   	zmq::message_t message(2);
+ 	msgpack::type::tuple<int, int, int> wmsg(0, 1, 2);
  	msgpack::sbuffer sbuf;
    	msgpack::pack(sbuf, wmsg);
+	message.rebuild(sbuf.size());
+	memcpy(message.data(), sbuf.data(), sbuf.size());
     
-	BOOST_CHECK(v.sendOne(&w, sbuf, 0));
+	BOOST_CHECK(v.sendOne(&w, message, 0, 0));
 	
 }
 

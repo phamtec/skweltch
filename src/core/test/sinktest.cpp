@@ -1,8 +1,9 @@
 #define BOOST_TEST_MODULE sink-tests
 #include <boost/test/unit_test.hpp>
 
-#include "../../core/Sink.hpp"
-#include "../../core/ISinkWorker.hpp"
+#include "../Sink.hpp"
+#include "../SinkMsg.hpp"
+#include "../ISinkWorker.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -54,31 +55,23 @@ public:
 	
 	virtual bool recv (zmq::message_t *msg_, int flags_ = 0)  {
 		
-		msgpack::type::tuple<int, int, int> sinkmsg;
+		SinkMsg sinkmsg;
+
 		switch (state) {
 		case 0:
-			sinkmsg.a0 = 1;
-			sinkmsg.a1 = first;
-			sinkmsg.a2 = 0;
+			sinkmsg.firstMsg(first);
 			id = first;
 			break;
 			
 		case 1:
-			sinkmsg.a0 = 3;
-			sinkmsg.a1 = last;
-			sinkmsg.a2 = 0;
+			sinkmsg.lastMsg(last);
 			break;
 		
 		default:
-			sinkmsg.a0 = 2;
-			sinkmsg.a1 = id++;
-			sinkmsg.a2 = data;
+			sinkmsg.dataMsg(id++, data);
 		}
 		
-		msgpack::sbuffer sbuf;
-		msgpack::pack(sbuf, sinkmsg);
-		msg_->rebuild(sbuf.size());
-		memcpy(msg_->data(), sbuf.data(), sbuf.size());
+		sinkmsg.set(msg_);
 
 		state++;
 
@@ -122,6 +115,7 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	BOOST_CHECK(s.process(&w));
 
 }
+
 
 BOOST_AUTO_TEST_CASE( tenMsgTest )
 {

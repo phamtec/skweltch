@@ -1,6 +1,10 @@
 
 #include "Ports.hpp"
 #include "Interrupt.hpp"
+#include "Work.hpp"
+#include "IWorkWorker.hpp"
+#include "StringMsg.hpp"
+#include "SinkMsg.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -16,6 +20,31 @@ using namespace std;
 using namespace boost;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount"));
+
+class WWorker : public IWorkWorker {
+
+public:
+	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
+	
+	virtual bool shouldQuit() {
+		return s_interrupted;
+	}
+
+};
+
+void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+
+	StringMsg msg(message);
+
+	LOG4CXX_DEBUG(logger,  "msg " << msg.getId());
+
+	// the work.
+	int length = msg.getPayload().length();
+
+	// and set the sink msg.
+	smsg->dataMsg(msg.getId(), length);
+	
+}
 
 int main (int argc, char *argv[])
 {
@@ -59,64 +88,13 @@ int main (int argc, char *argv[])
     	return 1;
     }
 
-   	//  Process tasks forever
-    int n=0;
     s_catch_signals ();
-    while (!s_interrupted) {
 
-        zmq::message_t message;
- 		try {
-       		receiver.recv(&message);
-		}
-		catch (zmq::error_t &e) {
-			if (string(e.what()) != "Interrupted system call") {
-				LOG4CXX_ERROR(logger, "recv failed." << e.what())
-			}
-		}
-		
-		if (s_interrupted) {
-			LOG4CXX_INFO(logger,  "interrupt received, killing server")
-			break;
-		}
+	// and do the work.
+	Work v(logger, &receiver, &sender);
+	WWorker w;
+	v.process(&w);
 
-        msgpack::unpacked msg;
-        msgpack::unpack(&msg, (const char *)message.data(), message.size());
-        msgpack::object obj = msg.get();
-        
-        if ((n % 10) == 0) {
-			LOG4CXX_DEBUG(logger,  "..." << obj << "...")
-        }
-        n++;
-        
- 		msgpack::type::tuple<int, int, string> wmsg;
-      	obj.convert(&wmsg);
- 
-		LOG4CXX_DEBUG(logger,  "batch " << wmsg.a0 << " msg " << wmsg.a1)
-
-		int count = wmsg.a2.length();
-
-        // Send results to sink
-		msgpack::sbuffer sbuf;
-		pair<int, int> resultsmsg(2, count);
-		msgpack::pack(sbuf, resultsmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-		try {
- 			sender.send(message);
- 		}
-		catch (zmq::error_t &e) {
-			if (string(e.what()) != "Interrupted system call") {
-				LOG4CXX_ERROR(logger, "send failed." << e.what())
-			}
-		}
-		if (s_interrupted) {
-			LOG4CXX_INFO(logger,  "interrupt sender, killing server")
- 			break;
-		}
-    }
-    
-	LOG4CXX_INFO(logger, "finished.")
-
-	return 0;
+    return 0;
 
 }

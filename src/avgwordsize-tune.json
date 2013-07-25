@@ -42,7 +42,7 @@
 		"select": "random",
 		"low": 2,
 		"high": 10,
-		"enabled": false,
+		"enabled": true,
 		"fail": false
 	}
 }

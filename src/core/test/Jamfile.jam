@@ -90,3 +90,13 @@ unit-test work.test
 		<include>../../msg
 	:
 	;
+
+unit-test track.test
+	: tracktest.cpp
+		/boost/test
+		/core//core
+		log4cxx
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../core
+	:
+	;

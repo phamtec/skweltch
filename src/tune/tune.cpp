@@ -32,14 +32,14 @@ int main (int argc, char *argv[])
 	
 	JsonObject config;
  	{
- 		stringstream ss(argv[1]);
+ 		ifstream ss(argv[1]);
 		if (!config.read(logger, &ss)) {
 			return 1;
 		}
  	}
 	JsonObject tuneconfig;
  	{
- 		stringstream ss(argv[2]);
+ 		ifstream ss(argv[2]);
 		if (!tuneconfig.read(logger, &ss)) {
 			return 1;
 		}

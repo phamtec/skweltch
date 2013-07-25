@@ -53,15 +53,11 @@ bool Vent::process(IVentWorker *worker) {
 	
 }
 
-bool Vent::sendOne(IVentWorker *worker, const msgpack::sbuffer &sbuf, int sleeptime) {
+bool Vent::sendOne(IVentWorker *worker, const zmq::message_t &message, int sleeptime, int sleepevery) {
 
 	// send the message buffer.
- 	zmq::message_t message(2);
-	message.rebuild(sbuf.size());
-	memcpy(message.data(), sbuf.data(), sbuf.size());
-
 	try {
-		sender->send(message);
+		sender->send(const_cast<zmq::message_t &>(message));
 	}
 	catch (zmq::error_t &e) {
 		LOG4CXX_ERROR(logger, "send failed." << e.what())
@@ -72,9 +68,12 @@ bool Vent::sendOne(IVentWorker *worker, const msgpack::sbuffer &sbuf, int sleept
 		return false;
 	}
 
+	count++;
+
 	if (sleeptime > 0) {
-		//  Do the work
-		zclock_sleep(sleeptime);
+		if ((count % sleepevery) == 0) {
+			zclock_sleep(sleeptime);	
+		}
 	}
 
 	return true;

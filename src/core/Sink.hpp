@@ -45,4 +45,3 @@ public:
 };
 
 #endif // __SINK_HPP_INCLUDED__
-

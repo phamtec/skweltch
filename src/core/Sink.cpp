@@ -4,17 +4,19 @@
 #include "ISinkWorker.hpp"
 #include "Elapsed.hpp"
 #include "SinkMsg.hpp"
+#include "MsgTracker.hpp"
 
 #include <zmq.hpp>
 #include <msgpack.hpp>
+#include <boost/dynamic_bitset.hpp>
 
 using namespace std;
+using namespace boost;
 
 bool Sink::process(ISinkWorker *worker) {
 
 	Elapsed elapsed;
-	int first = 0;
-	int last = 0;
+	MsgTracker tracker(logger);
  	while (!worker->shouldQuit()) {
 	
 		zmq::message_t message;
@@ -33,51 +35,52 @@ bool Sink::process(ISinkWorker *worker) {
 		}
 
 		SinkMsg sinkmsg(message);
-
 		switch (sinkmsg.getCode()) {
 		case 1:
-			// this one usually comes from a vent.
-			first = sinkmsg.getId();
-			worker->first(first);
-			LOG4CXX_INFO(logger, "First: " << first)
+			worker->first(sinkmsg.getId());
+			tracker.setFirst(sinkmsg.getId());
 			elapsed.start();
 			break;
 			
 		case 2:
-			if (first == 0) {
-  				LOG4CXX_ERROR(logger, "Don't know the first message yet.")
-   				return false;
-			}
-			worker->process(sinkmsg.getId(), sinkmsg.getData());
 
- 			if (last > 0 && sinkmsg.getId() == last) {
+			worker->process(sinkmsg.getId(), sinkmsg.getData());
 			
-  				LOG4CXX_INFO(logger, "Finished.")
+			// mark this message off.
+			tracker.track(sinkmsg.getId());
+			
+   			LOG4CXX_DEBUG(logger, "msg: " << sinkmsg.getId())
+			
+ 			if (tracker.complete()) {
+			
+				LOG4CXX_INFO(logger, "Finished.")
 
 				 //  Calculate and report duration of batch
 				int total_msec = elapsed.getTotal();
 
 				// get results.
 				worker->results(total_msec);
-   				LOG4CXX_INFO(logger, "Results written.")
-   				
-   				// start again
-   				first = 0;
-   				last = 0;
+				LOG4CXX_INFO(logger, "Results written.")
+			
+				// start tracking from the start.
+				tracker.reset();
 			}
 			break;
 			
 		case 3:
 			// this one usually comes from a vent.
-			last = sinkmsg.getId();
-			worker->last(last);
-			LOG4CXX_INFO(logger, "Last: " << last)
+			worker->last(sinkmsg.getId());
+			tracker.setLast(sinkmsg.getId());
 			break;
 			
 		default:
   			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.getCode())
    			return false;
 		}
+	}
+	
+	if (!tracker.complete()) {
+   		LOG4CXX_INFO(logger, "Didn't get all the messages.")
 	}
 	
    	LOG4CXX_INFO(logger, "finished.")

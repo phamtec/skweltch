@@ -9,10 +9,9 @@
 
 using namespace std;
 
-bool Work::process(IWorkWorker *worker) {
+void Work::process(IWorkWorker *worker) {
 	
    	//  Process tasks forever
-    int n=0;
     while (!worker->shouldQuit()) {
 
         zmq::message_t message;
@@ -30,20 +29,13 @@ bool Work::process(IWorkWorker *worker) {
 			break;
 		}
 
-        msgpack::unpacked msg;
-        msgpack::unpack(&msg, (const char *)message.data(), message.size());
-        msgpack::object obj = msg.get();
-        
-        if ((n % 10) == 0) {
-			LOG4CXX_DEBUG(logger,  "..." << obj << "...")
-        }
-        n++;
-        
         // do the work. Takes in the object passed in and generates a sinkmsg.
 		SinkMsg smsg;
-        worker->process(&obj, &smsg);
-        
-        // Send results to sink
+        worker->process(message, &smsg);
+    
+		LOG4CXX_DEBUG(logger,  "sending msg: " << smsg.getId())
+ 
+         // Send results to sink
 		smsg.set(&message);
 		try {
  			sender->send(message);
@@ -60,8 +52,6 @@ bool Work::process(IWorkWorker *worker) {
     }
     
 	LOG4CXX_INFO(logger, "finished.")
-
-	return 0;
 
 }
 

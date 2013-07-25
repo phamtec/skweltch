@@ -2,6 +2,9 @@
 #include "Ports.hpp"
 #include "WordSplitter.hpp"
 #include "Interrupt.hpp"
+#include "IVentWorker.hpp"
+#include "Vent.hpp"
+#include "StringMsg.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -18,24 +21,52 @@ using namespace boost;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.ventwords"));
 
+class VWorker : public IVentWorker {
+
+private:
+	istream *input;
+	int sleeptime;
+	int sleepevery;
+	
+public:
+	VWorker(istream *is, int slp, int ev) : input(is), sleeptime(slp), sleepevery(ev) {}
+	
+	virtual int sendAll(Vent *vent);
+	
+	virtual bool shouldQuit() {
+		return s_interrupted;
+	}
+};
+
+
 class SendWord : public IWord {
 
 private:
-	zmq::socket_t *sender;
-	int batch;
+	Vent *vent;
+	IVentWorker *worker;
+	int id;
 	int sleeptime;
 	int sleepevery;
-	int count;
 	
 public:
-	SendWord(zmq::socket_t *s, int b, int slp, int ev) : sender(s), batch(b), sleeptime(slp), sleepevery(ev), count(0) {}
+	SendWord(Vent *v, IVentWorker *w, int slp, int ev) : vent(v), worker(w), id(0), sleeptime(slp), sleepevery(ev) {}
 	
 	virtual bool word(const std::string &s);
-	int getCount() { return count; }
+	
+	int getId() { 
+		return id; 
+	}
 };
 
 bool SendWord::word(const std::string &s) {
 
+	zmq::message_t message(2);
+	StringMsg msg(id++, s);
+	msg.set(&message);
+	
+	return vent->sendOne(worker, message, sleeptime, sleepevery);
+
+/*
  	zmq::message_t message(2);
 	
 	// build the complete message.
@@ -68,6 +99,16 @@ bool SendWord::word(const std::string &s) {
 	}
 
 	return true;
+*/
+}
+
+int VWorker::sendAll(Vent *vent) {
+
+	SendWord w(vent, this, sleeptime, sleepevery);
+	WordSplitter splitter(input);
+	splitter.process(&w);
+	return w.getId()-1;
+	
 }
 
 int main (int argc, char *argv[])
@@ -104,7 +145,6 @@ int main (int argc, char *argv[])
 	
  	int sleeptime = root.getInt("sleep", 0);
 	int sleepevery = root.getInt("every", 0);
-	int expect = root.getInt("expect", -1);
 	
 	LOG4CXX_DEBUG(logger, "sleeping " << sleeptime << " every " << sleepevery)
 	
@@ -126,51 +166,17 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	
+    //  Send count tasks
     s_catch_signals ();
 
- 	// let the sink no the first message.
- 	{
-		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-		pair<int, int> expectmsg(1, expect);
-		msgpack::pack(sbuf, expectmsg);
-//		pair<int, int> firstmsg(1, 0);
-//		msgpack::pack(sbuf, firstmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-		try {
-			sink.send(message);
-		}
-		catch (zmq::error_t &e) {
-			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
-			return 1;
-		}
+	// and do the vent.
+	Vent v(logger, &sink, &sender);
+	VWorker w(&f, sleeptime, sleepevery);
+	if (v.process(&w)) {
+		return 0;
 	}
-	
-	LOG4CXX_INFO(logger, "starting... ")
+	else {
+		return 1;
+	}
 
-	SendWord w(&sender, 0, sleeptime, sleepevery);
-	WordSplitter splitter(&f);
-	splitter.process(&w);
-    
- 	// let the sink no the last message was just sent
- /*	{
-		zmq::message_t message(2);
-		msgpack::sbuffer sbuf;
-		pair<int, int> lastmsg(3, w.getCount());
-		msgpack::pack(sbuf, lastmsg);
-		message.rebuild(sbuf.size());
-		memcpy(message.data(), sbuf.data(), sbuf.size());
-		try {
-			sink.send(message);
-		}
-		catch (zmq::error_t &e) {
-			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
-			return 1;
-		}
-	}*/
-	   
-	LOG4CXX_INFO(logger, "finished (" << w.getCount() << ")")
-    
-    return 0;
 }

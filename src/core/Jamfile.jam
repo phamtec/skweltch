@@ -10,7 +10,7 @@ project core
 
 build-project test ;
 
-lib core : ExeRunner.cpp Ports.cpp Elapsed.cpp Msg.cpp Vent.cpp Work.cpp Sink.cpp
+lib core : ExeRunner.cpp Ports.cpp Elapsed.cpp Msg.cpp Vent.cpp Work.cpp Sink.cpp MsgTracker.cpp
 		/config//config
 	:	<link>static
 		<include>../config
