@@ -14,6 +14,26 @@
 using namespace std;
 using namespace boost;
 
+int MachineTuner::varCount(int group) {
+
+	int vars = 0;
+	for (JsonObject::iterator i=tunerconfig->begin(); i != tunerconfig->end(); i++) {
+		string key = tunerconfig->getKey(i);
+		JsonObject target = tunerconfig->getValue(i);
+		if (target.isObject()) {
+			if (key != "success") {
+				if (!target.getBool("enabled")) {
+					continue;
+				}
+				if (target.getInt("group", -1) == group) {
+					vars++;
+				}
+			}
+		}
+	}
+	return vars;
+}
+
 bool MachineTuner::tune(int group, int mutation, string *varstring) {
 
 	int mutations = tunerconfig->getInt("mutations", -1);
@@ -57,7 +77,7 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 							vars++;
 							if (varstring) {
 								if (!varstring->empty()) {
-									*varstring += ";";
+									*varstring += "\t";
 								}
 								*varstring += lexical_cast<string>(val);
 							}
@@ -69,7 +89,7 @@ bool MachineTuner::tune(int group, int mutation, string *varstring) {
 							vars++;
 							if (varstring) {
 								if (!varstring->empty()) {
-									*varstring += ";";
+									*varstring += "\t";
 								}
 								*varstring += lexical_cast<string>(val);
 							}

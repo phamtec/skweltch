@@ -71,12 +71,21 @@ int main (int argc, char *argv[])
 
    	// tune it.
    	try {
-		cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
 		for (int i=1; !s_interrupted && i<groups+1; i++) {
 		
 			// default to fail for each group.
 			tuner.resetFail();
 			
+			// draw the header.
+  			int varcount = tuner.varCount(i);
+  			if (varcount > 0) {
+				cout << "group\ti\t";
+				for (int j=0; j<varcount; j++) {
+					cout << "v" << j+1 << "\t";
+				}
+				cout << "n\tlow\thigh\tfail\tavg\tmed" << endl;
+			}
+						
 			for (int j=0; !s_interrupted && j<mutations; j++) {
 	
 				string vars;

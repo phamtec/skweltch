@@ -27,7 +27,8 @@ public:
 	void resetFail() { failonerror = true; }
 	bool failOnError() { return failonerror; }
 	bool tune(int group, int iteration, std::string *varstring);
-
+	int varCount(int group);
+	
 };
 
 #endif // __MACHINETUNER_HPP_INCLUDED__
