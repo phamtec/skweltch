@@ -58,12 +58,18 @@ bool MachineGraph::makeDOT(istream *json) {
 	return true;
 }
 
+void MachineGraph::writeTableHeader() {
+
+	*dot << "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+	
+}
+
 void MachineGraph::writeNode(const JsonObject &node) {
 
 	string name = node.getString("name");
 	
-	*dot << "	" << name << " [shape=box,label=<\n"
-"<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+	*dot << "	" << name << " [shape=box,label=<\n";
+	writeTableHeader();
 
 	*dot << "	<TR>\n"
 "		<TD><FONT POINT-SIZE=\"18\" COLOR=\"green\">" << name  << "</FONT></TD>\n"
@@ -101,7 +107,8 @@ void MachineGraph::writeNodeInfo(const JsonObject &node) {
 	int count = node.getInt("count", -1);
 	if (count > 0) {
 		any = true;
-		*dot << "			<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+		*dot << "			";
+		writeTableHeader();
 		writeNodeInfoRow("count", lexical_cast<string>(count));
 	}
 	
@@ -116,7 +123,8 @@ void MachineGraph::writeNodeInfo(const JsonObject &node) {
 	if (!s.empty()) {
 		if (!any) {
 			any = true;
-			*dot << "			<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+			*dot << "			";
+			writeTableHeader();
 		}
 		writeNodeInfoRow("node", s);
 	}
@@ -126,7 +134,8 @@ void MachineGraph::writeNodeInfo(const JsonObject &node) {
 		for (JsonObject::iterator i = confconn.begin(); i != confconn.end(); i++) {
 			if (!any) {
 				any = true;
-				*dot << "			<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+				*dot << "			";
+				writeTableHeader();
 			}
 			JsonObject o = confconn.getValue(i);
 			if (o.getString("mode") == "connect") {
@@ -156,7 +165,8 @@ void MachineGraph::writeNodeConfig(const JsonObject &node) {
 		bool any = false;
 		for (JsonObject::iterator i = config.begin(); i != config.end(); i++) {
 			if (!any) {
-				*dot << "			<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\">\n";
+				*dot << "			";
+				writeTableHeader();
 				any = true;
 			}
 			writeNodeConfigRow(config.getKey(i), config.getValueString(i));

@@ -16,6 +16,12 @@ using namespace boost;
 
 bool MachineRunner::runOne(const string &machine, int iterations, int group, int iter, const string &vars) {
 
+	ifstream jsonfile(machine.c_str());
+	JsonObject r;
+	if (!r.read(logger, &jsonfile)) {
+		return false;
+	}
+
 	TaskMonitor mon(logger);
 	int fail = 0;
 	int low = -1;
@@ -26,10 +32,16 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
  		LOG4CXX_INFO(logger, "runner start run.")
 		filesystem::remove("log/monitor.log");
 		filesystem::remove("results.json");
-		if (mon.start(machine) != 0) {
+		
+		// startup the machine.
+		vector<int> pids;
+		if (!mon.start(&r, &pids)) {
 			throw new runtime_error("couldn't run the machine.");
 		}
-	
+		
+		// wait till everything is gone.
+		mon.waitFinish(pids);
+
 		if (*interrupted) {
 			return false;
 		}

@@ -24,6 +24,7 @@ class MachineGraph  {
 	void writeNodeConfigRow(const std::string &name, const std::string &value);
 	void writeEdge(const std::string &from, const std::string &to, 
 		const std::string &fromlabel, const std::string &tolabel, bool samehead);
+	void writeTableHeader();
 	
 public:
 	MachineGraph(log4cxx::LoggerPtr l, std::ostream *d) : logger(l), dot(d) {}

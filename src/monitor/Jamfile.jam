@@ -30,6 +30,7 @@ exe monitor : monitor.cpp
 		monlib
 		/config//config
 		/core//core
+		/boost//program_options
 		zmq
 		czmq
 		log4cxx
