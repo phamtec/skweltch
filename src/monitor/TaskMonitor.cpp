@@ -122,7 +122,7 @@ int TaskMonitor::start(const string &jsonconfig) {
 		JsonObject reap = r.getChild("reap");
 		
 		stringstream exe;
-		exe << reap.getString("exe") << " '"<< reap.getChildAsString("config") << "' " << reap.getString("name");
+		exe << reap.getString("exe") << " " << pidfilename << " '"<< reap.getChildAsString("config") << "' " << reap.getString("name");
 		pid_t pid = er.run(exe.str());
 		if (pid == 0) {
 			return 1;

@@ -3,7 +3,7 @@
 rm -rf log/*.log
 rm -rf results.json
 dist/monitor integration-test/test.json
-sleep 3
+sleep 1
 
 # sink finds everything
 cat results.json | grep "elapsed" > /dev/null

@@ -75,7 +75,6 @@
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",
 		"config" : {
-			"pidFile": "tasks.pid",
 			"totalTime": 300
 		}
 	}

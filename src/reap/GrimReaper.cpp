@@ -18,20 +18,20 @@ int main (int argc, char *argv[])
 {
   	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
 
-	if (argc != 3) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " config name")
+	if (argc != 4) {
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pidFile config name")
 		return 1;
 	}
 	
 	{
 		stringstream outfn;
-		outfn << "org.skweltch." << argv[2];
+		outfn << "org.skweltch." << argv[3];
 		logger = log4cxx::Logger::getLogger(outfn.str());
 	}
 		
 	JsonObject root;
  	{
- 		stringstream ss(argv[1]);
+ 		stringstream ss(argv[2]);
 		if (!root.read(logger, &ss)) {
 			return 1;
 		}
@@ -41,7 +41,7 @@ int main (int argc, char *argv[])
  	zclock_sleep(totaltime);
 	LOG4CXX_INFO(logger, "waited " << totaltime << "ms, killing everything.")
  	
-	string filename(root.getString("pidFile"));
+	string filename(argv[1]);
 	ifstream pidfile(filename.c_str());	
 	if (pidfile.is_open()) {
 		string line;
