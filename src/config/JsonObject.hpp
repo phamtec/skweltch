@@ -36,8 +36,10 @@ public:
 	std::string getKey(iterator it);
 	JsonObject getValue(iterator it);
 	JsonArray getValueArray(iterator it);
-	std::string getValueString(iterator it);
+	std::string getValueString(iterator it) const;
 	bool isValueArray(iterator it);
+	bool isValueDouble(iterator it) const;
+	double getValueDouble(iterator it) const;
 	
 	// what is this thing?
 	bool isObject() const;
@@ -52,6 +54,7 @@ public:
 	void write(bool pp, std::ostream *ostream) const;
 	
 	// get different things from the object.
+	std::string getAsString(const std::string &key) const;
 	std::string getString(const std::string &key) const;
 	void setString(const std::string &key, const std::string &s);
 	
@@ -61,6 +64,9 @@ public:
 	bool getBool(const std::string &key) const;
 	void setBool(const std::string &key, bool n);
 	
+	bool isDouble(const std::string &key) const;
+	double getDouble(const std::string &key) const;
+
 	JsonArray getArray(const std::string &key) const;
 	JsonObject getChild(const std::string &key) const;
 	std::string getChildAsString(const std::string &key) const;

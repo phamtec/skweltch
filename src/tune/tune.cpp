@@ -61,6 +61,8 @@ int main (int argc, char *argv[])
 		return 1;
     }
     
+    JsonObject success = tuneconfig.getChild("success");
+    
    	filesystem::remove_all("temp");
     filesystem::create_directory("temp");
     
@@ -101,7 +103,7 @@ int main (int argc, char *argv[])
 					of.close();
 				}
 				runner.setFail(tuner.failOnError());
-				if (!runner.runOne(newconfig.str(), iterations, i, j, vars)) {
+				if (!runner.runOne(newconfig.str(), iterations, i, j, vars, success)) {
 					if (tuner.failOnError()) {
 						break; // next group.
 					}

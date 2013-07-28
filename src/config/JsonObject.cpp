@@ -131,6 +131,43 @@ string JsonObject::getString(const string &key) const {
 
 }
 
+bool JsonObject::isDouble(const std::string &key) const {
+
+	Value v = get(_value.get_obj(), key);
+	return v.type() == real_type;
+	
+}
+
+double JsonObject::getDouble(const std::string &key) const {
+
+	Value v = get(_value.get_obj(), key);
+	return v.get_value<double>();
+
+}
+
+string JsonObject::getAsString(const string &key) const {
+
+	Value v = get(_value.get_obj(), key);
+	
+	switch (v.type()) {
+	case str_type:
+		return v.get_value<string>();
+		
+	case int_type:
+		return lexical_cast<string>(v.get_value<int>());
+		
+	case bool_type:
+		return lexical_cast<string>(v.get_value<bool>());
+		
+	case real_type:
+		return lexical_cast<string>(v.get_value<double>());
+		
+	default:
+		return "?";
+	}
+
+}
+
 void JsonObject::setInt(const string &key, int n) {
 
 	set(&_value.get_obj(), key, Value(n));
@@ -246,7 +283,7 @@ JsonArray JsonObject::getValueArray(iterator it) {
 	return JsonArray(it->value_.get_array());
 }
 
-string JsonObject::getValueString(iterator it) {
+string JsonObject::getValueString(iterator it) const {
 
 	switch (it->value_.type()) {
 	case str_type:
@@ -258,12 +295,26 @@ string JsonObject::getValueString(iterator it) {
 	case bool_type:
 		return lexical_cast<string>(it->value_.get_value<bool>());
 		
+	case real_type:
+		return lexical_cast<string>(it->value_.get_value<double>());
+		
 	default:
 		return "?";
 	}
 	
 }
 
+bool JsonObject::isValueDouble(iterator it) const {
+
+	return it->value_.type() == real_type;
+	
+}
+
+double JsonObject::getValueDouble(iterator it) const {
+
+	return it->value_.get_value<double>();
+	
+}
 
 JsonObject JsonObject::findObj(const JsonPredicate &pred) {
 

@@ -70,7 +70,7 @@
 		}
 	],
 	
-	// and this is what is used to reap. Always one of them.
+	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",

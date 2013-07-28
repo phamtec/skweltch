@@ -23,7 +23,7 @@ public:
 		failonerror(false), logger(l), interrupted(i) {};
 	
 	void setFail(bool f) { failonerror = f; }
-	bool runOne(const std::string &machine, int iterations, int group, int i, const std::string &vars);
+	bool runOne(const std::string &machine, int iterations, int group, int i, const std::string &vars, const JsonObject &success);
 
 };
 

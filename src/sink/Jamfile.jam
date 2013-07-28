@@ -18,6 +18,7 @@ lib log4cxx : : <name>log4cxx ;
 exe sinkelapsed : SinkElapsed.cpp
 		/core//core
 		/config//config
+		/boost//filesystem
 		zmq
 		msgpack
 		log4cxx
@@ -31,6 +32,7 @@ exe sinkelapsed : SinkElapsed.cpp
 exe sinkavg : sinkavg.cpp
 		/core//core
 		/config//config
+		/boost//filesystem
 		zmq
 		msgpack
 		log4cxx

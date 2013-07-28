@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
  	for (int i=0; i<count; i++) {
  		LOG4CXX_INFO(logger, "soak start run.")
 		try {
-			if (!runner.runOne(argv[1], iterations, 0, 0, "")) {
+			if (!runner.runOne(argv[1], iterations, 0, 0, "", JsonObject())) {
 //				LOG4CXX_ERROR(logger, "failed, returning")
 //				break;
 			}

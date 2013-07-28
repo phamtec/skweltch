@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>
+#include <boost/filesystem.hpp>
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
@@ -51,11 +52,15 @@ void SWorker::results(int total_ms) {
 	JsonObject result;
 	result.add("elapsed", total_ms);
 	result.add("average", ((double)total / (double)count));
+	
+	// write the results.
 	{
-		ofstream results("results.json");
+		ofstream results("temp-results.json");
 		result.write(true, &results);
 	}
 	
+	// and then rename for others to find it.
+	filesystem::rename("temp-results.json", "results.json");
 }
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkavg"));
