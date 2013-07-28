@@ -1,0 +1,24 @@
+
+project graph
+    : requirements
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+        <link>static
+    :
+    :
+    ;
+
+build-project test ;
+
+lib log4cxx : : <name>log4cxx ;
+
+exe graph : graph.cpp MachineGraph.cpp
+		/config//config
+		log4cxx
+	:	<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;
+

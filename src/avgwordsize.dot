@@ -1,0 +1,141 @@
+digraph G {
+	splines=spline;
+	nodesep=2;
+	node [fontcolor=white,
+		fillcolor=black,
+		fontname=Geneva,
+		label="\N",style=filled
+	];
+	edge [color=blue,
+		fontcolor=black,
+		fontname=Geneva,
+		fontsize=10,
+		fontcolor=lightblue,
+		style=bold
+	];
+	VentWords [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">VentWords</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pushTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">bind:*:5557</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">syncTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">filename</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">data/words.txt</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">sleep</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">5</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">every</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">2000</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>>];
+	VentWords -> SinkAvg[headlabel="pullFrom",taillabel="syncTo"];
+	SinkAvg [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">SinkAvg</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pullFrom</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">bind:*:5558</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+</TABLE>>];
+	WorkCharCount [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">WorkCharCount</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">count</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">3</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pullFrom</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pushTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+</TABLE>>];
+	VentWords -> WorkCharCount[headlabel="pullFrom",taillabel="pushTo"];
+	WorkCharCount -> SinkAvg[headlabel="pullFrom",taillabel="pushTo"];
+	GrimReaper [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">GrimReaper</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">pidFile</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">tasks.pid</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">totalTime</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">300</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>>];
+}

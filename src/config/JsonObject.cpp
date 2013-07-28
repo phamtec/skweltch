@@ -247,8 +247,23 @@ JsonArray JsonObject::getValueArray(iterator it) {
 }
 
 string JsonObject::getValueString(iterator it) {
-	return it->value_.get_value<string>();
+
+	switch (it->value_.type()) {
+	case str_type:
+		return it->value_.get_value<string>();
+		
+	case int_type:
+		return lexical_cast<string>(it->value_.get_value<int>());
+		
+	case bool_type:
+		return lexical_cast<string>(it->value_.get_value<bool>());
+		
+	default:
+		return "?";
+	}
+	
 }
+
 
 JsonObject JsonObject::findObj(const JsonPredicate &pred) {
 

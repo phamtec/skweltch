@@ -1,5 +1,5 @@
 
-project test
+project graph-test
     : requirements 
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
@@ -20,14 +20,13 @@ explicit unit_test_framework ;
 
 lib log4cxx : : <name>log4cxx ;
 
-unit-test nodes.test
-	: nodestest.cpp
-		/ui//httpserver
+unit-test graph.test
+	: graphtest.cpp ../MachineGraph.cpp
+		/config//config
 		/boost/test
 		log4cxx
-	:   <include>../../../turtle-1.2.2/include
-		<include>../../../config
-		<include>../../../json_spirit_v4.06/json_spirit
-		<link>static
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../config
+		<include>../../json_spirit_v4.06/json_spirit
 	:
 	;

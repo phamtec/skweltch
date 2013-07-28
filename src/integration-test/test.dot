@@ -1,0 +1,145 @@
+digraph G {
+	splines=spline;
+	nodesep=2;
+	node [fontcolor=white,
+		fillcolor=black,
+		fontname=Geneva,
+		label="\N",style=filled
+	];
+	edge [color=blue,
+		fontcolor=black,
+		fontname=Geneva,
+		fontsize=10,
+		fontcolor=lightblue,
+		style=bold
+	];
+	VentRandomNum [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">VentRandomNum</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pushTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">bind:*:5557</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">syncTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">count</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">50</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">low</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">1</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">high</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">10</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">sleep</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">0</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>>];
+	VentRandomNum -> SinkElapsed[headlabel="pullFrom",taillabel="syncTo"];
+	SinkElapsed [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">SinkElapsed</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pullFrom</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">bind:*:5559</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+</TABLE>>];
+	WorkSleep [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">WorkSleep</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">count</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">3</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">node</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">localhost</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pullFrom</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">pushTo</FONT></TD>
+					<TD ALIGN="left"><FONT POINT-SIZE="10">connect</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+</TABLE>>];
+	VentRandomNum -> WorkSleep[headlabel="pullFrom",taillabel="pushTo"];
+	WorkSleep -> SinkElapsed[headlabel="pullFrom",taillabel="pushTo"];
+	GrimReaper [shape=box,label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+	<TR>
+		<TD><FONT POINT-SIZE="18" COLOR="green">GrimReaper</FONT></TD>
+	</TR>
+	<TR>
+		<TD>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">pidFile</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">tasks.pid</FONT></TD>
+				</TR>
+				<TR>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">totalTime</FONT></TD>
+					<TD ALIGN="left"><FONT COLOR="lightgray" POINT-SIZE="10">400</FONT></TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>>];
+}
