@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sys/time.h>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
@@ -31,7 +32,7 @@ public:
 	virtual void first(int id) {}
 	virtual void last(int id) {}
 	
-	virtual void process(int id, int data);
+	virtual void process(int id, const std::string &data);
 	virtual void results(int total_ms);
 	
 	virtual bool shouldQuit() {
@@ -40,9 +41,9 @@ public:
 
 };
 
-void SWorker::process(int id, int data) {
+void SWorker::process(int id, const std::string &data) {
 
-	total += data;
+	total += lexical_cast<int>(data);
 	count++;
 
 }

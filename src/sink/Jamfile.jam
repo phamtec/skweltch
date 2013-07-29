@@ -42,3 +42,18 @@ exe sinkavg : sinkavg.cpp
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;
+
+exe sinkcharfreq : sinkcharfreq.cpp
+		/core//core
+		/config//config
+		/boost//filesystem
+		zmq
+		msgpack
+		log4cxx
+	:	<include>../cppzmq-master
+		<include>../config
+		<include>../core
+		<include>../msg
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;

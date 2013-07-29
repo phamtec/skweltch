@@ -17,3 +17,10 @@ alias unit_test_framework
 
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
+
+unit-test freq.test
+	: freqtest.cpp
+		/boost/test
+	:  <include>../../turtle-1.2.2/include 
+	:
+	;

@@ -46,10 +46,10 @@ private:
 	int last;
 	int first2;
 	int last2;
-	int data;
+	std::string data;
 	
 public:
-	MockReceiver(int f1, int l1, int f2, int l2, int d) : state(0), id(1), first(f1), last(l1), first2(f2), last2(l2), data(d) {}
+	MockReceiver(int f1, int l1, int f2, int l2, const std::string &d) : state(0), id(1), first(f1), last(l1), first2(f2), last2(l2), data(d) {}
 	
 	virtual bool send (zmq::message_t &msg_, int flags_ = 0) { return false; }
 	
@@ -104,12 +104,12 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	
 	MOCK_EXPECT(w.first).with(20).once();
 	MOCK_EXPECT(w.last).with(20).once();
-	MOCK_EXPECT(w.process).with(20, 100).once();
+	MOCK_EXPECT(w.process).with(20, "100").once();
 	MOCK_EXPECT(w.results).with(mock::any).once();
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 20));
 
-	MockReceiver receiver(20, 20, -1, -1, 100);
+	MockReceiver receiver(20, 20, -1, -1, "100");
 	
 	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
 	BOOST_CHECK(s.process(&w));
@@ -124,14 +124,14 @@ BOOST_AUTO_TEST_CASE( tenMsgTest )
 	MOCK_EXPECT(w.first).with(20).once();
 	MOCK_EXPECT(w.last).with(29).once();
 	for (int i=20; i<=29; i++) {
-		MOCK_EXPECT(w.process).with(i, 100).once();
+		MOCK_EXPECT(w.process).with(i, "100").once();
 	}
 	MOCK_EXPECT(w.results).with(mock::any).once();
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 29));
 
-	MockReceiver receiver(20, 29, -1, -1, 100);
+	MockReceiver receiver(20, 29, -1, -1, "100");
 	
 	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
 	BOOST_CHECK(s.process(&w));
@@ -152,14 +152,14 @@ BOOST_AUTO_TEST_CASE( restartTest )
 	MOCK_EXPECT(w.last).with(23).once();
 	MOCK_EXPECT(w.last).with(26).once();
 	for (int i=20; i<=26; i++) {
-		MOCK_EXPECT(w.process).with(i, 100).once();
+		MOCK_EXPECT(w.process).with(i, "100").once();
 	}
 	MOCK_EXPECT(w.results).with(mock::any).exactly(2);
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfter2Times, &c, 20, 26));
 
-	MockReceiver receiver(20, 23, 24, 26, 100);
+	MockReceiver receiver(20, 23, 24, 26, "100");
 	
 	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
 	BOOST_CHECK(s.process(&w));

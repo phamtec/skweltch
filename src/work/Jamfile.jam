@@ -45,3 +45,18 @@ exe workcharcount : workcharcount.cpp
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;
+
+exe workcharfreq : workcharfreq.cpp
+		zmq
+		czmq
+		msgpack
+		/core//core
+		/config//config
+		log4cxx
+	: 	<include>../cppzmq-master
+		<include>../core
+		<include>../msg
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;

@@ -3,7 +3,7 @@
 #include "Interrupt.hpp"
 #include "Work.hpp"
 #include "IWorkWorker.hpp"
-#include "StringMsg.hpp"
+#include "DataMsg.hpp"
 #include "SinkMsg.hpp"
 
 #include <zmq.hpp>
@@ -20,7 +20,7 @@
 using namespace std;
 using namespace boost;
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount"));
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharfreq"));
 
 class WWorker : public IWorkWorker {
 
@@ -35,15 +35,39 @@ public:
 
 void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
-	StringMsg msg(message);
+	DataMsg<std::string> msg(message);
 
 	LOG4CXX_DEBUG(logger,  "msg " << msg.getId());
 
+	string word = msg.getPayload();
+	
 	// the work.
-	int length = msg.getPayload().length();
+	string result;
+	for (int i=0; i<26; i++) {
+		result += "0";
+	}
+	for (string::const_iterator i=word.begin(); i != word.end(); i++) {
+		int index = *i - 'a';
+		if (index < 0 || index > 25) {
+			throw runtime_error("letter not in range.");
+		}
+		char ss[2];
+		ss[0] = result[index];
+		ss[1] = 0;
+		int c;
+		sscanf(ss, "%x", &c);		
+		c++;
+		if (c > 16) {
+			throw runtime_error("ony handle up to 16 of each letter.");
+		}
+		sprintf(ss, "%x", c);
+		result[index] = ss[0];
+	}
+
+	LOG4CXX_DEBUG(logger,  "result " << result);
 
 	// and set the sink msg.
-	smsg->dataMsg(msg.getId(), lexical_cast<string>(length));
+	smsg->dataMsg(msg.getId(), result);
 	
 }
 
