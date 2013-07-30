@@ -20,14 +20,19 @@
 using namespace std;
 using namespace boost;
 
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkcharfreq"));
+
 class SWorker : public ISinkWorker {
 
 private:
 	int counts[26];
 
-public:
+	void init();
 	
-	virtual void first(int id);
+public:
+	SWorker() { init(); }
+	
+	virtual void first(int id) {}
 	virtual void last(int id) {}
 	
 	virtual void process(int id, const std::string &data);
@@ -39,15 +44,18 @@ public:
 
 };
 
-void SWorker::first(int id) {
+void SWorker::init() {
 
-	for (size_t i=0; i<25; i++) {
+	// init for next time.
+	for (size_t i=0; i<26; i++) {
 		counts[i] = 0;
 	}
 
 }
 
 void SWorker::process(int id, const std::string &data) {
+
+	LOG4CXX_DEBUG(logger, id << ", " << data)
 
 	if (data.length() > 26) {
 		throw runtime_error("ony handle up to 26 letters.");
@@ -70,7 +78,7 @@ void SWorker::results(int total_ms) {
 
 	JsonObject result;
 	result.add("elapsed", total_ms);
-	for (size_t i=0; i<25; i++) {
+	for (size_t i=0; i<26; i++) {
 		char s[2];
 		s[0] = 'a' + i;
 		s[1] = 0;
@@ -85,9 +93,10 @@ void SWorker::results(int total_ms) {
 	
 	// and then rename for others to find it.
 	filesystem::rename("temp-results.json", "results.json");
-}
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkcharfreq"));
+	init();
+	
+}
 
 int main (int argc, char *argv[])
 {

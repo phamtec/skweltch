@@ -37,6 +37,7 @@ bool Sink::process(ISinkWorker *worker) {
 		SinkMsg sinkmsg(message);
 		switch (sinkmsg.getCode()) {
 		case 1:
+			LOG4CXX_DEBUG(logger, "got first: " << sinkmsg.getId())
 			worker->first(sinkmsg.getId());
 			tracker.setFirst(sinkmsg.getId());
 			elapsed.start();
@@ -69,9 +70,10 @@ bool Sink::process(ISinkWorker *worker) {
 			
 		case 3:
 			// this one usually comes from a vent.
+			LOG4CXX_DEBUG(logger, "got last: " << sinkmsg.getId())
 			worker->last(sinkmsg.getId());
 			tracker.setLast(sinkmsg.getId());
-			break;
+ 			break;
 			
 		default:
   			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.getCode())

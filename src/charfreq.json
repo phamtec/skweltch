@@ -47,7 +47,8 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 3,
+			"count": 1,
+//			"count": 3,
 			"name": "WorkCharFreq",
 			"exe": "dist/workcharfreq",
 			"node": "localhost",
@@ -75,7 +76,7 @@
 		"name": "GrimReaper",
 		"exe": "dist/grimreaper",
 		"config" : {
-			"totalTime": 300
+			"totalTime": 4000
 		}
 	}
 		

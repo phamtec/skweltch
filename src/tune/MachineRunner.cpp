@@ -39,7 +39,13 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 	for (int i=0; i<iterations; i++) {
 	
  		LOG4CXX_INFO(logger, "runner start run.")
-		filesystem::remove("results.json");
+ 		
+ 		//if it's already gone then no probs.
+ 		try {
+			filesystem::remove("results.json");
+		}
+		catch (...) {
+		}
 		
 		// try to kill it all.
 		vector<int> vpids;

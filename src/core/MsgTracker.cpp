@@ -26,7 +26,7 @@ void MsgTracker::grow(int n) {
 	int k = n - bits.size();
 	if (k > 0) {
 		LOG4CXX_DEBUG(logger, "growing by " << k << " buckets.")
-		for (size_t i=0; i<k; i++) {
+		for (int i=0; i<k; i++) {
 			bits.push_back(bitset<SIZE>());
 		}
 	}
@@ -46,7 +46,7 @@ void MsgTracker::setLast(int l) {
 bool MsgTracker::complete() {
 
 	if (first == -1) {
-		return true;
+		return false;
 	}
 	
 	// don't know yet.
@@ -64,7 +64,7 @@ bool MsgTracker::complete() {
  	
 	// make sure all the lower buckets are full.
 	for (size_t i=0; i<bits.size()-1; i++) {
-		if (!bits[i].count() == SIZE) {
+		if (bits[i].count() != SIZE) {
   			LOG4CXX_DEBUG(logger, "bucket " << i << " not complete.")
 			return false;
 		}
