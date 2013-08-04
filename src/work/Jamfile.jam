@@ -60,3 +60,20 @@ exe workcharfreq : workcharfreq.cpp
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;
+	
+exe workxpath : workxpath.cpp ../pugixml-1.2/src/pugixml.cpp
+		zmq
+		czmq
+		msgpack
+		/core//core
+		/config//config
+		log4cxx
+	: 	<include>../cppzmq-master
+		<include>../core
+		<include>../msg
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+		<include>../pugixml-1.2/src
+	:
+	;
+

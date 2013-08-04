@@ -1,0 +1,51 @@
+{
+	"mutations": 200,
+	"iterations": 300,
+	"groups": 1,
+	"success": {
+		"data" : [
+			"XML Developer's Guide",
+			"Midnight Rain",
+			"Maeve Ascendant",
+			"Oberon's Legacy",
+			"The Sundered Grail",
+			"Lover Birds",
+			"Splish Splash",
+			"Creepy Crawlies",
+			"Paradox Lost",
+			"Microsoft .NET: The Programming Bible",
+			"MSXML3: A Comprehensive Guide",
+			"Visual Studio 7: A Comprehensive Guide"
+		]
+    },
+	"vent.config" : {
+		"group": 1,
+		"var": "sleep",
+		"type": "int",
+		"select": "random",
+		"low": 0,
+		"high": 50,
+		"enabled": false,
+		"fail": false
+	},
+	"vent.config" : {
+		"group": 1,
+		"var": "every",
+		"type": "int",
+		"select": "random",
+		"low": 500,
+		"high": 2000,
+		"enabled": false,
+		"fail": false
+	},
+	"background[0]" : {
+		"group": 1,
+		"var": "count",
+		"type": "int",
+		"select": "random",
+		"low": 2,
+		"high": 20,
+		"enabled": true,
+		"fail": false
+	}
+}

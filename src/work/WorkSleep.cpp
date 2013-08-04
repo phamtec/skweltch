@@ -42,7 +42,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	zclock_sleep(msg.getPayload());
 	
 	// and set the sink msg.
-	smsg->dataMsg(msg.getId(), "");
+	smsg->dataMsg(msg.getId(), vector<string>());
 	
 }
 

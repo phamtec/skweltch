@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns:r="http://www.w3.org/TR/RDF/" xmlns:d="http://purl.org/dc/elements/1.0/" xmlns="http://dmoz.org/rdf/">
+  <!-- Generated at 2012-09-23 00:04:02 EST from DMOZ 2.0 -->
+  <Topic r:id="">
+    <catid>1</catid>
+  </Topic>
+  <Topic r:id="Top/Arts">
+    <catid>381773</catid>
+  </Topic>
+  <Topic r:id="Top/Arts/Animation">
+    <catid>423945</catid>
+    <link1 r:resource="http://www.awn.com/"></link1>
+    <link r:resource="http://animation.about.com/"></link>
+    <link r:resource="http://www.toonhound.com/"></link>
+    <link r:resource="http://enculturation.gmu.edu/2_1/pisters.html"></link>
+    <link r:resource="http://www.digitalmediafx.com/Features/animationhistory.html"></link>
+    <link r:resource="http://www-viz.tamu.edu/courses/viza615/97spring/pjames/history/main.html"></link>
+    <link r:resource="http://www.spark-online.com/august00/media/romano.html"></link>
+    <link r:resource="http://www.animated-divots.net/"></link>
+  </Topic>
+  <ExternalPage about="http://www.awn.com/">
+    <d:Title>Animation World Network</d:Title>
+    <d:Description>Provides information resources to the international animation community. Features include searchable database archives, monthly magazine, web animation guide, the Animation Village, discussion forums and other useful resources.</d:Description>
+    <priority>1</priority>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://animation.about.com/">
+    <d:Title>About.com: Animation Guide</d:Title>
+    <d:Description>Keep up with developments in online animation for all skill levels. Download tools, and seek inspiration from online work.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.toonhound.com/">
+    <d:Title>Toonhound</d:Title>
+    <d:Description>British cartoon, animation and comic strip creations - links, reviews and news from the UK.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://enculturation.gmu.edu/2_1/pisters.html">
+    <d:Title>Enculturation: From Mouse to Mouse: Overcoming Information</d:Title>
+    <d:Description>Essay by Patricia Pisters on the animated image and its changing relationship with the cinematic image.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.digitalmediafx.com/Features/animationhistory.html">
+    <d:Title>Digital Media FX: The History of Animation</d:Title>
+    <d:Description>Michael Crandol takes an exhaustive look at the history of animation and animators/visionaries like Max Fleisher, Walter Lantz, and Otto Messmer.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www-viz.tamu.edu/courses/viza615/97spring/pjames/history/main.html">
+    <d:Title>History of Animation: Before Disney</d:Title>
+    <d:Description>A short, illustrated essay by Patrick James on the basics of early animations.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.spark-online.com/august00/media/romano.html">
+    <d:Title>Spark Online: Only Genius Is Genius</d:Title>
+    <d:Description>Chris Romano feels that the proliferation of Flash and other web-based animation technologies has not improved the overall quality of animation and cartoons.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.animated-divots.net/">
+    <d:Title>Richard's Animated Divots</d:Title>
+    <d:Description>Chronology of animated movies, television programs, and short cartoons. Includes animation filmographies and a list of anime television series.</d:Description>
+    <topic>Top/Arts/Animation</topic>
+  </ExternalPage>
+  <Topic r:id="Top/Arts/Animation/Anime">
+    <catid>425085</catid>
+  </Topic>
+  <Topic r:id="Top/Arts/Animation/Anime/Characters">
+    <catid>425147</catid>
+    <link r:resource="http://www.angelfire.com/anime2/ninisbishonen/"></link>
+    <link r:resource="http://www.angelfire.com/anime2/bestanimecharacters/"></link>
+    <link r:resource="http://valleyofazure.tripod.com/"></link>
+    <link r:resource="http://www.angelfire.com/nv/neko/"></link>
+    <link r:resource="http://www.angelfire.com/grrl/magicshoppe2/"></link>
+    <link r:resource="http://shotani.www2.50megs.com/animen_uno.html"></link>
+  </Topic>
+  <ExternalPage about="http://www.angelfire.com/anime2/ninisbishonen/">
+    <d:Title>Nini's Bishonen Dungeon</d:Title>
+    <d:Description>Shrines to Vega, Taiki, Dilandau, and Tiger Eye, as well as fan art, adoptions, and links.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.angelfire.com/anime2/bestanimecharacters/">
+    <d:Title>Site for Liz's Anime Favorites</d:Title>
+    <d:Description>Shrines to Duo, Ryoko, Shampoo, Katy the Kitty, Lady Une, Mimete, Junjun, Parapara, and Sailor Saturn with images, profiles, and links.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <ExternalPage about="http://valleyofazure.tripod.com/">
+    <d:Title>Azure Valley</d:Title>
+    <d:Description>Dedicated to anthropomorphic characters. Fan art, images, profiles, and links.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.angelfire.com/nv/neko/">
+    <d:Title>Neko Central</d:Title>
+    <d:Description>Image galleries, descriptions, information, and media on cats from different series.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <ExternalPage about="http://www.angelfire.com/grrl/magicshoppe2/">
+    <d:Title>Chibi Hime's Magic Shoppe 2</d:Title>
+    <d:Description>Shrines to Escaflowne's Dilandau, Final Fantasy's Vincent, SoulTaker's Kyousuke, and Hsi Wu from Jackie Chan Adventures. Includes images, information, and fan fiction.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <ExternalPage about="http://shotani.www2.50megs.com/animen_uno.html">
+    <d:Title>AniMen</d:Title>
+    <d:Description>Features men from Fushigi Yuugi, Sailor Moon, Escaflowne, Rayearth, Gundam Wing, Bubblegum Crisis/AD Police, Tenchi Muyo, Utena, and Ayashi no Ceres. Profiles, commentary, polls, fan fiction, images, downloads, and links.</d:Description>
+    <topic>Top/Arts/Animation/Anime/Characters</topic>
+  </ExternalPage>
+  <Topic r:id="Top/Arts/Animation/Anime/Clubs_and_Organizations">
+    <catid>425148</catid>
+    <link r:resource="http://www.angelfire.com/yt/ahsaa/"></link>
+    <link r:resource="http://anime-alberta.org/"></link>
+    <link r:resource="http://www.yale.edu/anime/"></link>
+    <link r:resource="http://www.nnanime.com/"></link>
+    <link r:resource="http://www.unc.edu/coup/"></link>
+    <link r:resource="http://web.mit.edu/anime/www/"></link>
+    <link r:resource="http://uranime.nekomusume.net/"></link>
+    <link r:resource="http://www.ic.sunysb.edu/Clubs/anime/"></link>
+    <link r:resource="http://carleton.ottawa-anime.org/"></link>
+    <link r:resource="http://soap.ottawa-anime.org/"></link>
+    <link r:resource="http://www.jaco.org/"></link>
+    <link r:resource="http://www.orgs.ttu.edu/muepsilonkappa/"></link>
+    <link r:resource="http://www.yorku.ca/anime/"></link>
+    <link r:resource="http://www.emeraldtokyo.com/"></link>
+    <link r:resource="http://www.novaanime.org/"></link>
+    <link r:resource="http://www.neoanime.org/"></link>
+    <link r:resource="http://www.hcs.harvard.edu/~anime/"></link>
+    <link r:resource="http://www.haas-online.net/"></link>
+    <link r:resource="http://www.umich.edu/~animania/"></link>
+    <link r:resource="http://wpganime.ca/"></link>
+    <link r:resource="http://animeclub.org/"></link>
+    <link r:resource="http://www.sa.niu.edu/anime/"></link>
+    <link r:resource="http://organizations.weber.edu/wyvern/"></link>
+    <link r:resource="http://groups.yahoo.com/group/goddessofloveandbeauty/"></link>
+    <link r:resource="http://www.bumac.org/"></link>
+    <link r:resource="http://rinoa.nu/axe/axe.html"></link>
+    <link r:resource="http://www.auburn.edu/student_info/anime_manga/"></link>
+    <link r:resource="http://www.freewebs.com/shanimeclub/"></link>
+    <link r:resource="http://www.indyanime.org/"></link>
+    <link r:resource="http://www.fresnoanime.com/"></link>
+    <link r:resource="http://www.otakuanime.org/"></link>
+    <link r:resource="http://www.delawareanimesociety.com/"></link>
+    <link r:resource="http://www.ctrl-a.org/"></link>
+    <link r:resource="http://www.stevens.edu/anime/"></link>
+    <link r:resource="http://www.animekurabu.org/"></link>
+    <link r:resource="http://dcanimeclub.org/"></link>
+    <link r:resource="http://uts.cc.utexas.edu/~anime/"></link>
+    <link r:resource="http://ecujapan.org/category/anime/"></link>
+    <link r:resource="http://dampfkraft.com/bas/"></link>
+    <link r:resource="http://www.ohio.edu/orgs/jcon/"></link>
+    <link r:resource="http://tech.groups.yahoo.com/group/pin0yotaku/"></link>
+    <link r:resource="http://www.greenmustard.com/"></link>
+    <link r:resource="http://tech.groups.yahoo.com/group/amrc-l/"></link>
+    <link r:resource="http://www.calanimagealpha.com/"></link>
+  </Topic>
+</RDF>

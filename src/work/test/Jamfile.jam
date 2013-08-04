@@ -24,3 +24,11 @@ unit-test freq.test
 	:  <include>../../turtle-1.2.2/include 
 	:
 	;
+
+unit-test xpathwork.test
+	: xpathtest.cpp ../../pugixml-1.2/src/pugixml.cpp
+		/boost/test
+	:  	<include>../../turtle-1.2.2/include 
+		<include>../../pugixml-1.2/src
+	:
+	;

@@ -35,7 +35,7 @@ public:
 	virtual void first(int id) {}
 	virtual void last(int id) {}
 	
-	virtual void process(int id, const std::string &data);
+	virtual void process(int id, std::vector<std::string> *data);
 	virtual void results(int total_ms);
 	
 	virtual bool shouldQuit() {
@@ -53,18 +53,18 @@ void SWorker::init() {
 
 }
 
-void SWorker::process(int id, const std::string &data) {
+void SWorker::process(int id, std::vector<std::string> *data) {
 
 	LOG4CXX_DEBUG(logger, id << ", " << data)
 
-	if (data.length() > 26) {
+	if ((*data)[0].length() > 26) {
 		throw runtime_error("ony handle up to 26 letters.");
 	}
 
 	for (int i=0; i<26; i++) {
 
 		char ss[2];
-		ss[0] = data[i];
+		ss[0] = (*data)[0][i];
 		ss[1] = 0;
 		int c;
 		sscanf(ss, "%x", &c);		

@@ -45,3 +45,18 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 		<include>../json_spirit_v4.06/json_spirit
 	:
 	;
+
+exe ventxml : ventxml.cpp XmlParser.cpp XPathSplitter.cpp
+		zmq
+		czmq
+		/core//core
+		/config//config
+		msgpack
+		log4cxx
+	:	<include>../cppzmq-master
+		<include>../config
+		<include>../core
+		<include>../msg
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;

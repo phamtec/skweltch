@@ -47,8 +47,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 1,
-//			"count": 3,
+			"count": 3,
 			"name": "WorkCharFreq",
 			"exe": "dist/workcharfreq",
 			"node": "localhost",

@@ -43,6 +43,20 @@ exe sinkavg : sinkavg.cpp
 	:
 	;
 
+exe sinkstrings : sinkstrings.cpp
+		/core//core
+		/config//config
+		/boost//filesystem
+		zmq
+		msgpack
+		log4cxx
+	:	<include>../cppzmq-master
+		<include>../config
+		<include>../core
+		<include>../json_spirit_v4.06/json_spirit
+	:
+	;
+
 exe sinkcharfreq : sinkcharfreq.cpp
 		/core//core
 		/config//config

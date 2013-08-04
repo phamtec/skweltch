@@ -20,18 +20,6 @@ then
 	echo "FAILED (work0)"
 	exit 1
 fi
-cat log/run.log | grep "WorkSleep\[1\]" > /dev/null
-if [ "$?" != "0" ]
-then
-	echo "FAILED (work1)"
-	exit 1
-fi
-cat log/run.log | grep "WorkSleep\[2\]" > /dev/null
-if [ "$?" != "0" ]
-then
-	echo "FAILED (work2)"
-	exit 1
-fi
 
 echo "PASSED"
 exit 0

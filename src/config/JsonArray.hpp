@@ -33,6 +33,7 @@ public:
 	std::string getChildAsString(iterator it, const std::string &key) const;
 	bool empty() const { return _array.empty(); }	
 	void add(const JsonObject &o);
+	void add(const std::string &o);
 	int size();
 	
 };

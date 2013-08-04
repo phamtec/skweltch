@@ -26,7 +26,7 @@ public:
 
 	virtual void first(int id) {}
 	virtual void last(int id) {}
-	virtual void process(int id, const std::string &data) {}
+	virtual void process(int id, std::vector<std::string> *data) {}
 	
 	virtual void results(int total_ms);
 	

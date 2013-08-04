@@ -67,7 +67,9 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	LOG4CXX_DEBUG(logger,  "result " << result);
 
 	// and set the sink msg.
-	smsg->dataMsg(msg.getId(), result);
+	vector<string> v;
+	v.push_back(result);
+	smsg->dataMsg(msg.getId(), v);
 	
 }
 

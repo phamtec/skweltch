@@ -18,9 +18,19 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
+lib log4cxx : : <name>log4cxx ;
+
 unit-test words.test
 	: wordstest.cpp ../WordSplitter.cpp
 		/boost/test
+	:  <include>../../turtle-1.2.2/include 
+	:
+	;
+
+unit-test xpath.test
+	: xpathtest.cpp ../XmlParser.cpp ../XPathSplitter.cpp
+		/boost/test
+		log4cxx
 	:  <include>../../turtle-1.2.2/include 
 	:
 	;

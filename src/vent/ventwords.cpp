@@ -66,40 +66,6 @@ bool SendWord::word(const std::string &s) {
 	
 	return vent->sendOne(worker, message, sleeptime, sleepevery);
 
-/*
- 	zmq::message_t message(2);
-	
-	// build the complete message.
-	msgpack::type::tuple<int, int, string> wmsg(batch, count, s);
-		
-	// pack the number up and send it.
-	msgpack::sbuffer sbuf;
-	msgpack::pack(sbuf, wmsg);
-	message.rebuild(sbuf.size());
-	memcpy(message.data(), sbuf.data(), sbuf.size());
- 
-	try {
-		sender->send(message);
-	}
-	catch (zmq::error_t &e) {
-		LOG4CXX_ERROR(logger, "send failed." << e.what())
-	}
-	
-	if (s_interrupted) {
-		LOG4CXX_INFO(logger, "interrupt received, killing server")
-		return false;
-	}
-	
-	count++;
-	
-	if (sleeptime > 0) {
-		if ((count % sleepevery) == 0) {
-			zclock_sleep(sleeptime);	
-		}
-	}
-
-	return true;
-*/
 }
 
 int VWorker::sendAll(Vent *vent) {

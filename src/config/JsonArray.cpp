@@ -55,6 +55,12 @@ void JsonArray::add(const JsonObject &o) {
 	
 }
 
+void JsonArray::add(const std::string &s) {
+
+	_array.push_back(Value(s));
+	
+}
+
 JsonObject JsonArray::getValue(int i) const {
 
 	return JsonObject(_array[i]);

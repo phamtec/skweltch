@@ -14,7 +14,7 @@ class MsgTracker {
 
 private:
 	
-	static const int SIZE = 100;
+	static const size_t SIZE = 100;
     
 	log4cxx::LoggerPtr logger;
 	int first;

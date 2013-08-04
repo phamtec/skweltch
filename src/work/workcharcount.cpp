@@ -43,7 +43,9 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	int length = msg.getPayload().length();
 
 	// and set the sink msg.
-	smsg->dataMsg(msg.getId(), lexical_cast<string>(length));
+	vector<string> v;
+	v.push_back(lexical_cast<string>(length));
+	smsg->dataMsg(msg.getId(), v);
 	
 }
 
