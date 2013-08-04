@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 #include <zmq.hpp>
 #include <czmq.h>
 #include <zclock.h>
@@ -77,12 +79,17 @@ int VWorker::sendAll(Vent *vent) {
 
 	SendChunk w(vent, this, sleeptime, sleepevery);
 	XPathSplitter splitter(logger, input);
-	splitter.process(xpath, &w);
+	if (!splitter.process(xpath, &w)) {
+		return 0;
+	}
+	
 	return w.getId()-1;
 	
 }
 
-int main (int argc, char *argv[])
+int doWork(JsonObject *pipes, JsonObject *root, istream *f);
+
+int main(int argc, char *argv[])
 {
  	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
 
@@ -114,36 +121,59 @@ int main (int argc, char *argv[])
 
 	string filename = root.getString("filename");
 	
- 	int sleeptime = root.getInt("sleep", 0);
-	int sleepevery = root.getInt("every", 0);
-	string xpath = root.getString("xpath");
+	if (filename.find(".gz") > 0) {
+		ifstream fs(filename.c_str(), ios_base::in | ios_base::binary);    
+		if (!fs.is_open()) {
+			LOG4CXX_ERROR(logger, " no file " << filename)
+			return 1;
+		}
 	
-	LOG4CXX_DEBUG(logger, "sleeping " << sleeptime << " every " << sleepevery)
+		iostreams::filtering_streambuf<iostreams::input> in;
+		in.push(iostreams::gzip_decompressor());
+		in.push(fs);
+		istream f(&in);
 	
+		return doWork(&pipes, &root, &f);
+
+	}
+	else {
+		ifstream f(filename.c_str(), ifstream::in);
+		if (!f.is_open()) {
+			LOG4CXX_ERROR(logger, " no file " << filename)
+			return 1;
+		}
+	
+		return doWork(&pipes, &root, &f);
+	}
+
+}
+
+int doWork(JsonObject *pipes, JsonObject *root, istream *f) {
+
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
 	zmq::socket_t sink(context, ZMQ_PUSH);
 
  	Ports ports(logger);
-    if (!ports.join(&sender, pipes, "pushTo")) {
+    if (!ports.join(&sender, *pipes, "pushTo")) {
     	return 1;
     }
-    if (!ports.join(&sink, pipes, "syncTo")) {
+    if (!ports.join(&sink, *pipes, "syncTo")) {
     	return 1;
     }
 
-	ifstream f(filename.c_str(), ifstream::in);
-	if (!f.is_open()) {
-		LOG4CXX_ERROR(logger, " no file " << filename)
-		return 1;
-	}
+ 	int sleeptime = root->getInt("sleep", 0);
+	int sleepevery = root->getInt("every", 0);
+	string xpath = root->getString("xpath");
 	
-    //  Send count tasks
-    s_catch_signals ();
+	LOG4CXX_DEBUG(logger, "sleeping " << sleeptime << " every " << sleepevery)
+	
+	//  Send count tasks
+	s_catch_signals ();
 
 	// and do the vent.
 	Vent v(logger, &sink, &sender);
-	VWorker w(&f, xpath, sleeptime, sleepevery);
+	VWorker w(f, xpath, sleeptime, sleepevery);
 	if (v.process(&w)) {
 		return 0;
 	}

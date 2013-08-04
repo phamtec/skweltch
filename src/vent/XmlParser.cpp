@@ -27,7 +27,9 @@ bool XmlParser::process(IXmlElement *elem) {
 			case START:
 				// dump what we have since the last end tag.
 				if (!s.empty()) {
-					elem->content(s);
+					if (!elem->content(s)) {
+						return false;
+					}
 				}
 				state = INTAG;
 				s = "";
@@ -61,13 +63,17 @@ bool XmlParser::process(IXmlElement *elem) {
 				
 			case INATTR:
 				// go to next attr.
-				elem->attr(s);
+				if (!elem->attr(s)) {
+					return false;
+				}
 				s = "";
 				break;
 				
 			case INTAG:
 				state = INATTR;
-				elem->startTag(s);
+				if (!elem->startTag(s)) {
+					return false;
+				}
 				// collecting the attribute.
 				s = "";
 				break;
@@ -86,26 +92,38 @@ bool XmlParser::process(IXmlElement *elem) {
 				
 			case INATTR:
 				// output the last attribute.
-				elem->attr(s);
-				elem->endAttr();
+				if (!elem->attr(s)) {
+					return false;
+				}
+				if (!elem->endAttr()) {
+					return false;
+				}
 				s = "";
 				state = START;
 				break;
 				
 			case INTAG:
 				if (s[0] == '/') {
-					elem->endTag(s.substr(1));
+					if (!elem->endTag(s.substr(1))) {
+						return false;
+					}
 				}
 				else {
-					elem->startTag(s);
-					elem->endAttr();
+					if (!elem->startTag(s)) {
+						return false;
+					}
+					if (!elem->endAttr()) {
+						return false;
+					}
 				}
 				s = "";
 				state = START;
 				break;
 				
 			case INPI:
-				elem->pi(s);
+				if (!elem->pi(s)) {
+					return false;
+				}
 				s = "";
 				state = START;
 				break;

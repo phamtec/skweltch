@@ -78,7 +78,9 @@ bool XPathSplitterElem::endTag(const string &s) {
 		
 			if (spos == stack.size()) {
 				// finished the chunk.
-				ch->chunk(chunk);
+				if (!ch->chunk(chunk)) {
+					return false;
+				}
 			}
 					
 			// back up the stack.

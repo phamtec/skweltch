@@ -1,0 +1,18 @@
+{
+	"mutations": 20,
+	"iterations": 3,
+	"groups": 1,
+	"success": {
+    	"file": "results.dat"
+    },
+	"background[0]" : {
+		"group": 1,
+		"var": "count",
+		"type": "int",
+		"select": "random",
+		"low": 4,
+		"high": 20,
+		"enabled": true,
+		"fail": false
+	}
+}

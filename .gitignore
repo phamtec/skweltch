@@ -1,6 +1,8 @@
 
 *.pde
 
+src/bin/*
+
 src/test/bin/*
 
 *.out

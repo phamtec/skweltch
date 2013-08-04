@@ -51,6 +51,7 @@ exe ventxml : ventxml.cpp XmlParser.cpp XPathSplitter.cpp
 		czmq
 		/core//core
 		/config//config
+		/boost//iostreams
 		msgpack
 		log4cxx
 	:	<include>../cppzmq-master

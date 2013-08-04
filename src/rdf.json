@@ -22,7 +22,9 @@
 			}
 		},
 		"config" : {
-			"filename": "data/rdf.xml",
+			// the file may be gzipped.
+//			"filename": "data/rdf2.xml.gz",
+			"filename": "../content.rdf.u8.gz",
 			"xpath": "RDF/Topic",
 			"sleep": 5,
 			"every": 2000

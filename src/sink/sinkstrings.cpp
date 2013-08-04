@@ -25,8 +25,10 @@ class SWorker : public ISinkWorker {
 
 private:
 	JsonArray list;
+	ofstream *dat;
 	
 public:
+	SWorker(ofstream *d) : dat(d) {}
 	
 	virtual void first(int id) {}
 	virtual void last(int id) {}
@@ -43,16 +45,21 @@ public:
 void SWorker::process(int id, vector<string> *data) {
 
 	for (vector<string>::iterator i=data->begin(); i != data->end(); i++) {
-		list.add(*i);
+		*dat << *i << endl;
 	}
 	
 }
 
 void SWorker::results(int total_ms) {
 
+	// finished with this now.
+	dat->close();
+
 	JsonObject result;
 	result.add("elapsed", total_ms);
-	result.add("data", list);
+	
+	// results are really out there...
+	result.add("file", "results.dat");
 	
 	// write the results.
 	{
@@ -105,12 +112,15 @@ int main (int argc, char *argv[])
     	return 1;
     }
 
+	// get ready to write all the results.
+	ofstream dat("results.dat");
+
 	// turn on interrupts.
     s_catch_signals ();
 
 	// and do the sink.
 	Sink s(logger, &receiver);
-	SWorker w;
+	SWorker w(&dat);
 	if (s.process(&w)) {
 		return 0;
 	}
