@@ -37,7 +37,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 	DataMsg<std::string> msg(message);
 
-	LOG4CXX_DEBUG(logger,  "msg " << msg.getId());
+	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
 
 	string word = msg.getPayload();
 	
@@ -64,7 +64,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 		result[index] = ss[0];
 	}
 
-	LOG4CXX_DEBUG(logger,  "result " << result);
+	LOG4CXX_TRACE(logger,  "result " << result);
 
 	// and set the sink msg.
 	vector<string> v;

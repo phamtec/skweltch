@@ -41,7 +41,7 @@ XPathSplitterElem::XPathSplitterElem(log4cxx::LoggerPtr l, const string &xpath, 
 
 bool XPathSplitterElem::startTag(const string &s) {
 
-	LOG4CXX_DEBUG(logger, "start tag " << s << ".")
+	LOG4CXX_TRACE(logger, "start tag " << s << ".")
 
     if (spos < stack.size()) {
 		if (s == stack[spos]) {
@@ -69,7 +69,7 @@ bool XPathSplitterElem::endAttr() {
 
 bool XPathSplitterElem::endTag(const string &s) {
 
-	LOG4CXX_DEBUG(logger, "end tag " << s << ".")
+	LOG4CXX_TRACE(logger, "end tag " << s << ".")
 
 	chunk += "</" + s + ">";	
 	

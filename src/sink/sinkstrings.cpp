@@ -25,10 +25,10 @@ class SWorker : public ISinkWorker {
 
 private:
 	JsonArray list;
-	ofstream *dat;
+	ostream *dat;
 	
 public:
-	SWorker(ofstream *d) : dat(d) {}
+	SWorker(ostream *d) : dat(d) {}
 	
 	virtual void first(int id) {}
 	virtual void last(int id) {}
@@ -51,9 +51,6 @@ void SWorker::process(int id, vector<string> *data) {
 }
 
 void SWorker::results(int total_ms) {
-
-	// finished with this now.
-	dat->close();
 
 	JsonObject result;
 	result.add("elapsed", total_ms);

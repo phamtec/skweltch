@@ -62,7 +62,8 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		
 		// try to open the results file.
 		JsonObject results;
-		for (int i=0; i<100; i++) {
+		int retries = 0;
+		for (; retries<resultsSleepCount; retries++) {
 			ifstream s("results.json");
 			if (s.is_open()) {
 				LOG4CXX_DEBUG(logger, "results ready.")
@@ -72,30 +73,36 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 			
 			// allow the file to be written.
 			LOG4CXX_DEBUG(logger, "results not ready, waiting...")
-			zclock_sleep(50);
+			zclock_sleep(resultsSleep);
+		}
+		
+		if (retries >= resultsSleepCount) {
+			LOG4CXX_ERROR(logger, "still no results after " << (resultsSleep * resultsSleepCount) << " ms.")
 		}
 		
 		if (!results.empty()) {
 		
 			// compare the results against the success condition.
 			bool bad = false;
-			JsonObject &o = const_cast<JsonObject &>(success);
-			for (JsonObject::iterator i=o.begin(); !bad && i != o.end(); i++) {
-				string k = o.getKey(i);
-				if (o.isValueDouble(i)) {
-					double v = o.getValueDouble(i);
-					double rv = results.getDouble(k);
-					if (abs(v - rv) > 0.005) {
-						LOG4CXX_ERROR(logger, "failure because " << k << "=" << rv << " not " << v)
-						bad = true;
+			if (!success.empty()) {
+				JsonObject &o = const_cast<JsonObject &>(success);
+				for (JsonObject::iterator i=o.begin(); !bad && i != o.end(); i++) {
+					string k = o.getKey(i);
+					if (o.isValueDouble(i)) {
+						double v = o.getValueDouble(i);
+						double rv = results.getDouble(k);
+						if (abs(v - rv) > 0.005) {
+							LOG4CXX_ERROR(logger, "failure because " << k << "=" << rv << " not " << v)
+							bad = true;
+						}
 					}
-				}
-				else {
-					string v = o.getValueString(i);
-					string rv = results.getAsString(k);
-					if (v != rv) {
-						LOG4CXX_ERROR(logger, "failure because " << k << "=" << rv << " not " << v)
-						bad = true;
+					else {
+						string v = o.getValueString(i);
+						string rv = results.getAsString(k);
+						if (v != rv) {
+							LOG4CXX_ERROR(logger, "failure because " << k << "=" << rv << " not " << v)
+							bad = true;
+						}
 					}
 				}
 			}

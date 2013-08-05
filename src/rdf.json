@@ -50,7 +50,7 @@
 	// these are all run in the background and remembered.
 	"background": [
 		{
-			"count": 3,
+			"count": 10,
 			"name": "WorkXPath",
 			"exe": "dist/workxpath",
 			"node": "localhost",
@@ -82,5 +82,5 @@
 			"totalTime": 4000
 		}
 	}
-		
+
 }

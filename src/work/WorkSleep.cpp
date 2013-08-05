@@ -36,7 +36,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 	IntMsg msg(message);
 
-	LOG4CXX_DEBUG(logger,  "msg " << msg.getId());
+	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
 
 	//  Do the work
 	zclock_sleep(msg.getPayload());

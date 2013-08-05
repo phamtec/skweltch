@@ -1,6 +1,6 @@
 {
-	"mutations": 20,
-	"iterations": 3,
+	"mutations": 30,
+	"iterations": 4,
 	"groups": 1,
 	"success": {
     	"file": "results.dat"
@@ -10,8 +10,8 @@
 		"var": "count",
 		"type": "int",
 		"select": "random",
-		"low": 4,
-		"high": 20,
+		"low": 10,
+		"high": 100,
 		"enabled": true,
 		"fail": false
 	}

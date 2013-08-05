@@ -67,7 +67,7 @@ bool SendChunk::chunk(const std::string &s) {
 	StringMsg msg(id++, s);
 	msg.set(&message);
 	
-	LOG4CXX_DEBUG(logger, "sending chunk.")
+	LOG4CXX_TRACE(logger, "sending chunk.")
 
 	return vent->sendOne(worker, message, sleeptime, sleepevery);
 
@@ -75,7 +75,7 @@ bool SendChunk::chunk(const std::string &s) {
 
 int VWorker::sendAll(Vent *vent) {
 
-	LOG4CXX_DEBUG(logger, "parsing xpath "<< xpath << ".")
+	LOG4CXX_TRACE(logger, "parsing xpath "<< xpath << ".")
 
 	SendChunk w(vent, this, sleeptime, sleepevery);
 	XPathSplitter splitter(logger, input);

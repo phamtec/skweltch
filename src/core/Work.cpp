@@ -33,7 +33,7 @@ void Work::process(IWorkWorker *worker) {
 		SinkMsg smsg;
         worker->process(message, &smsg);
     
-		LOG4CXX_DEBUG(logger,  "sending msg: " << smsg.getId())
+		LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
  
          // Send results to sink
 		smsg.set(&message);

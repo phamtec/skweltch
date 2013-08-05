@@ -50,22 +50,7 @@ bool Sink::process(ISinkWorker *worker) {
 			// mark this message off.
 			tracker.track(sinkmsg.getId());
 			
-   			LOG4CXX_DEBUG(logger, "msg: " << sinkmsg.getId())
-			
- 			if (tracker.complete()) {
-			
-				LOG4CXX_INFO(logger, "Finished.")
-
-				 //  Calculate and report duration of batch
-				int total_msec = elapsed.getTotal();
-
-				// get results.
-				worker->results(total_msec);
-				LOG4CXX_INFO(logger, "Results written.")
-			
-				// start tracking from the start.
-				tracker.reset();
-			}
+   			LOG4CXX_TRACE(logger, "msg: " << sinkmsg.getId())
 			break;
 			
 		case 3:
@@ -78,6 +63,21 @@ bool Sink::process(ISinkWorker *worker) {
 		default:
   			LOG4CXX_ERROR(logger, "Unknown message: " << sinkmsg.getCode())
    			return false;
+		}
+		
+		if (tracker.complete()) {
+		
+			LOG4CXX_INFO(logger, "Finished.")
+
+			 //  Calculate and report duration of batch
+			int total_msec = elapsed.getTotal();
+
+			// get results.
+			worker->results(total_msec);
+			LOG4CXX_INFO(logger, "Results written.")
+		
+			// start tracking from the start.
+			tracker.reset();
 		}
 	}
 	

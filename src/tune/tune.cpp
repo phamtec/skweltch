@@ -69,7 +69,7 @@ int main (int argc, char *argv[])
     s_catch_signals ();
 
  	MachineTuner tuner(logger, &config, &tuneconfig, &s_interrupted);
- 	MachineRunner runner(logger, &s_interrupted);
+ 	MachineRunner runner(logger, &s_interrupted, 1000, 120);
 
    	// tune it.
    	try {

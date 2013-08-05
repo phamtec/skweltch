@@ -150,7 +150,7 @@ void TaskMonitor::waitFinish(const vector<int> &pids) {
 
 	// make sure we ack all the children.
 	for (vector<int>::const_iterator i=pids.begin(); i != pids.end(); i++) {
-		zclock_sleep(5);
+		zclock_sleep(20);
 		::waitpid(*i, NULL, 0);	
 	}
 	

@@ -51,7 +51,7 @@ bool MsgTracker::complete() {
 	
 	// don't know yet.
 	if (last == -1) {
- 		LOG4CXX_DEBUG(logger, "no last yet.")
+ 		LOG4CXX_TRACE(logger, "no last yet.")
 		return false;
 	}
 	
@@ -81,7 +81,7 @@ bool MsgTracker::complete() {
 		}
 	}
 	
-  	LOG4CXX_DEBUG(logger, "all messages received.")
+  	LOG4CXX_INFO(logger, "all messages received.")
 	return true;
 }
 
