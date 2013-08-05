@@ -1,0 +1,42 @@
+
+# Get all of what we need.
+sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool liblog4cxx10 liblog4cxx10-dev
+
+# get and install boost
+sudo -s
+curl -O http://aarnet.dl.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.tar.gz
+tar xzf boost_1_54_0.tar.gz
+cd boost_1_54_0
+./bootstrap.sh --with-libraries=exception,math,system,iostreams,regex,random,thread,date_time,program_options,serialization,signals,test,log,locale,graph,filesystem,atomic,chrono,context,wave
+./b2 install --without-mpi
+cd tools/build/v2
+./bootstrap.sh
+./b2 install
+exit
+
+# get the source code for our stuff
+git clone https://phamtec@github.com/phamtec/skweltch.git
+
+curl -O http://download.zeromq.org/zeromq-3.2.3.tar.gz
+tar xzf zeromq-3.2.3.tar.gz
+cd zeromq-3.2.3
+./configure
+make
+sudo make install
+
+curl -O http://download.zeromq.org/czmq-1.4.1.tar.gz
+tar xzf czmq-1.4.1.tar.gz
+cd czmq-1.4.1
+./configure
+make
+sudo macurl -O ke install
+
+git clone https://github.com/msgpack/msgpack-c.git
+cd msgpack-c
+./bootstrap
+./configure
+make
+make install
+
+
+
