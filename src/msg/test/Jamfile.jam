@@ -21,6 +21,7 @@ explicit unit_test_framework ;
 lib zmq : : <name>zmq ;
 lib log4cxx : : <name>log4cxx ;
 lib msgpack : : <name>msgpack ;
+lib apr : : <name>'apr-1' ;
 
 unit-test msg.test
 	: msgtest.cpp
@@ -30,6 +31,7 @@ unit-test msg.test
 		zmq
 		msgpack
 		log4cxx
+		apr
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config

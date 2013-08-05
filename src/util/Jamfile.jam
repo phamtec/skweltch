@@ -12,6 +12,7 @@ project util
 lib zmq : : <name>zmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 exe listen : listen.cpp
 		/config//config
@@ -19,6 +20,7 @@ exe listen : listen.cpp
 		zmq
 		msgpack
 		log4cxx
+		apr
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config
@@ -32,6 +34,7 @@ exe send : send.cpp
 		zmq
 		msgpack
 		log4cxx
+		apr
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config

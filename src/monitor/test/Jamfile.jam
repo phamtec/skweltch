@@ -20,6 +20,7 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 unit-test pipes.test
 	: pipestest.cpp ../PipeBuilder.cpp
@@ -28,6 +29,7 @@ unit-test pipes.test
 		/config//config
 		/boost/test
 		log4cxx
+		apr
 	:   <include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config

@@ -22,6 +22,7 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 unit-test ports.test
 	: portstest.cpp
@@ -30,6 +31,7 @@ unit-test ports.test
 		/config//config
 		/boost/test
 		log4cxx
+		apr
 	:   <include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config

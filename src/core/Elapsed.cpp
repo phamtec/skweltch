@@ -3,15 +3,14 @@
 
 Elapsed::Elapsed() {
 
-    //  Start our clock now
-    gettimeofday (&tstart, NULL);
-
+    start();
+ 
 }
 
 void Elapsed::start() {
 
     //  Start our clock now
-    gettimeofday (&tstart, NULL);
+    gettimeofday (&tstart, 0);
 
 }
 
@@ -19,7 +18,7 @@ int Elapsed::getTotal() {
 
     //  Calculate and report duration of batch
     struct timeval tend, tdiff;
-    gettimeofday(&tend, NULL);
+    gettimeofday(&tend, 0);
     if (tend.tv_usec < tstart.tv_usec) {
         tdiff.tv_sec = tend.tv_sec - tstart.tv_sec - 1;
         tdiff.tv_usec = 1000000 + tend.tv_usec - tstart.tv_usec;

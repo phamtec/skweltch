@@ -14,6 +14,7 @@ build-project test ;
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 lib monlib : PipeBuilder.cpp TaskMonitor.cpp
 		/config//config
@@ -34,6 +35,7 @@ exe monitor : monitor.cpp
 		zmq
 		czmq
 		log4cxx
+		apr
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config

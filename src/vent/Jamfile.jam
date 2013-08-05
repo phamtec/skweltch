@@ -15,6 +15,7 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 exe ventrandomnum : VentRandomNum.cpp
 		zmq
@@ -23,6 +24,7 @@ exe ventrandomnum : VentRandomNum.cpp
 		/config//config
 		msgpack
 		log4cxx
+		apr
 	:   <include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -38,6 +40,7 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 		/config//config
 		msgpack
 		log4cxx
+		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -54,6 +57,7 @@ exe ventxml : ventxml.cpp XmlParser.cpp XPathSplitter.cpp
 		/boost//iostreams
 		msgpack
 		log4cxx
+		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core

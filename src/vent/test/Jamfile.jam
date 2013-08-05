@@ -19,6 +19,7 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>'apr-1' ;
 
 unit-test words.test
 	: wordstest.cpp ../WordSplitter.cpp
@@ -31,6 +32,7 @@ unit-test xpath.test
 	: xpathtest.cpp ../XmlParser.cpp ../XPathSplitter.cpp
 		/boost/test
 		log4cxx
+		apr
 	:  <include>../../turtle-1.2.2/include 
 	:
 	;
