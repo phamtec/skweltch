@@ -67,6 +67,8 @@ src/graph/bin/*
 
 src/graph/test/bin/*
 
+src/machine/bin/*
+
 turtle-1.2.2.zip
 
 turtle-1.2.2/*
