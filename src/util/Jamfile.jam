@@ -5,7 +5,7 @@ project util
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
-         <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
+         <toolset>gcc:<library>'apr-1'<library>'aprutil-1'
    :
     :
     ;

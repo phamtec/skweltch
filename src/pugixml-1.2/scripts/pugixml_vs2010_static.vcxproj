@@ -92,7 +92,7 @@
 		<ResourceCompile>
 			<PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 		</ResourceCompile>
-	<Lib>
+	<library>
 		<OutputFile>$(OutDir)pugixmlsd.lib</OutputFile>
 	</Lib>
 		<Link>
@@ -116,7 +116,7 @@
 		<ResourceCompile>
 			<PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 		</ResourceCompile>
-	<Lib>
+	<library>
 		<OutputFile>$(OutDir)pugixmlsd.lib</OutputFile>
 	</Lib>
 		<Link>
@@ -140,7 +140,7 @@
 		<ResourceCompile>
 			<PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 		</ResourceCompile>
-	<Lib>
+	<library>
 		<OutputFile>$(OutDir)pugixmls.lib</OutputFile>
 	</Lib>
 		<Link>
@@ -166,7 +166,7 @@
 		<ResourceCompile>
 			<PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 		</ResourceCompile>
-	<Lib>
+	<library>
 		<OutputFile>$(OutDir)pugixmls.lib</OutputFile>
 	</Lib>
 		<Link>
