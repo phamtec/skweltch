@@ -22,10 +22,10 @@ public:
 	// factories.
 	void startMsg(const std::string &config) 
 		{ data.first = 1; data.second = config; }
-	void ventMsg(const std::string &config) 
-		{ data.first = 2; data.second = config; }
-	void stopMsg(const std::string &config) 
-		{ data.first = 3; data.second = config; }
+	void ventMsg() 
+		{ data.first = 2; }
+	void stopMsg() 
+		{ data.first = 3; }
 		
 };
 

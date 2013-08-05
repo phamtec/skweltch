@@ -1,0 +1,86 @@
+{
+	"pidFile": "tasks.pid",
+	
+	// this is what is used to feed the machine.
+	// always one of them.
+	"vent" : {
+		"name": "VentXML",
+		"exe": "dist/ventxml",
+		"node": "localhost",
+		"connections": {
+			"pushTo": {
+				"direction": "to",
+				"mode":"bind",
+				"address": "*",
+				"port": 5557
+			},
+			"syncTo": {
+				"direction": "to",
+				"mode":"connect",
+				"block": "SinkStrings",
+				"connection": "pullFrom"
+			}
+		},
+		"config" : {
+			// the file may be gzipped.
+//			"filename": "data/rdf2.xml.gz",
+			"filename": "../content.rdf.u8.gz",
+			"xpath": "RDF/Topic",
+			"sleep": 5,
+			"every": 2000
+		}
+	},
+	
+	"sink" : {
+		"name": "SinkStrings",
+		"exe": "dist/sinkstrings",
+		"node": "localhost",
+		"connections": {
+			"pullFrom": {
+				"direction": "from",
+				"mode":"bind",
+				"address": "*",
+				"port": 5558
+			}
+		},
+		"config" : {
+		}
+	},
+		
+	// these are all run in the background and remembered.
+	"background": [
+		{
+			"count": 10,
+			"name": "WorkXPath",
+			"exe": "dist/workxpath",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"connect",
+					"block": "VentXML",
+					"connection": "pushTo"
+				},
+				"pushTo": {
+					"direction": "to",
+					"block": "SinkStrings",
+					"mode":"connect",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
+				"xpath": "Topic/*[starts-with(name(), 'link')]/@r:resource"
+			}
+		}
+	],
+	
+	// and this is what is used to reap.
+	"reap": {
+		"name": "GrimReaper",
+		"exe": "dist/grimreaper",
+		"config" : {
+			"totalTime": 4000
+		}
+	}
+
+}

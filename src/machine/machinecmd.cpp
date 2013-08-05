@@ -68,10 +68,10 @@ int main (int argc, char *argv[])
 			msg.startMsg(vm["jsonConfig"].as<string>());
 		}
 		else if (vm["cmd"].as<string>() == "vent") {
-			msg.ventMsg(vm["jsonConfig"].as<string>());
+			msg.ventMsg();
 		}
 		else if (vm["cmd"].as<string>() == "stop") {
-			msg.stopMsg(vm["jsonConfig"].as<string>());
+			msg.stopMsg();
 		}
 		else {
 			LOG4CXX_ERROR(logger, "didn't understand command.")

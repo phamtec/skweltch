@@ -18,6 +18,8 @@ namespace po = boost::program_options;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.machine"));
 
+bool stop(TaskMonitor *mon, JsonObject *r, const vector<int> &pids);
+
 int main (int argc, char *argv[])
 {
 	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
@@ -54,6 +56,15 @@ int main (int argc, char *argv[])
 			return 1;
 		}
 		
+		enum {
+			IDLE = 0,
+			RUNNING = 1
+		} state = IDLE;
+	
+		JsonObject r;	
+		vector<int> pids;
+		TaskMonitor mon(logger);
+			
 		s_catch_signals ();
 		while (1) {
 	
@@ -72,35 +83,48 @@ int main (int argc, char *argv[])
 		
 			MachineMsg msg(message);
 		
-			ifstream jsonfile(msg.getData().c_str());
-			JsonObject r;
-			if (!r.read(logger, &jsonfile)) {
-				return 1;
-			}
-	
-			vector<int> pids;
-			TaskMonitor mon(logger);
 			switch (msg.getCode()) {
 			case 1:
 				{
+					if (state == RUNNING) {
+						if (!stop(&mon, &r, pids)) {
+							return 1;
+						}
+						pids.clear();
+					}
+					ifstream jsonfile(msg.getData().c_str());
+					if (!r.read(logger, &jsonfile)) {
+						return 1;
+					}
 					if (!mon.start(&r, &pids, true)) {
+						return 1;
+					}
+					state = RUNNING;
+				}
+				break;
+				
+			case 2:
+				if (state != RUNNING) {
+					LOG4CXX_ERROR(logger, "not running.")
+				}
+				else {
+					if (!mon.doVent(&r, 0)) {
 						return 1;
 					}
 				}
 				break;
 				
-			case 2:
-				if (!mon.doVent(&r, 0)) {
-					return 1;
-				}
-				break;
-				
 			case 3:
-				if (!mon.doReap(&r, 0)) {
-					return 1;
+				if (state != RUNNING) {
+					LOG4CXX_ERROR(logger, "not running.")
 				}
-				// wait till everything is gone.
-				mon.waitFinish(pids);
+				else {
+					if (!stop(&mon, &r, pids)) {
+						return 1;
+					}
+					pids.clear();
+					state = IDLE;
+				}
 				break;
 			}
 		}
@@ -111,4 +135,16 @@ int main (int argc, char *argv[])
 		LOG4CXX_ERROR(logger, e.what())
 	}
 	
+}
+
+bool stop(TaskMonitor *mon, JsonObject *r, const vector<int> &pids) {
+
+	if (!mon->doReap(r, 0)) {
+		return false;
+	}
+	
+	// wait till everything is gone.
+	mon->waitFinish(pids);
+	
+	return true;
 }
