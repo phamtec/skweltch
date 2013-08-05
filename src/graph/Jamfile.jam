@@ -5,6 +5,7 @@ project graph
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;

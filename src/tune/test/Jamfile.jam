@@ -4,7 +4,8 @@ project tune-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-    :
+         <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
+   :
     :
     ;
 
@@ -20,7 +21,6 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>'apr-1' ;
 
 unit-test tuner.test
 	: tunertest.cpp ../MachineTuner.cpp
@@ -29,7 +29,6 @@ unit-test tuner.test
 		/config//config
 		/boost/test
 		log4cxx
-		apr
 		/boost//filesystem
 		/boost//system
 	:   <include>../../turtle-1.2.2/include 

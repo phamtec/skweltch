@@ -5,6 +5,7 @@ project pipe
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;
@@ -13,7 +14,6 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>'apr-1' ;
 
 exe pipecount : pipecount.cpp
 		zmq
@@ -22,7 +22,6 @@ exe pipecount : pipecount.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config
@@ -37,7 +36,6 @@ exe pipedump : pipedump.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../config

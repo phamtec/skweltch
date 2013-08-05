@@ -5,6 +5,7 @@ project tune
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;
@@ -14,7 +15,6 @@ build-project test ;
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>'apr-1' ;
 
 exe tune : tune.cpp MachineTuner.cpp
 		/config//config
@@ -23,7 +23,6 @@ exe tune : tune.cpp MachineTuner.cpp
 		/machine//machinelib
 		czmq
 		log4cxx
-		apr
 		/boost//filesystem
 		/boost//system
 	:	<include>../core
@@ -41,7 +40,6 @@ exe soak : soak.cpp
 		/machine//machinelib
 		czmq
 		log4cxx
-		apr
 		/boost//filesystem
 		/boost//system
 	:	<include>../core

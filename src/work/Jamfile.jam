@@ -5,6 +5,7 @@ project work
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;
@@ -15,7 +16,6 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>'apr-1' ;
 
 exe worksleep : WorkSleep.cpp
 		zmq
@@ -24,7 +24,6 @@ exe worksleep : WorkSleep.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../msg
@@ -40,7 +39,6 @@ exe workcharcount : workcharcount.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../msg
@@ -56,7 +54,6 @@ exe workcharfreq : workcharfreq.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../msg
@@ -72,7 +69,6 @@ exe workxpath : workxpath.cpp ../pugixml-1.2/src/pugixml.cpp
 		/core//core
 		/config//config
 		log4cxx
-		apr
 	: 	<include>../cppzmq-master
 		<include>../core
 		<include>../msg

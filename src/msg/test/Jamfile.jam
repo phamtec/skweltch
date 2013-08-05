@@ -4,6 +4,7 @@ project msg-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;
@@ -21,7 +22,6 @@ explicit unit_test_framework ;
 lib zmq : : <name>zmq ;
 lib log4cxx : : <name>log4cxx ;
 lib msgpack : : <name>msgpack ;
-lib apr : : <name>'apr-1' ;
 
 unit-test msg.test
 	: msgtest.cpp
@@ -31,7 +31,6 @@ unit-test msg.test
 		zmq
 		msgpack
 		log4cxx
-		apr
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config

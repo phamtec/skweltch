@@ -5,6 +5,7 @@ project sink
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <toolset>gcc:<lib>'apr-1'<lib>'aprutil-1'
     :
     :
     ;
@@ -14,7 +15,6 @@ build-project test ;
 lib zmq : : <name>zmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>'apr-1' ;
 
 exe sinkelapsed : SinkElapsed.cpp
 		/core//core
@@ -23,7 +23,6 @@ exe sinkelapsed : SinkElapsed.cpp
 		zmq
 		msgpack
 		log4cxx
-		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -38,7 +37,6 @@ exe sinkavg : sinkavg.cpp
 		zmq
 		msgpack
 		log4cxx
-		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -53,7 +51,6 @@ exe sinkstrings : sinkstrings.cpp
 		zmq
 		msgpack
 		log4cxx
-		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
@@ -68,7 +65,6 @@ exe sinkcharfreq : sinkcharfreq.cpp
 		zmq
 		msgpack
 		log4cxx
-		apr
 	:	<include>../cppzmq-master
 		<include>../config
 		<include>../core
