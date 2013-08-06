@@ -32,7 +32,6 @@ lib httpserver : connection.cpp
 		/config//config
 		/boost/system//boost_system
 		/boost/thread//boost_thread
-		/boost//log
 		log4cxx apr aprutil expat
 	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 

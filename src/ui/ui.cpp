@@ -6,20 +6,24 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <fstream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
 
 using namespace std;
 using namespace boost;
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+LoggerPtr logger(Logger::getLogger("org.skweltch.ui"));
 
 int main(int argc, char* argv[])
 {
-	log::add_file_log(log::keywords::file_name = "ui.log", log::keywords::auto_flush = true);
-	
+	// Set up a simple configuration that logs on the console.
+	PropertyConfigurator::configure("log4cxx.conf");
+
 	if (argc != 4) {
-		BOOST_LOG_TRIVIAL(error) << "Usage: rest <address> <port> <doc_root>\n";
+		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " <address> <port> <doc_root>")
 		return 1;
 	}
 	
@@ -35,7 +39,7 @@ int main(int argc, char* argv[])
 	}
 	catch (std::exception& e)
 	{
-		BOOST_LOG_TRIVIAL(error) << "exception: " << e.what();
+		LOG4CXX_ERROR(logger, "exception: " << e.what())
 	}
 
 	return 0;

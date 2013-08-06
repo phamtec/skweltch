@@ -13,7 +13,7 @@ using namespace std;
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 
-LoggerPtr logger(Logger::getLogger("org.skweltch"));
+LoggerPtr logger(Logger::getLogger("org.skweltch.listen"));
 
 int main (int argc, char *argv[])
 {

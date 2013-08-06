@@ -16,7 +16,7 @@ void packval(msgpack::sbuffer *sbuf, const char *s);
 void packpair(msgpack::sbuffer *sbuf, const char *s1, const char *s2);
 void packtuple(msgpack::sbuffer *sbuf, const char *s1, const char *s2, const char *s3);
 
-LoggerPtr logger(Logger::getLogger("org.skweltch"));
+LoggerPtr logger(Logger::getLogger("org.skweltch.send"));
 
 int main (int argc, char *argv[])
 {
