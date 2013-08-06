@@ -1,0 +1,51 @@
+
+# Get all of what we need.
+# sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool python-dev liblog4cxx10 liblog4cxx10-dev
+
+sudo yum install git-core zlib-devel bzip2-devel gcc gcc-c++ autoconf libtool liblog4cxx10 liblog4cxx10-dev
+
+# get the source code for our stuff
+git clone https://phamtec@github.com/phamtec/skweltch.git
+
+# don't need this...
+sudo -s
+cd /opt
+# get and install boost
+curl -O http://aarnet.dl.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.tar.gz
+tar xzf boost_1_54_0.tar.gz
+cd boost_1_54_0
+./bootstrap.sh --with-libraries=exception,math,system,iostreams,regex,random,thread,date_time,program_options,serialization,signals,test,locale,filesystem,atomic,chrono,context,wave
+./b2 install --without-mpi
+cd tools/build/v2
+./bootstrap.sh
+./b2 install
+cd /opt/boost_1_54_0
+chown -R ec2-user:ec2-user *
+exit
+
+# get the source code for our stuff
+git clone https://phamtec@github.com/phamtec/skweltch.git
+
+curl -O http://download.zeromq.org/zeromq-3.2.3.tar.gz
+tar xzf zeromq-3.2.3.tar.gz
+cd zeromq-3.2.3
+./configure
+make
+sudo make install
+
+curl -O http://download.zeromq.org/czmq-1.4.1.tar.gz
+tar xzf czmq-1.4.1.tar.gz
+cd czmq-1.4.1
+./configure
+make
+sudo make install
+
+git clone https://github.com/msgpack/msgpack-c.git
+cd msgpack-c
+./bootstrap
+./configure
+make
+sudo make install
+
+
+
