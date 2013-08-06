@@ -1,4 +1,7 @@
 
+# get the source code for our stuff
+git clone https://phamtec@github.com/phamtec/skweltch.git
+
 # Get all of what we need.
 sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool python-dev liblog4cxx10 liblog4cxx10-dev
 
@@ -14,9 +17,6 @@ cd tools/build/v2
 ./b2 install
 chown -R paul:paul *
 exit
-
-# get the source code for our stuff
-git clone https://phamtec@github.com/phamtec/skweltch.git
 
 curl -O http://download.zeromq.org/zeromq-3.2.3.tar.gz
 tar xzf zeromq-3.2.3.tar.gz
