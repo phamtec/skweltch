@@ -4,7 +4,7 @@ project ui-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <toolset>gcc:<library>'apr-1'<library>'aprutil-1'
+        <link>static
     :
     :
     ;
@@ -20,6 +20,9 @@ alias unit_test_framework
 explicit unit_test_framework ;
 
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 
 unit-test ui.test
 	: uitest.cpp
@@ -27,7 +30,7 @@ unit-test ui.test
 		/config//config
 		/boost/test
 		/boost/system
-		log4cxx
+		log4cxx apr aprutil expat
 	:   <include>../../turtle-1.2.2/include
 		<include>../../config
 		<include>../../json_spirit_v4.06/json_spirit

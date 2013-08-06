@@ -12,6 +12,9 @@ project machine
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 lib msgpack : : <name>msgpack ;
 
 lib machinelib : MachineRunner.cpp
@@ -19,7 +22,7 @@ lib machinelib : MachineRunner.cpp
 		/core//core
 		/monitor//monlib
 		czmq
-		log4cxx
+		log4cxx apr aprutil expat
 		/boost//filesystem
 		/boost//system
 	:	<include>../core
@@ -35,7 +38,7 @@ exe machine : machine.cpp
 		/monitor//monlib
 		/machine//machinelib
 		zmq
-		log4cxx
+		log4cxx apr aprutil expat
 		msgpack
 		/boost//program_options
 		/boost//filesystem
@@ -56,7 +59,7 @@ exe machinecmd : machinecmd.cpp
 		/monitor//monlib
 		/machine//machinelib
 		zmq
-		log4cxx
+		log4cxx apr aprutil expat
 		msgpack
 		/boost//program_options
 		/boost//filesystem

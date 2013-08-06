@@ -14,9 +14,9 @@ build-project test ;
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>apr-1 ;
-lib aprutil : : <name>aprutil-1 ;
-lib expat : : <name>expat ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 
 lib monlib : PipeBuilder.cpp TaskMonitor.cpp
 		/config//config

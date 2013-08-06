@@ -4,6 +4,7 @@ project msg-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
+        <link>static
     :
     :
     ;
@@ -20,9 +21,9 @@ explicit unit_test_framework ;
 
 lib zmq : : <name>zmq ;
 lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>apr-1 ;
-lib aprutil : : <name>aprutil-1 ;
-lib expat : : <name>expat ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 lib msgpack : : <name>msgpack ;
 
 unit-test msg.test

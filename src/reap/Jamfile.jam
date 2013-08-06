@@ -5,7 +5,6 @@ project reap
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
-        <toolset>gcc:<library>'apr-1'<library>'aprutil-1'
     :
     :
     ;
@@ -13,12 +12,15 @@ project reap
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 
 exe grimreaper : GrimReaper.cpp
 		/core//core
 		/config//config
 		zmq czmq
-		log4cxx
+		log4cxx apr aprutil expat
 	:	<include>../cppzmq-master
 		<include>../core
 		<include>../config

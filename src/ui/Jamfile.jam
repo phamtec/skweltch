@@ -4,7 +4,7 @@ project ui
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <toolset>gcc:<library>'apr-1'<library>'aprutil-1'
+        <link>static
     :
     :
     ;
@@ -13,24 +13,27 @@ build-project rest ;
 build-project test ;
 
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>apr-1 <toolset>gcc ;
+lib aprutil : : <name>aprutil-1 <toolset>gcc ;
+lib expat : : <name>expat <toolset>gcc ;
 
 lib httpserver : connection.cpp
-    connection_manager.cpp
-    mime_types.cpp
-    reply.cpp
-    request_handler.cpp
-    request_parser.cpp
-    server.cpp
-    RestHandler.cpp
-    RestContext.cpp
-    rest/nodesHandler.cpp
-    rest/loadHandler.cpp
-    rest/GraphLayout.cpp
- 	/config//config
-   	/boost/system//boost_system
-    /boost/thread//boost_thread
-    /boost//log
-    log4cxx
+		connection_manager.cpp
+		mime_types.cpp
+		reply.cpp
+		request_handler.cpp
+		request_parser.cpp
+		server.cpp
+		RestHandler.cpp
+		RestContext.cpp
+		rest/nodesHandler.cpp
+		rest/loadHandler.cpp
+		rest/GraphLayout.cpp
+		/config//config
+		/boost/system//boost_system
+		/boost/thread//boost_thread
+		/boost//log
+		log4cxx apr aprutil expat
 	:	<define>BOOST_ALL_NO_LIB=1
 		<include>../config 
 		<include>../json_spirit_v4.06/json_spirit
