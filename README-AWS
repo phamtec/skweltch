@@ -14,8 +14,8 @@ cd /opt
 curl -O http://aarnet.dl.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.tar.gz
 tar xzf boost_1_54_0.tar.gz
 cd boost_1_54_0
-./bootstrap.sh --with-libraries=exception,math,system,iostreams,regex,random,thread,date_time,program_options,serialization,signals,test,locale,filesystem,atomic,chrono,context,wave
-./b2 install --without-mpi
+./bootstrap.sh --with-toolset=gcc 
+./b2 install --without-mpi --without-log --without-graph --without-graph_parallel --without-signals --without-coroutine --without-python --without-wave
 cd tools/build/v2
 ./bootstrap.sh
 ./b2 install
