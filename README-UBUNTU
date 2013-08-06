@@ -1,6 +1,6 @@
 
 # Get all of what we need.
-sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool liblog4cxx10 liblog4cxx10-dev
+sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool python-dev liblog4cxx10 liblog4cxx10-dev
 
 # get and install boost
 sudo -s
@@ -12,6 +12,7 @@ cd boost_1_54_0
 cd tools/build/v2
 ./bootstrap.sh
 ./b2 install
+chown -R paul:paul *
 exit
 
 # get the source code for our stuff
@@ -29,14 +30,14 @@ tar xzf czmq-1.4.1.tar.gz
 cd czmq-1.4.1
 ./configure
 make
-sudo macurl -O ke install
+sudo make install
 
 git clone https://github.com/msgpack/msgpack-c.git
 cd msgpack-c
 ./bootstrap
 ./configure
 make
-make install
+sudo make install
 
 
 

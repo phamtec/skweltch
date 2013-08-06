@@ -4,7 +4,7 @@ project core-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <toolset>gcc:<library>'apr-1'<library>'aprutil-1'
+	<link>static
     :
     :
     ;
@@ -23,6 +23,9 @@ lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib msgpack : : <name>msgpack ;
 lib log4cxx : : <name>log4cxx ;
+lib apr : : <name>apr-1 ;
+lib aprutil : : <name>aprutil-1 ;
+lib expat : : <name>expat ;
 
 unit-test ports.test
 	: portstest.cpp
@@ -30,7 +33,7 @@ unit-test ports.test
 		/core//core
 		/config//config
 		/boost/test
-		log4cxx
+		log4cxx apr aprutil expat
 	:   <include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config
@@ -46,7 +49,7 @@ unit-test vent.test
 		zmq
 		czmq
 		msgpack
-		log4cxx
+		log4cxx apr aprutil expat
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config
@@ -64,7 +67,7 @@ unit-test sink.test
 		zmq
 		czmq
 		msgpack
-		log4cxx
+		log4cxx apr aprutil expat
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config
@@ -82,7 +85,7 @@ unit-test work.test
 		zmq
 		czmq
 		msgpack
-		log4cxx
+		log4cxx apr aprutil expat
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../cppzmq-master
 		<include>../../config
@@ -96,7 +99,7 @@ unit-test track.test
 	: tracktest.cpp
 		/boost/test
 		/core//core
-		log4cxx
+		log4cxx apr aprutil expat
 	:  	<include>../../turtle-1.2.2/include 
 		<include>../../core
 	:
