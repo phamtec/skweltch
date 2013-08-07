@@ -1,3 +1,4 @@
+#define BOOST_TEST_MODULE tune-tests
 #include <boost/test/unit_test.hpp>
 
 #include "JsonPath.hpp"
@@ -12,15 +13,16 @@
 using namespace std;
 using namespace boost;
 
-unit_test::test_suite*
-init_unit_test_suite( int argc, char* argv[] ) 
+struct SetupLogging
 {
-    unit_test::framework::master_test_suite().p_name.value = "tune-tests";
+    SetupLogging() {
+		log4cxx::BasicConfigurator::configure();
+    }
+};
 
-	log4cxx::BasicConfigurator::configure();
+BOOST_AUTO_TEST_SUITE( tuneTests )
 
-    return 0;
-}
+BOOST_GLOBAL_FIXTURE( SetupLogging )
 
 BOOST_AUTO_TEST_CASE( tunerTest )
 {
@@ -187,3 +189,5 @@ BOOST_AUTO_TEST_CASE( tuner3Test )
 	config.dump(log4cxx::Logger::getRootLogger());
 	BOOST_CHECK(JsonPath(log4cxx::Logger::getRootLogger()).getPath(config, "background[0]").getInt("count", -1) == 5);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

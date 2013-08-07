@@ -4,7 +4,6 @@ project sink-test
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <link>static
         <library>/src//zmq
         <library>/src//czmq
         <library>/src//log4cxx
@@ -35,6 +34,6 @@ explicit unit_test_framework ;
 
 unit-test sinkfreq.test
 	: sinkfreqtest.cpp
-	:  <include>../../turtle-1.2.2/include 
+	:
 	:
 	;

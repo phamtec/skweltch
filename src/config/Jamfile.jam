@@ -4,7 +4,7 @@ project config
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <link>static
+        <library>/src//log4cxx
 		<include>../json_spirit_v4.06/json_spirit
     :
     :

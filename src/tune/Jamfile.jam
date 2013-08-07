@@ -4,7 +4,6 @@ project tune
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <link>static
         <library>/src//zmq
         <library>/src//czmq
         <library>/src//log4cxx
@@ -12,6 +11,7 @@ project tune
         <library>/config//config
         <library>/core//core
         <library>/machine//machinelib
+        <library>/monitor//monlib
         <library>/boost//program_options
         <library>/boost//filesystem
         <library>/boost//system

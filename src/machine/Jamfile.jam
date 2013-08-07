@@ -4,7 +4,6 @@ project machine
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <link>static
         <library>/src//zmq
         <library>/src//czmq
         <library>/src//log4cxx

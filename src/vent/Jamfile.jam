@@ -4,7 +4,6 @@ project vent
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-        <link>static
         <library>/src//zmq
         <library>/src//czmq
         <library>/src//log4cxx
@@ -38,7 +37,6 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 
 exe ventxml : ventxml.cpp XmlParser.cpp XPathSplitter.cpp
 		/boost//iostreams
-		/src//bz2
 	:
 	:
 	;
