@@ -8,22 +8,14 @@ collections of Command line programs that do messaging.
 
 We are standing on the shoulders of some fantastic technologies:
 
-- Boost C++ libraries (1.54.0)
--- For everything
-- 0MQ (3.2.3)
--- Excellent messaging system
-- 0MQ C library (1.4.1)
--- The C library for the above
-- cppzmq
--- The C++ library for 0MQ.
-- msgpack C library (from github)
--- The message format on the wire.
-- Log4CXX 10.0
--- For logging (just like Log4J)
-- json_spirit_v4.06
--- JSON for the configuration files, passing parameters etc.
-- pugixml (1.2)
--- for parsing XML
+- Boost C++ libraries (1.54.0) - For everything
+- 0MQ (3.2.3) - Excellent messaging system
+- 0MQ C library (1.4.1) - The C library for the above
+- cppzmq - The C++ library for 0MQ.
+- msgpack C library (from github) - The message format on the wire.
+- Log4CXX 10.0 - For logging (just like Log4J)
+- json_spirit_v4.06 - JSON for the configuration files, passing parameters etc.
+- pugixml (1.2) - for parsing XML
 
 And we unit test with:
 
