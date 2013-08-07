@@ -1,3 +1,5 @@
+Skweltch on UBUNTU
+------------------
 
 # get the source code for our stuff
 git clone https://phamtec@github.com/phamtec/skweltch.git
@@ -38,6 +40,11 @@ cd msgpack-c
 ./configure
 make
 sudo make install
+
+# get the source code for our stuff
+git clone https://phamtec@github.com/phamtec/skweltch.git
+cd skweltch
+b2 toolset=gcc release
 
 
 

@@ -1,11 +1,8 @@
+Skweltch on AWS
+---------------
 
-# Get all of what we need.
-# sudo apt-get install git curl g++ zlibc libbz2-dev ruby autoconf libtool python-dev liblog4cxx10 liblog4cxx10-dev
-
+# all the things we need.
 sudo yum install git-core zlib-devel bzip2-devel gcc gcc-c++ autoconf libtool liblog4cxx10 liblog4cxx10-dev
-
-# get the source code for our stuff
-git clone https://phamtec@github.com/phamtec/skweltch.git
 
 # don't need this...
 sudo -s
@@ -15,7 +12,7 @@ curl -O http://aarnet.dl.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0
 tar xzf boost_1_54_0.tar.gz
 cd boost_1_54_0
 ./bootstrap.sh --with-toolset=gcc 
-./b2 install --without-mpi --without-log --without-graph --without-graph_parallel --without-signals --without-coroutine --without-python --without-wave
+./b2 install --without-mpi --without-log --without-graph --without-graph_parallel --without-signals --without-coroutine --without-python --without-wave --link-static --threading-multi
 cd tools/build/v2
 ./bootstrap.sh
 ./b2 install
@@ -26,6 +23,10 @@ exit
 # get the source code for our stuff
 git clone https://phamtec@github.com/phamtec/skweltch.git
 
+cd /opt
+sudo mkdir tools
+sudo chown ec2-user:ec2-user tools
+cd tools
 curl -O http://download.zeromq.org/zeromq-3.2.3.tar.gz
 tar xzf zeromq-3.2.3.tar.gz
 cd zeromq-3.2.3
@@ -33,6 +34,7 @@ cd zeromq-3.2.3
 make
 sudo make install
 
+cd /opt/tools
 curl -O http://download.zeromq.org/czmq-1.4.1.tar.gz
 tar xzf czmq-1.4.1.tar.gz
 cd czmq-1.4.1
@@ -40,12 +42,18 @@ cd czmq-1.4.1
 make
 sudo make install
 
+cd /opt/tools
 git clone https://github.com/msgpack/msgpack-c.git
 cd msgpack-c
 ./bootstrap
 ./configure
 make
 sudo make install
+
+# our code
+git clone https://phamtec@github.com/phamtec/skweltch.git
+cd skweltch
+b2 toolset=gcc release
 
 
 

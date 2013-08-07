@@ -1,11 +1,127 @@
+Skweltch
+--------
 
-Get boost boost_1_53_0 and install.
+Big data made simple.
 
-get and unzip zeromq-3.2.3.tar.gz
-$ ./configure
-$ make
-$ sudo make install
+This project uses the following technologies to build "machines" which are really just 
+collections of Command line programs that do messaging.
 
-In here:
+We are standing on the shoulders of some fantastic technologies:
 
-get and unzip turtle-1.2.2.zip to make folder turtle-1.2.2
+- Boost C++ libraries (1.54.0)
+-- For everything
+- 0MQ (3.2.3)
+-- Excellent messaging system
+- 0MQ C library (1.4.1)
+-- The C library for the above
+- cppzmq
+-- The C++ library for 0MQ.
+- msgpack C library (from github)
+-- The message format on the wire.
+- Log4CXX 10.0
+-- For logging (just like Log4J)
+- json_spirit_v4.06
+-- JSON for the configuration files, passing parameters etc.
+- pugixml (1.2)
+-- for parsing XML
+
+And we unit test with:
+
+- Boost Test
+- Turtle (1.2.2)
+-- For mocking
+
+The software uses the idea of a "machine" which is a JSON file that describes the programs 
+to run, ports to bind to for a machine for doing useful work.
+
+You can find a few examples in the source code with an extension of JSON.
+
+The following programs are available so far:
+
+monitor
+	Take a machine and run it, waiting for a result to be written to "result.json". If you
+	want to test a machine, this is the simplest way to do it.
+	
+soak
+	Run a machine over and over again, measuring the speed and seeing if there are errors.
+	
+tune
+	Modify the machine configuration according to a "tune" JSON file and test if it runs
+	better of worse.
+	
+machine
+	A program for loading a machine, venting messages and stopping it. This program
+	responds to 0MQ messages.
+machinecmd
+	Send various messages over 0MQ to machine to tell it to do things.
+	
+graph
+	Generate a DOT file for the machine so that it can be printed out nicely.
+	
+ui
+	A Restful HTTP server for looking at machines (not really very functional at the 
+	moment).
+	
+send
+	A utility for sending a 0MQ message.
+listen
+	A utility for listening to 0MQ messages.
+
+All of these programs respond/send 0MQ messages and are meant to be run as part of a machine.
+
+Vents
+-----
+
+ventwords
+	Take a text file and splt all the words out making them lower case.
+ventxml
+	Take an XML file (even a GZipped one) and parse it out sending the chunks found as
+	discreet 0MQ messages. This is very efficient and operates on the stream directly. It's
+	also extremely simple and only really operates on very simple XPaths.
+ventrandomnum
+	Generate random numbers as messages.
+		
+Work
+----
+
+workcharfreq
+	Take a word and generate an array of letter occurrences for the word, sending the 
+	array on.
+workxpath
+	Take a chunk of XML and do an XPath expression on it sending the results on. This is a
+	reasonably complete XPath 1.0 implementation.
+workcharcount
+	Take a word and count the number of characters sending the count on.
+worksleep
+	Sleep for the number sent ms sending a blank message on.
+	
+Sinks
+-----
+
+sinkcharfreq
+	Take lot's of arrays of letter occurrences and sum them into 1 big array writing the
+	results to results.json at the end.
+sinkelapsed
+	Take the incoming messages and throw them away bug measure the elapsed time of the 
+	entire process writing the results to results.json at the end.
+sinkavg
+	Take the numbers being sent in and average them out writing the results to 
+	results.json at the end.
+sinkstrings
+	Take all the strings beng recieved and append them to results.dat, at the end writing 
+	the filename and the elapsed time to results.json.
+
+Pipes
+-----
+pipedump
+	Take a message from 0MQ (msgpack) and write it out to the log, passing it on.
+pipecount
+	Count all the messages coming through and write out the log, passing them on.
+
+Future
+------
+
+In the very near future, the "node" setting in a machine will allow you to run a machine 
+across multiple physical machines.
+
+Tuning will be beefed up to choose machines that are running the best through correlation.
