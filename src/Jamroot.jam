@@ -9,6 +9,7 @@ use-project /boost : /opt/boost_1_54_0  ;
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
 lib log4cxx : : <toolset>gcc:<file>/usr/lib64/liblog4cxx.so <toolset>darwin:<name>log4cxx ;
+lib bz2 : : <toolset>gcc:<file>/usr/lib64/libbz2.so <toolset>darwin:<name>bz2 ;
 lib msgpack : : <name>msgpack ;
 #lib apr : : <toolset>darwin:<name>apr ;
 #lib aprutil : : <toolset>darwin:<name>aprutil ;

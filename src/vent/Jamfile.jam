@@ -38,6 +38,7 @@ exe ventwords : ventwords.cpp WordSplitter.cpp
 
 exe ventxml : ventxml.cpp XmlParser.cpp XPathSplitter.cpp
 		/boost//iostreams
+		/src//bz2
 	:
 	:
 	;
