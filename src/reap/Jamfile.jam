@@ -11,10 +11,10 @@ project reap
 
 lib zmq : : <name>zmq ;
 lib czmq : : <name>czmq ;
-lib log4cxx : : <name>log4cxx ;
-lib apr : : <name>apr-1 <toolset>gcc ;
-lib aprutil : : <name>aprutil-1 <toolset>gcc ;
-lib expat : : <name>expat <toolset>gcc ;
+lib log4cxx : : <toolset>gcc:<file>/usr/lib64/liblog4cxx.so <toolset>darwin:<name>log4cxx ;
+lib apr : : <toolset>ignore:<name>apr-1 ;
+lib aprutil : : <toolset>ignore:<name>aprutil-1 ;
+lib expat : : <toolset>ignore:<name>expat ;
 
 exe grimreaper : GrimReaper.cpp
 		/core//core
