@@ -103,7 +103,7 @@ sinkavg
 	Take the numbers being sent in and average them out writing the results to 
 	results.json at the end.
 sinkstrings
-	Take all the strings beng recieved and append them to results.dat, at the end 
+	Take all the strings beng received and append them to results.dat, at the end 
 	writing the filename and the elapsed time to results.json.
 
 Pipes
@@ -122,4 +122,4 @@ machine across multiple physical machines.
 Tuning will be beefed up to choose machines that are running the best through 
 correlation.
 
-A proper GUI using jquery and C++ restful back end.
+A proper GUI using jQuery and C++ restful back end.
