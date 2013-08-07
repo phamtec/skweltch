@@ -39,15 +39,16 @@ You can find a few examples in the source code with an extension of JSON.
 The following programs are available so far:
 
 monitor
-	Take a machine and run it, waiting for a result to be written to "result.json". If you
-	want to test a machine, this is the simplest way to do it.
+	Take a machine and run it, waiting for a result to be written to "result.json". If 
+	you want to test a machine, this is the simplest way to do it.
 	
 soak
-	Run a machine over and over again, measuring the speed and seeing if there are errors.
+	Run a machine over and over again, measuring the speed and seeing if there are 
+	errors.
 	
 tune
-	Modify the machine configuration according to a "tune" JSON file and test if it runs
-	better of worse.
+	Modify the machine configuration according to a "tune" JSON file and test if it 
+	runs better of worse.
 	
 machine
 	A program for loading a machine, venting messages and stopping it. This program
@@ -59,15 +60,16 @@ graph
 	Generate a DOT file for the machine so that it can be printed out nicely.
 	
 ui
-	A Restful HTTP server for looking at machines (not really very functional at the 
-	moment).
+	A Restful HTTP server for looking at machines (not really very functional at 
+	the moment).
 	
 send
 	A utility for sending a 0MQ message.
 listen
 	A utility for listening to 0MQ messages.
 
-All of these programs respond/send 0MQ messages and are meant to be run as part of a machine.
+All of these programs respond/send 0MQ messages and are meant to be run as part of a 
+machine.
 
 Vents
 -----
@@ -75,9 +77,10 @@ Vents
 ventwords
 	Take a text file and splt all the words out making them lower case.
 ventxml
-	Take an XML file (even a GZipped one) and parse it out sending the chunks found as
-	discreet 0MQ messages. This is very efficient and operates on the stream directly. It's
-	also extremely simple and only really operates on very simple XPaths.
+	Take an XML file (even a GZipped one) and parse it out sending the chunks found 
+	as discreet 0MQ messages. This is very efficient and operates on the stream 
+	directly. It's also extremely simple and only really operates on very simple 
+	XPaths.
 ventrandomnum
 	Generate random numbers as messages.
 		
@@ -85,11 +88,11 @@ Work
 ----
 
 workcharfreq
-	Take a word and generate an array of letter occurrences for the word, sending the 
-	array on.
+	Take a word and generate an array of letter occurrences for the word, sending 
+	the array on.
 workxpath
-	Take a chunk of XML and do an XPath expression on it sending the results on. This is a
-	reasonably complete XPath 1.0 implementation.
+	Take a chunk of XML and do an XPath expression on it sending the results on. This 
+	is a reasonably complete XPath 1.0 implementation.
 workcharcount
 	Take a word and count the number of characters sending the count on.
 worksleep
@@ -99,8 +102,8 @@ Sinks
 -----
 
 sinkcharfreq
-	Take lot's of arrays of letter occurrences and sum them into 1 big array writing the
-	results to results.json at the end.
+	Take lot's of arrays of letter occurrences and sum them into 1 big array writing 
+	the results to results.json at the end.
 sinkelapsed
 	Take the incoming messages and throw them away bug measure the elapsed time of the 
 	entire process writing the results to results.json at the end.
@@ -108,8 +111,8 @@ sinkavg
 	Take the numbers being sent in and average them out writing the results to 
 	results.json at the end.
 sinkstrings
-	Take all the strings beng recieved and append them to results.dat, at the end writing 
-	the filename and the elapsed time to results.json.
+	Take all the strings beng recieved and append them to results.dat, at the end 
+	writing the filename and the elapsed time to results.json.
 
 Pipes
 -----
@@ -121,7 +124,10 @@ pipecount
 Future
 ------
 
-In the very near future, the "node" setting in a machine will allow you to run a machine 
-across multiple physical machines.
+In the very near future, the "node" setting in a machine will allow you to run a 
+machine across multiple physical machines.
 
-Tuning will be beefed up to choose machines that are running the best through correlation.
+Tuning will be beefed up to choose machines that are running the best through 
+correlation.
+
+A proper GUI using jquery and C++ restful back end.
