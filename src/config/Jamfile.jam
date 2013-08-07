@@ -4,6 +4,8 @@ project config
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
+        <link>static
+		<include>../json_spirit_v4.06/json_spirit
     :
     :
     ;
@@ -14,7 +16,6 @@ lib config : JsonObject.cpp JsonArray.cpp JsonNamePredicate.cpp JsonPath.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_value.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_reader.cpp
 		../json_spirit_v4.06/json_spirit/json_spirit_writer.cpp
-	: 	<link>static
-		<include>../json_spirit_v4.06/json_spirit
+	: 	
 	:
 	;

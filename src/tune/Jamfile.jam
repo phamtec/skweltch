@@ -5,49 +5,35 @@ project tune
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <library>/src//zmq
+        <library>/src//czmq
+        <library>/src//log4cxx
+        <library>/src//msgpack
+        <library>/config//config
+        <library>/core//core
+        <library>/machine//machinelib
+        <library>/boost//program_options
+        <library>/boost//filesystem
+        <library>/boost//system
+        <include>../cppzmq-master
+		<include>../config
+		<include>../msg
+		<include>../core
+		<include>../monitor
+		<include>../machine
+		<include>../json_spirit_v4.06/json_spirit
     :
     :
     ;
 
 build-project test ;
 
-lib zmq : : <name>zmq ;
-lib czmq : : <name>czmq ;
-lib log4cxx : : <toolset>gcc:<file>/usr/lib64/liblog4cxx.so <toolset>darwin:<name>log4cxx ;
-lib apr : : <toolset>ignore:<name>apr-1 ;
-lib aprutil : : <toolset>ignore:<name>aprutil-1 ;
-lib expat : : <toolset>ignore:<name>expat ;
-
 exe tune : tune.cpp MachineTuner.cpp
-		/config//config
-		/core//core
-		/monitor//monlib
-		/machine//machinelib
-		czmq
-		log4cxx apr aprutil expat
-		/boost//filesystem
-		/boost//system
-	:	<include>../core
-		<include>../config
-		<include>../machine
-		<include>../monitor
-		<include>../json_spirit_v4.06/json_spirit
+	:
 	:
 	;
 
 exe soak : soak.cpp
-		/config//config
-		/core//core
-		/monitor//monlib
-		/machine//machinelib
-		czmq
-		log4cxx apr aprutil expat
-		/boost//filesystem
-		/boost//system
-	:	<include>../core
-		<include>../config
-		<include>../machine
-		<include>../monitor
-		<include>../json_spirit_v4.06/json_spirit
+	:
 	:
 	;

@@ -5,6 +5,20 @@ project work-test
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <link>static
+        <library>/src//zmq
+        <library>/src//czmq
+        <library>/src//log4cxx
+        <library>/src//msgpack
+        <library>/config//config
+        <library>/core//core
+        <library>/boost//program_options
+        <library>/boost/test
+        <include>../../cppzmq-master
+		<include>../../config
+		<include>../../msg
+		<include>../../core
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../turtle-1.2.2/include 
     :
     :
     ;
@@ -21,15 +35,12 @@ explicit unit_test_framework ;
 
 unit-test freq.test
 	: freqtest.cpp
-		/boost/test
-	:  <include>../../turtle-1.2.2/include 
+	:
 	:
 	;
 
 unit-test xpathwork.test
 	: xpathtest.cpp ../../pugixml-1.2/src/pugixml.cpp
-		/boost/test
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../pugixml-1.2/src
+	: 	<include>../../pugixml-1.2/src
 	:
 	;

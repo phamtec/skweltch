@@ -1,10 +1,23 @@
 
 project core-test
-    : requirements 
+    : requirements
         <toolset>gcc:<c++-template-depth>300
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
-	<link>static
+        <link>static
+        <library>/src//zmq
+        <library>/src//czmq
+        <library>/src//log4cxx
+        <library>/src//msgpack
+        <library>/config//config
+        <library>/core//core
+        <library>/boost//program_options
+        <library>/boost/test
+        <include>../../cppzmq-master
+		<include>../../config
+		<include>../../msg
+		<include>../../json_spirit_v4.06/json_spirit
+		<include>../../turtle-1.2.2/include 
     :
     :
     ;
@@ -19,88 +32,32 @@ alias unit_test_framework
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
-lib zmq : : <name>zmq ;
-lib czmq : : <name>czmq ;
-lib msgpack : : <name>msgpack ;
-lib log4cxx : : <toolset>gcc:<file>/usr/lib64/liblog4cxx.so <toolset>darwin:<name>log4cxx ;
-lib apr : : <toolset>ignore:<name>apr-1 ;
-lib aprutil : : <toolset>ignore:<name>aprutil-1 ;
-lib expat : : <toolset>ignore:<name>expat ;
-
 unit-test ports.test
 	: portstest.cpp
-		zmq
-		/core//core
-		/config//config
-		/boost/test
-		log4cxx apr aprutil expat
-	:   <include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-		<include>../../json_spirit_v4.06/json_spirit
+	:   
 	:
 	;
 	
 unit-test vent.test
 	: venttest.cpp
-		/boost/test
-		/core//core
-		/config//config
-		zmq
-		czmq
-		msgpack
-		log4cxx apr aprutil expat
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../core
-		<include>../../msg
+	:
 	:
 	;
 
 unit-test sink.test
 	: sinktest.cpp
-		/boost/test
-		/core//core
-		/config//config
-		zmq
-		czmq
-		msgpack
-		log4cxx apr aprutil expat
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../core
-		<include>../../msg
+	:
 	:
 	;
 
 unit-test work.test
 	: worktest.cpp
-		/boost/test
-		/core//core
-		/config//config
-		zmq
-		czmq
-		msgpack
-		log4cxx apr aprutil expat
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../cppzmq-master
-		<include>../../config
-		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../core
-		<include>../../msg
+	:
 	:
 	;
 
 unit-test track.test
 	: tracktest.cpp
-		/boost/test
-		/core//core
-		log4cxx apr aprutil expat
-	:  	<include>../../turtle-1.2.2/include 
-		<include>../../core
+	:
 	:
 	;
