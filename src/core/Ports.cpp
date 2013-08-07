@@ -1,7 +1,7 @@
 
 #include "Ports.hpp"
 
-#include "JsonObject.hpp";
+#include "JsonObject.hpp"
 
 #include <zmq.hpp>
 #include <log4cxx/logger.h>

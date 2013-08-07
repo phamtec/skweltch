@@ -1,10 +1,10 @@
 
 #include "PipeBuilder.hpp"
 
-#include "JsonObject.hpp";
-#include "JsonArray.hpp";
-#include "JsonNamePredicate.hpp";
-#include "JsonPath.hpp";
+#include "JsonObject.hpp"
+#include "JsonArray.hpp"
+#include "JsonNamePredicate.hpp"
+#include "JsonPath.hpp"
 
 #include <log4cxx/logger.h>
 

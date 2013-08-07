@@ -58,6 +58,10 @@ cd msgpack-c
 make
 sudo make install
 
+# setup path correctly
+LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export $LD_LIBRARY_PATH
+
 # our code
 git clone https://phamtec@github.com/phamtec/skweltch.git
 cd skweltch
