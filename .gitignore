@@ -9,6 +9,8 @@ src/test/bin/*
 
 *.o
 
+src/build/test/bin/*
+
 src/test/bin/*
 
 src/core/bin/*

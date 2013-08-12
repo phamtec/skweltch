@@ -29,5 +29,6 @@ build-project pipe ;
 build-project ui ;
 build-project util ;
 build-project graph ;
+build-project build ;
 
-install dist : monitor machine sink vent work reap pipe ui tune util graph ;
+install dist : monitor machine sink vent work reap pipe ui tune util graph build ;

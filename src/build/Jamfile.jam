@@ -1,0 +1,21 @@
+
+project build
+    : requirements
+        <toolset>gcc:<c++-template-depth>300
+        <toolset>darwin:<cxxflags>-ftemplate-depth-300
+        <threading>multi
+        <library>/src//zmq
+        <library>/src//czmq
+        <library>/src//log4cxx
+        <library>/src//msgpack
+        <library>/config//config
+        <library>/boost//program_options
+        <include>../cppzmq-master
+		<include>../core
+		<include>../config
+		<include>../json_spirit_v4.06/json_spirit
+    :
+    :
+    ;
+
+build-project test ;
