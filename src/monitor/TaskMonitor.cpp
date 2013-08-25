@@ -3,6 +3,7 @@
 
 #include "JsonObject.hpp"
 #include "JsonArray.hpp"
+#include "JsonNamePredicate.hpp"
 #include "ExeRunner.hpp"
 #include "PipeBuilder.hpp"
 
@@ -143,6 +144,12 @@ bool TaskMonitor::doReap(JsonObject *root, vector<int> *pids) {
 	}
 	
 	return true;
+	
+}
+
+bool TaskMonitor::doBlock(JsonObject *root, std::vector<int> *pids, const std::string &block) {
+
+ 	return runOne(root, root->findObj(JsonNamePredicate(block)), pids);
 	
 }
 

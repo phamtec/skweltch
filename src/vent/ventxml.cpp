@@ -64,7 +64,7 @@ public:
 bool SendChunk::chunk(const std::string &s) {
 
 	zmq::message_t message(2);
-	StringMsg msg(id++, s);
+	StringMsg msg(id++, clock(), s);
 	msg.set(&message);
 	
 	LOG4CXX_TRACE(logger, "sending chunk.")

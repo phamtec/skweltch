@@ -12,6 +12,7 @@ public:
 	
 	// getters.
 	virtual int getId() = 0;
+	virtual clock_t getTime() = 0;
 	
 };
 

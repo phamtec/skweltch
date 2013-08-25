@@ -149,5 +149,34 @@ BOOST_AUTO_TEST_CASE( failedTestTest )
 
 }
 
+BOOST_AUTO_TEST_CASE( noTestsTest )
+{
+	
+	stringstream ss("...found 8 targets...\n"
+"...updating 2 targets...\n"
+"darwin.compile.c++ bin/darwin-4.2.1/debug/hello.o\n"
+"darwin.link bin/darwin-4.2.1/debug/hello\n"
+"...updated 2 targets...\n");
+
+	BuildStatus stat = BoostAnalyser(log4cxx::Logger::getRootLogger()).analyse(&ss);
+	BOOST_CHECK(stat.workDone);
+	BOOST_CHECK(stat.targets == 2);
+	BOOST_CHECK(stat.passedTests == 0);
+	BOOST_CHECK(stat.success);
+
+}
+
+BOOST_AUTO_TEST_CASE( noWorkAtAllTest )
+{
+	stringstream ss("...found 8 targets...\n");
+	
+	BuildStatus stat = BoostAnalyser(log4cxx::Logger::getRootLogger()).analyse(&ss);
+	BOOST_CHECK(!stat.workDone);
+	BOOST_CHECK(stat.targets == 0);
+	BOOST_CHECK(stat.passedTests == 0);
+	BOOST_CHECK(!stat.success);
+
+}
+ 
 BOOST_AUTO_TEST_SUITE_END()
 

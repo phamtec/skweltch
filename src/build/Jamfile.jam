@@ -9,13 +9,32 @@ project build
         <library>/src//log4cxx
         <library>/src//msgpack
         <library>/config//config
-        <library>/boost//program_options
+        <library>/core//core
+        <library>/boost//filesystem
+        <library>/boost//system
         <include>../cppzmq-master
-		<include>../core
 		<include>../config
+		<include>../msg
+		<include>../core
 		<include>../json_spirit_v4.06/json_spirit
     :
     :
     ;
 
 build-project test ;
+
+exe workb2 : workb2.cpp BoostAnalyser.cpp
+			/boost//regex
+	:
+	:
+	;
+
+exe ventbuild : ventbuild.cpp
+	:
+	:
+	;
+
+exe sinkbuild : sinkbuild.cpp
+	:
+	:
+	;

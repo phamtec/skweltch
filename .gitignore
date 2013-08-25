@@ -11,6 +11,8 @@ src/test/bin/*
 
 src/build/test/bin/*
 
+src/build/bin/*
+
 src/test/bin/*
 
 src/core/bin/*

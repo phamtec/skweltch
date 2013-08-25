@@ -31,4 +31,4 @@ build-project util ;
 build-project graph ;
 build-project build ;
 
-install dist : monitor machine sink vent work reap pipe ui tune util graph build ;
+install dist : core config monitor machine sink vent work reap pipe ui tune util graph build ;

@@ -1,0 +1,82 @@
+{
+	"pidFile": "tasks.pid",
+	
+	// this is what is used to feed the machine.
+	// always one of them.
+	"vent" : {
+		"name": "VentBuild",
+		"exe": "dist/ventbuild",
+		"node": "localhost",
+		"connections": {
+			"pushTo": {
+				"direction": "to",
+				"mode":"bind",
+				"address": "*",
+				"port": 5557
+			},
+			"syncTo": {
+				"direction": "to",
+				"mode":"connect",
+				"block": "SinkBuild",
+				"connection": "pullFrom"
+			}
+		},
+		"config" : {
+		}
+	},
+	
+	"sink" : {
+		"name": "SinkBuild",
+		"exe": "dist/sinkbuild",
+		"node": "localhost",
+		"connections": {
+			"pullFrom": {
+				"direction": "from",
+				"mode":"bind",
+				"address": "*",
+				"port": 5558
+			}
+		},
+		"config" : {
+		}
+	},
+	
+	// these are all run in the background and remembered.
+	"background": [
+		{
+			"count": 1,
+			"name": "WorkB2",
+			"exe": "dist/workb2",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"connect",
+					"block": "VentBuild",
+					"connection": "pushTo"
+				},
+				"pushTo": {
+					"direction": "to",
+					"block": "SinkBuild",
+					"mode":"connect",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
+				"dir": "/Users/paul/Documents/test",
+				"cmd": "b2 -j2 toolset=darwin debug > build.log",
+				"logfile": "build.log"
+			}
+		}
+	],
+	
+	// and this is what is used to reap.
+	"reap": {
+		"name": "GrimReaper",
+		"exe": "dist/grimreaper",
+		"config" : {
+			"totalTime": 300
+		}
+	}
+		
+}

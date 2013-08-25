@@ -42,6 +42,11 @@ MOCK_BASE_CLASS( mock_work_worker, IWorkWorker )
 	MOCK_METHOD( shouldQuit, 0 )
 };
 
+MOCK_BASE_CLASS( mock_poller, IPoller )
+{
+	MOCK_METHOD( poll, 2 )
+};
+
 int shouldQuitAfterTimes( int *i, int times )
 {
     return (*i)++ > times;
@@ -53,14 +58,16 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 	mock_socket receiver;
 	mock_socket sender;
 	mock_work_worker w;
+	mock_poller p;
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 2));
 	MOCK_EXPECT(w.process).with(mock::any, mock::any).once();
-	MOCK_EXPECT(receiver.recv).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(sender.send).with(mock::any, 0).once().returns(true);
+	MOCK_EXPECT(receiver.recv).with(mock::any, 0).once().returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, 1000).once().returns(true);
 
-	Work ww(log4cxx::Logger::getRootLogger(), &receiver, &sender);
+	Work ww(log4cxx::Logger::getRootLogger(), &p, &receiver, &sender);
 	ww.process(&w);
 	
 }

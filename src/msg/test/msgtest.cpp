@@ -27,12 +27,13 @@ BOOST_GLOBAL_FIXTURE( SetupLogging )
 
 BOOST_AUTO_TEST_CASE( intTest )
 {
-	IntMsg m(1, 2);
+	IntMsg m(1, 2, 3);
 	zmq::message_t message(2);
 	m.set(&message);
 	IntMsg m2(message);
 	BOOST_CHECK(m2.getId() == 1);
-	BOOST_CHECK(m2.getPayload() == 2);
+	BOOST_CHECK(m2.getTime() == 2);
+	BOOST_CHECK(m2.getPayload() == 3);
 	
 }
 

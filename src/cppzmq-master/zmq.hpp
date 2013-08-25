@@ -289,6 +289,7 @@ namespace zmq
 	class i_socket_t
 	{
 	public:
+        virtual operator void* () { return 0; }
     	virtual bool send (message_t &msg_, int flags_ = 0) = 0;
         virtual bool recv (message_t *msg_, int flags_ = 0) = 0;
        	virtual void bind (const char *addr_) = 0;

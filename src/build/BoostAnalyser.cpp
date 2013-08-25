@@ -85,6 +85,7 @@ BuildStatus BoostAnalyser::analyse(istream *stream) {
 	status.passedTests = 0;
 	match_results<std::string::const_iterator> what;
 	while (state != FINISHED && getline(*stream, l)) {
+		LOG4CXX_TRACE(logger, state << ", " << l)
 		switch (state) {
 		case START: 
 			matchOne(l, &reUpdating, &state, BUILDING, &status.targets);
@@ -106,7 +107,11 @@ BuildStatus BoostAnalyser::analyse(istream *stream) {
 			break;
 			
 		case LINKING:
-			matchOne(l, &reTesting, &state, TESTING);
+			if (!matchOne(l, &reTesting, &state, TESTING)) {
+				if (matchOne(l, &reUpdated, &state, FINISHED)) {
+					status.success = true;
+				}
+			}
 			break;
 			
 		case TESTING:

@@ -12,6 +12,8 @@ public:
 
 	virtual void process(const zmq::message_t &message, SinkMsg *smsg) = 0;
 	virtual bool shouldQuit() = 0;
+	virtual int getTimeout() { return 1000; }
+	virtual void timeout() {}
 
 };
 

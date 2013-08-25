@@ -12,7 +12,7 @@ class IntMsg : public DataMsg<int> {
 
 public:
 	IntMsg(const zmq::message_t &message) : DataMsg<int>(message) {}
-	IntMsg(int id, int n) : DataMsg<int>(id, n) {}
+	IntMsg(int id, clock_t t, int n) : DataMsg<int>(id, t, n) {}
 	
 };
 

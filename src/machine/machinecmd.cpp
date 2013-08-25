@@ -44,8 +44,8 @@ int main (int argc, char *argv[])
 		po::notify(vm);
 
 		// minimal args
-        if (vm.count("help")) {
-			LOG4CXX_ERROR(logger, desc)
+        if (vm.count("help") || vm.count("cmd") == 0) {
+			cerr << desc << endl;
             return 0;
         }
  
@@ -59,12 +59,15 @@ int main (int argc, char *argv[])
 			sender.connect(ss.str().c_str());
 		}
 		catch (zmq::error_t &e) {  	
-			LOG4CXX_ERROR(logger, "couldn't connect should be: tcp://localhost:port.")
+			cerr << "couldn't connect should be: tcp://localhost:port." << endl;
 			return 1;
 		}
 
 		MachineMsg msg;
 		if (vm["cmd"].as<string>() == "start") {
+			if (vm.count("jsonConfig") == 0) {
+				cerr << "Didn't specify a config to start." << endl;
+			}
 			msg.startMsg(vm["jsonConfig"].as<string>());
 		}
 		else if (vm["cmd"].as<string>() == "vent") {
@@ -74,7 +77,7 @@ int main (int argc, char *argv[])
 			msg.stopMsg();
 		}
 		else {
-			LOG4CXX_ERROR(logger, "didn't understand command.")
+			cerr << "didn't understand command." << endl;
 			return 1;
 		}
 		
@@ -84,13 +87,13 @@ int main (int argc, char *argv[])
 			sender.send(message);
 		}
 		catch (zmq::error_t &e) {  	
-			LOG4CXX_ERROR(logger, "couldn't send message.")
+			cerr << "couldn't send message." << endl;
 			return 1;
 		}
 
 	}
 	catch (std::exception& e) {
-		LOG4CXX_ERROR(logger, e.what())
+		cerr << e.what() << endl;
 	}
 	
 	return 0;

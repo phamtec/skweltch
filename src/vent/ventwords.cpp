@@ -61,7 +61,7 @@ public:
 bool SendWord::word(const std::string &s) {
 
 	zmq::message_t message(2);
-	StringMsg msg(id++, s);
+	StringMsg msg(id++, clock(), s);
 	msg.set(&message);
 	
 	return vent->sendOne(worker, message, sleeptime, sleepevery);

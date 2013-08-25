@@ -30,6 +30,7 @@ int main (int argc, char *argv[])
 			("demonize", po::value<bool>()->default_value(false), "should we stay running?")
 			("vent", po::value<bool>()->default_value(false), "do a vent.")
 			("reap", po::value<bool>()->default_value(false), "do a reap.")
+			("block", po::value<string>(), "the name of a block to focus on.")
 		;
 
 		po::variables_map vm;
@@ -39,7 +40,7 @@ int main (int argc, char *argv[])
 
 		// minimal args
         if (vm.count("help") || !vm.count("jsonConfig")) {
-			LOG4CXX_ERROR(logger, desc)
+			cerr << desc << endl;
             return 0;
         }
         
@@ -59,6 +60,14 @@ int main (int argc, char *argv[])
 			if (!mon.doReap(&r, 0)) {
 				return 1;
 			}
+		}
+		else if (vm.count("block")) {
+			vector<int> pids;
+			if (!mon.doBlock(&r, &pids, vm["block"].as<string>())) {
+				return 1;
+			}
+			// wait till everything is gone.
+			mon.waitFinish(pids);
 		}
 		else {
 			vector<int> pids;

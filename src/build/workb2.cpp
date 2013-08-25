@@ -3,8 +3,10 @@
 #include "Interrupt.hpp"
 #include "Work.hpp"
 #include "IWorkWorker.hpp"
-#include "DataMsg.hpp"
+#include "StringMsg.hpp"
 #include "SinkMsg.hpp"
+#include "ExeRunner.hpp"
+#include "BoostAnalyser.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -12,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
@@ -20,11 +23,17 @@
 using namespace std;
 using namespace boost;
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharfreq"));
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount"));
 
 class WWorker : public IWorkWorker {
 
+private:
+	string cmd;
+	string logfile;
+
 public:
+	WWorker(const string &c, const string &l) : cmd(c), logfile(l) {}
+	
 	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
 	
 	virtual bool shouldQuit() {
@@ -35,40 +44,23 @@ public:
 
 void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
-	DataMsg<std::string> msg(message);
+	StringMsg msg(message);
 
 	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
 
-	string word = msg.getPayload();
+	// run the cmd.
+	int pid = ExeRunner(logger).run(cmd);
 	
-	// the work.
-	string result;
-	for (int i=0; i<26; i++) {
-		result += "0";
-	}
-	for (string::const_iterator i=word.begin(); i != word.end(); i++) {
-		int index = *i - 'a';
-		if (index < 0 || index > 25) {
-			throw runtime_error("letter not in range.");
-		}
-		char ss[2];
-		ss[0] = result[index];
-		ss[1] = 0;
-		int c;
-		sscanf(ss, "%x", &c);		
-		c++;
-		if (c > 16) {
-			throw runtime_error("ony handle up to 16 of each letter.");
-		}
-		sprintf(ss, "%x", c);
-		result[index] = ss[0];
-	}
-
-	LOG4CXX_TRACE(logger,  "result " << result);
-
+	// and wait to die.
+	::waitpid(pid, NULL, 0);	
+	
+	// analyse the log file.
+	ifstream f(logfile.c_str());
+	BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+	
 	// and set the sink msg.
 	vector<string> v;
-	v.push_back(result);
+	v.push_back((stat.success || !stat.workDone) ? "success": "fail");
 	smsg->dataMsg(msg.getId(), v);
 	
 }
@@ -103,6 +95,13 @@ int main (int argc, char *argv[])
 		}
  	}
 
+	// make sure we are rooted at the path.
+	string dir = root.getString("dir");
+	filesystem::current_path(dir);
+	
+	string cmd = root.getString("cmd");
+	string logfile = root.getString("logfile");
+
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -120,7 +119,7 @@ int main (int argc, char *argv[])
 	// and do the work.
 	Poller p(logger);
 	Work v(logger, &p, &receiver, &sender);
-	WWorker w;
+	WWorker w(cmd, logfile);
 	v.process(&w);
 
     return 0;

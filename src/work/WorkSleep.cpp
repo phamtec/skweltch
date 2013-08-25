@@ -91,7 +91,8 @@ int main (int argc, char *argv[])
     s_catch_signals ();
 
 	// and do the work.
-	Work v(logger, &receiver, &sender);
+	Poller p(logger);
+	Work v(logger, &p, &receiver, &sender);
 	WWorker w;
 	v.process(&w);
 

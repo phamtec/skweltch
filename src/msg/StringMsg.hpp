@@ -13,7 +13,7 @@ class StringMsg : public DataMsg<std::string> {
 
 public:
 	StringMsg(const zmq::message_t &message): DataMsg<std::string>(message) {}
-	StringMsg(int id, const std::string &s) : DataMsg<std::string>(id, s) {}
+	StringMsg(int id, clock_t t, const std::string &s) : DataMsg<std::string>(id, t, s) {}
 	
 };
 

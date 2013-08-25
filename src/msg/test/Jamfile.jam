@@ -37,3 +37,10 @@ unit-test msg.test
 	:
 	:
 	;
+
+
+unit-test ignore.test
+	: ignoretest.cpp ../IgnoreWhileWorking.cpp
+	:
+	:
+	;

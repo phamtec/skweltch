@@ -10,18 +10,22 @@
 */
 
 template <typename DataType>
-class DataMsg : public Msg<std::pair<int, DataType> >, public IDataMsg {
+class DataMsg : public Msg<msgpack::type::tuple<int, clock_t, DataType> >, public IDataMsg {
 
 public:
-	DataMsg(const zmq::message_t &message) : Msg< std::pair<int, DataType> >(message) {}
-	DataMsg(int id, DataType n) : Msg< std::pair<int, DataType> >(std::pair<int, DataType>(id, n)) {}
+	DataMsg(const zmq::message_t &message) : Msg<msgpack::type::tuple<int, clock_t, DataType> >(message) {}
+	DataMsg(int id, clock_t t, DataType n) : Msg<msgpack::type::tuple<int, clock_t, DataType> >(
+		msgpack::type::tuple<int, clock_t, DataType>(id, t, n)) {}
 	
 	// getters.
 	virtual int getId() { 
-		return this->data.first; 
+		return this->data.a0; 
+	}
+	virtual clock_t getTime() {
+		return this->data.a1;
 	}
 	DataType getPayload() { 
-		return  this->data.second; 
+		return  this->data.a2; 
 	}
 	
 };

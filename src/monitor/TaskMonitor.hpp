@@ -25,7 +25,7 @@ public:
 	bool doVent(JsonObject *root, std::vector<int> *pids);
 	void writePidFile(JsonObject *root, std::vector<int> *pids);
 	bool doReap(JsonObject *root, std::vector<int> *pids);
-	
+	bool doBlock(JsonObject *root, std::vector<int> *pids, const std::string &block);
 };
 
 #endif // __TASKMONITOR_HPP_INCLUDED__
