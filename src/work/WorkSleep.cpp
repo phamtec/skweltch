@@ -22,7 +22,7 @@ using namespace boost;
 class WWorker : public IWorkWorker {
 
 public:
-	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -32,7 +32,7 @@ public:
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.worksleep"));
 
-void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 	IntMsg msg(message);
 
@@ -44,6 +44,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	// and set the sink msg.
 	smsg->dataMsg(msg.getId(), vector<string>());
 	
+	return true;
 }
 
 int main (int argc, char *argv[])

@@ -18,8 +18,8 @@ public:
 		msgpack::type::tuple<int, int, std::vector<std::string> >()) {}
 	
 	// getters.
-	int getCode() { return data.a0; }
-	int getId() { return data.a1; }
+	int getCode() const { return data.a0; }
+	int getId() const { return data.a1; }
 	std::vector<std::string> *getData() { return &data.a2; }
 	
 	// factories.

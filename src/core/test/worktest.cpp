@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 2));
-	MOCK_EXPECT(w.process).with(mock::any, mock::any).once();
+	MOCK_EXPECT(w.process).with(mock::any, mock::any).once().returns(true);
 	MOCK_EXPECT(sender.send).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(receiver.recv).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(p.poll).with(mock::any, 1000).once().returns(true);

@@ -1,0 +1,3 @@
+# DO NOT DELETE
+
+config/JsonArray.o: config/JsonArray.hpp config/JsonObject.hpp

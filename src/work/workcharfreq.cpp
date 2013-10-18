@@ -25,7 +25,7 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharfreq"
 class WWorker : public IWorkWorker {
 
 public:
-	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -33,7 +33,7 @@ public:
 
 };
 
-void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 	DataMsg<std::string> msg(message);
 
@@ -71,6 +71,7 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	v.push_back(result);
 	smsg->dataMsg(msg.getId(), v);
 	
+	return true;
 }
 
 int main (int argc, char *argv[])

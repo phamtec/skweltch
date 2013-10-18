@@ -47,6 +47,11 @@ void SWorker::process(int id, std::vector<std::string> *data) {
 
 void SWorker::results(int total_ms) {
 
+	// don't bother with the status if we are just working.
+	if (status == "working") {
+		return;
+	}
+	
 	JsonObject result;
 	result.add("elapsed", total_ms);
 	result.add("result", status);

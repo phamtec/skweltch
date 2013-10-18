@@ -28,12 +28,19 @@ alias unit_test_framework
         /boost//unit_test_framework
     ;
 
+alias Foundation : : : : <linkflags>"-framework Foundation" ;
+alias AppKit : : : : <linkflags>"-framework AppKit" ;
+alias CoreData : : : : <linkflags>"-framework CoreData" ;
+
 # make aliases explicit so the libraries will only be built when requested
 explicit unit_test_framework ;
 
 unit-test build.test
- 	: buildtest.cpp ../BoostAnalyser.cpp
+ 	: buildtest.cpp ../BoostAnalyser.cpp ../FileModChecker.cpp ../Notify.mm
  		/boost//regex
- 	:   
+ 		/boost//wave
+ 		/boost//thread
+ 		Foundation AppKit CoreData
+ 	:
  	:
  	;

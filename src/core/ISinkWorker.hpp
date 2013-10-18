@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 
+/**
+	An interface to the Sink worker.
+*/
+
 class ISinkWorker {
 
 public:

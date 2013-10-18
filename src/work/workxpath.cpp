@@ -31,7 +31,7 @@ private:
 public:
 	WWorker(const string &xp) : xpath(xp) {}
 	
-	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -39,7 +39,7 @@ public:
 
 };
 
-void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 	StringMsg msg(message);
 
@@ -62,6 +62,8 @@ void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	
 	// just send it on.
 	smsg->dataMsg(msg.getId(), v);
+	
+	return true;
 }
 
 int main (int argc, char *argv[])

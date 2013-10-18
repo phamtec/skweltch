@@ -30,11 +30,14 @@ class WWorker : public IWorkWorker {
 private:
 	string cmd;
 	string logfile;
-
+	vector<int> msgids;
+	
 public:
 	WWorker(const string &c, const string &l) : cmd(c), logfile(l) {}
 	
-	virtual void process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual int getTimeout() { return 1000; }
+	virtual void timeout(Work *work);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -42,27 +45,53 @@ public:
 
 };
 
-void WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
+	// no messages for 1 second, go ahead and build if we received any.
 	StringMsg msg(message);
 
 	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
 
-	// run the cmd.
-	int pid = ExeRunner(logger).run(cmd);
+	// we will need to build, we need to make sure we send a sink for EVERY message we ignore.
+	msgids.push_back(msg.getId());
 	
-	// and wait to die.
-	::waitpid(pid, NULL, 0);	
+	// don't send any of the sink commands.
+	return false;
+}
+
+void WWorker::timeout(Work *work) {
+
+	if (msgids.size() > 0) {
 	
-	// analyse the log file.
-	ifstream f(logfile.c_str());
-	BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+		// run the cmd.
+		int pid = ExeRunner(logger).run(cmd);
 	
-	// and set the sink msg.
-	vector<string> v;
-	v.push_back((stat.success || !stat.workDone) ? "success": "fail");
-	smsg->dataMsg(msg.getId(), v);
+		// and wait to die.
+		::waitpid(pid, NULL, 0);	
 	
+		// analyse the log file.
+		ifstream f(logfile.c_str());
+		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+	
+		// send an ignore for all but the last message.
+		for (size_t i=0; i<msgids.size()-1; i++) {
+			SinkMsg smsg;
+			vector<string> v;
+			v.push_back("working");
+			smsg.dataMsg(i, v);
+			work->sendSink(smsg);
+		}
+		
+		// and set the sink msg.
+		SinkMsg smsg;
+		vector<string> v;
+		v.push_back((stat.success || !stat.workDone) ? "success": "fail");
+		smsg.dataMsg(msgids[msgids.size()-1], v);
+		work->sendSink(smsg);
+		
+		// done.
+		msgids.clear();
+	}
 }
 
 int main (int argc, char *argv[])

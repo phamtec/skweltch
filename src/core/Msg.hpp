@@ -30,7 +30,7 @@ public:
 	}
 	
 	// set the data into a real message.
-	void set(zmq::message_t *message) {
+	void set(zmq::message_t *message) const {
 
 		msgpack::sbuffer sbuf;
 		msgpack::pack(sbuf, data);

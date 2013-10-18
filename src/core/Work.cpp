@@ -58,25 +58,13 @@ void Work::process(IWorkWorker *worker) {
 			
 			// do the work. Takes in the object passed in and generates a sinkmsg.
 			SinkMsg smsg;
-			worker->process(message, &smsg);
-	
-			LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
- 
-			 // Send results to sink
-			smsg.set(&message);
-			try {
-				sender->send(message);
+			if (worker->process(message, &smsg)) {
+				sendSink(smsg);
 			}
-			catch (zmq::error_t &e) {
-				if (string(e.what()) != "Interrupted system call") {
-					LOG4CXX_ERROR(logger, "send failed." << e.what())
-				}
-			}
-			
 		}
 		else {
-			worker->timeout();
-			LOG4CXX_DEBUG(logger,  "timeout, asking again.")
+			// there was a timeout, give the worker a chance to send on anyway.
+			worker->timeout(this);
 		}
 		
 		if (worker->shouldQuit()) {
@@ -89,3 +77,21 @@ void Work::process(IWorkWorker *worker) {
 
 }
 
+void Work::sendSink(const SinkMsg &smsg) {
+
+	LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
+
+	zmq::message_t message;
+
+	 // Send results to sink
+	smsg.set(&message);
+	try {
+		sender->send(message);
+	}
+	catch (zmq::error_t &e) {
+		if (string(e.what()) != "Interrupted system call") {
+			LOG4CXX_ERROR(logger, "send failed." << e.what())
+		}
+	}
+	
+}

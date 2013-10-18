@@ -4,6 +4,10 @@
 
 class Vent;
 
+/**
+	An interface to the Vent worker.
+*/
+
 class IVentWorker {
 
 public:

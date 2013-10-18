@@ -2,7 +2,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "ExeRunner.hpp"
+#include "Elapsed.hpp"
 #include "../BoostAnalyser.hpp"
+#include "../FileModChecker.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -12,6 +14,8 @@
 
 using namespace std;
 using namespace boost;
+
+void notify();
 
 struct SetupLogging
 {
@@ -176,6 +180,25 @@ BOOST_AUTO_TEST_CASE( noWorkAtAllTest )
 	BOOST_CHECK(stat.passedTests == 0);
 	BOOST_CHECK(!stat.success);
 
+}
+
+BOOST_AUTO_TEST_CASE( detectFileChangesTest )
+{
+	// make sure that 20 CRC's of the full source tree don't take longer than 1/2 a second.
+/*	Elapsed t;
+	t.start();
+	for (int i=0; i<20; i++) {
+		// do a CRC.
+		long crc = FileModChecker(log4cxx::Logger::getRootLogger()).getCrc(".");
+		BOOST_CHECK(crc > 0);
+	}
+	BOOST_CHECK(t.getTotal() < 500);*/
+
+}
+ 
+BOOST_AUTO_TEST_CASE( macNotificationTest )
+{
+	notify();
 }
  
 BOOST_AUTO_TEST_SUITE_END()
