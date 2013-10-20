@@ -12,13 +12,9 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (assign) NSString* tcpUrl;
+@property (assign) Boolean shouldBind;
 
-- (IBAction)start:(id)sender;
-- (IBAction)chooseBind:(id)sender;
-- (IBAction)chooseConnect:(id)sender;
-- (IBAction)portValue:(id)sender;
+@property (assign) IBOutlet NSTextField *portField;
 
 @end
