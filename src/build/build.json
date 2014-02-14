@@ -4,8 +4,8 @@
 	// this is what is used to feed the machine.
 	// always one of them.
 	"vent" : {
-		"name": "VentBuild",
-		"exe": "dist/ventbuild",
+		"name": "PollDir",
+		"exe": "dist/polldir",
 		"node": "localhost",
 		"connections": {
 			"pushTo": {
@@ -22,19 +22,22 @@
 			}
 		},
 		"config" : {
+			"dir": "/Users/paul/Documents/test",
+			"sleeptime": 500
 		}
 	},
 	
 	"sink" : {
 		"name": "SinkBuild",
-		"exe": "dist/sinkbuild",
+// no exe means to not run the block.
+//		"exe": "dist/sinkbuild",
 		"node": "localhost",
 		"connections": {
 			"pullFrom": {
 				"direction": "from",
 				"mode":"bind",
 				"address": "*",
-				"port": 5558
+				"port": 5559
 			}
 		},
 		"config" : {
@@ -52,7 +55,7 @@
 				"pullFrom": {
 					"direction": "from",
 					"mode":"connect",
-					"block": "VentBuild",
+					"block": "PollDir",
 					"connection": "pushTo"
 				},
 				"pushTo": {

@@ -13,7 +13,7 @@ using namespace std;
 
 bool Vent::process(IVentWorker *worker) {
 
-	// let the sink no the first message.
+	// let the sink know the first message.
  	{
  		SinkMsg msg;
  		msg.firstMsg(0);

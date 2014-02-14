@@ -5,7 +5,7 @@ project test
         <toolset>darwin:<cxxflags>-ftemplate-depth-300
         <threading>multi
         <library>/src//log4cxx
-        <include>../../../turtle-1.2.2/include
+        <include>../../../turtle
 		<include>../../../config
 		<include>../../../json_spirit_v4.06/json_spirit
     :

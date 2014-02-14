@@ -30,6 +30,8 @@ public:
 	Vent(log4cxx::LoggerPtr l, zmq::i_socket_t *sk, zmq::i_socket_t *sn) : logger(l), sink(sk), sender(sn), count(0) {}
 	
 	bool process(IVentWorker *worker);
+	
+	// this is called to send a single message from the worker.
 	bool sendOne(IVentWorker *worker, const zmq::message_t &message, int sleeptime, int sleepevery);
 	
 };

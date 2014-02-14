@@ -15,8 +15,6 @@
 using namespace std;
 using namespace boost;
 
-void notify();
-
 struct SetupLogging
 {
     SetupLogging() {
@@ -73,7 +71,7 @@ BOOST_AUTO_TEST_CASE( badTest )
 "build/test/buildtest.cpp:28: error: 'ccc' was not declared in this scope\n"
 "build/test/buildtest.cpp:31: error: expected `;' before '}' token\n"
 "\n"
-"    \"g++\"  -ftemplate-depth-128 -O3 -finline-functions -Wno-inline -Wall -dynamic -gdwarf-2 -fexceptions -fPIC -ftemplate-depth-300 -DBOOST_PROGRAM_OPTIONS_DYN_LINK=1 -DBOOST_TEST_DYN_LINK=1 -DBOOST_TEST_NO_AUTO_LINK=1 -DNDEBUG  -I\"/opt/boost_1_54_0\" -I\"config\" -I\"core\" -I\"cppzmq-master\" -I\"json_spirit_v4.06/json_spirit\" -I\"msg\" -I\"turtle-1.2.2/include\" -c -o \"build/test/bin/darwin-4.2.1/release/threading-multi/buildtest.o\" \"build/test/buildtest.cpp\"\n"
+"    \"g++\"  -ftemplate-depth-128 -O3 -finline-functions -Wno-inline -Wall -dynamic -gdwarf-2 -fexceptions -fPIC -ftemplate-depth-300 -DBOOST_PROGRAM_OPTIONS_DYN_LINK=1 -DBOOST_TEST_DYN_LINK=1 -DBOOST_TEST_NO_AUTO_LINK=1 -DNDEBUG  -I\"/opt/boost_1_54_0\" -I\"config\" -I\"core\" -I\"cppzmq-master\" -I\"json_spirit_v4.06/json_spirit\" -I\"msg\" -I\"turtle-1.2.4/include\" -c -o \"build/test/bin/darwin-4.2.1/release/threading-multi/buildtest.o\" \"build/test/buildtest.cpp\"\n"
 "\n"
 "...failed darwin.compile.c++ build/test/bin/darwin-4.2.1/release/threading-multi/buildtest.o...\n"
 "...removing build/test/bin/darwin-4.2.1/release/threading-multi/buildtest.o\n"
@@ -185,20 +183,20 @@ BOOST_AUTO_TEST_CASE( noWorkAtAllTest )
 BOOST_AUTO_TEST_CASE( detectFileChangesTest )
 {
 	// make sure that 20 CRC's of the full source tree don't take longer than 1/2 a second.
-/*	Elapsed t;
+	Elapsed t;
 	t.start();
+	long lastcrc = 0;
 	for (int i=0; i<20; i++) {
 		// do a CRC.
 		long crc = FileModChecker(log4cxx::Logger::getRootLogger()).getCrc(".");
-		BOOST_CHECK(crc > 0);
+		BOOST_CHECK(crc != 0);
+		if (lastcrc != 0) {
+			BOOST_CHECK(crc == lastcrc);
+		}
+		lastcrc = crc;
 	}
-	BOOST_CHECK(t.getTotal() < 500);*/
+	BOOST_CHECK(t.getTotal() < 500);
 
-}
- 
-BOOST_AUTO_TEST_CASE( macNotificationTest )
-{
-	notify();
 }
  
 BOOST_AUTO_TEST_SUITE_END()

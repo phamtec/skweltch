@@ -8,7 +8,7 @@ project config-test
         <library>/config//config
         <library>/boost/test
 		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../turtle-1.2.2/include
+		<include>../../turtle
     :
     :
     ;

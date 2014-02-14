@@ -13,7 +13,7 @@ project graph-test
 		<include>../../config
 		<include>../../msg
 		<include>../../json_spirit_v4.06/json_spirit
-		<include>../../turtle-1.2.2/include 
+		<include>../../turtle 
     :
     :
     ;

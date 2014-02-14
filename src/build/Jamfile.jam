@@ -38,3 +38,8 @@ exe sinkbuild : sinkbuild.cpp
 	:
 	:
 	;
+
+exe polldir : polldir.cpp FileModChecker.cpp
+	:
+	:
+	;

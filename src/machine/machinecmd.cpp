@@ -9,6 +9,7 @@
 #include <log4cxx/helpers/exception.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
+#include <iostream>
 
 using namespace std;
 using namespace boost;
