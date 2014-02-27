@@ -17,19 +17,19 @@ add_executable (pathTest
 
 target_link_libraries (mainTest 
 	log4cxx
-	config
+	configLib
 	boost_unit_test_framework
 	boost_test_exec_monitor)
 	
 target_link_libraries (jsonTest 
 	log4cxx
-	config
+	configLib
 	boost_unit_test_framework
 	boost_test_exec_monitor)
 	
 target_link_libraries (pathTest 
 	log4cxx
-	config
+	configLib
 	boost_unit_test_framework
 	boost_test_exec_monitor)
 	

@@ -1,5 +1,5 @@
 
-add_library (config SHARED
+add_library (configLib SHARED
 	JsonArray.cpp
 	JsonNamePredicate.cpp
 	JsonObject.cpp
@@ -9,7 +9,7 @@ add_library (config SHARED
 include_directories (
 	${Skweltch_SOURCE_DIR}/json_spirit_v4.06/json_spirit)
 
-target_link_libraries (config 
+target_link_libraries (configLib 
 	log4cxx)
 
 add_subdirectory (test)
