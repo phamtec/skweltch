@@ -32,5 +32,7 @@ target_link_libraries (monitor
 	czmq
 	msgpack
 	log4cxx)
-
-add_subdirectory (test)
+	
+install(TARGETS monitorLib monitor
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

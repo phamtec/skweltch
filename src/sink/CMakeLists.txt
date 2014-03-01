@@ -63,3 +63,7 @@ target_link_libraries (sinkstrings
 	log4cxx)
 
 add_subdirectory (test) 
+
+install(TARGETS sinkavg sinkcharfreq sinkelapsed sinkstrings
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

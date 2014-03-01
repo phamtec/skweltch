@@ -69,3 +69,7 @@ target_link_libraries (ventxml
 	log4cxx)
 
 add_subdirectory (test) 
+
+install(TARGETS ventLib ventrandomnum ventwords ventxml
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

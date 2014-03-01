@@ -24,3 +24,6 @@ target_link_libraries (coreLib
 	log4cxx)
 
 add_subdirectory (test)
+
+install(TARGETS coreLib
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

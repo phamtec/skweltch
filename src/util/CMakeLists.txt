@@ -35,3 +35,7 @@ target_link_libraries (send
 	czmq
 	msgpack
 	log4cxx)
+
+install(TARGETS listen send
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

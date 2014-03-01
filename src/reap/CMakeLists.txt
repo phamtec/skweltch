@@ -17,3 +17,7 @@ target_link_libraries (grimreaper
 	czmq
 	msgpack
 	log4cxx)
+	
+install(TARGETS grimreaper
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

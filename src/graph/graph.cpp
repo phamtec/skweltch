@@ -13,13 +13,13 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.graph"));
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
 	if (argc != 2) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig")
+        cerr << "usage: " << argv[0] << " jsonConfig" << endl;
 		return 1;
 	}
 	
+	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+    
 	ifstream json(argv[1]);
 	MachineGraph(log4cxx::Logger::getRootLogger(), &cout).makeDOT(&json);
 	

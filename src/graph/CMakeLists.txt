@@ -34,3 +34,7 @@ target_link_libraries (graph
 	log4cxx)
 
 add_subdirectory (test) 
+
+install(TARGETS graphLib graph
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

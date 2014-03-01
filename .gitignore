@@ -9,6 +9,12 @@ src/test/bin/*
 
 *.o
 
+src/osx
+
+src/win
+
+src/unix
+
 src/build/test/bin/*
 
 src/build/bin/*

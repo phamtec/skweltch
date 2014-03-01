@@ -29,3 +29,7 @@ target_link_libraries (pipedump
 	czmq
 	msgpack
 	log4cxx)
+	
+install(TARGETS pipecount pipedump
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

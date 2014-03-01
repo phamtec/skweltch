@@ -54,3 +54,7 @@ target_link_libraries (tune
 	log4cxx)
 
 add_subdirectory (test) 
+
+install(TARGETS tuneLib tune soak
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

@@ -36,3 +36,6 @@ target_link_libraries (machine
 	msgpack
 	log4cxx)
 
+install(TARGETS machineLib machine
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

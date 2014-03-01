@@ -13,3 +13,6 @@ target_link_libraries (configLib
 	log4cxx)
 
 add_subdirectory (test)
+
+install(TARGETS configLib
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)
