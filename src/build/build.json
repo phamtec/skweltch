@@ -1,60 +1,31 @@
 {
-	"pidFile": "tasks.pid",
-	
-	// this is what is used to feed the machine.
-	// always one of them.
-	"vent" : {
-		"name": "PollDir",
-		"exe": "dist/polldir",
-		"node": "localhost",
-		"connections": {
-			"pushTo": {
-				"direction": "to",
-				"mode":"bind",
-				"address": "*",
-				"port": 5557
+	"blocks": [
+		{
+			"name": "PollDir",
+			"exe": "dist/polldir",
+			"node": "localhost",
+			"connections": {
+				"pushTo": {
+					"direction": "to",
+					"mode":"bind",
+					"address": "*",
+					"port": 5557
+				}
 			},
-			"syncTo": {
-				"direction": "to",
-				"mode":"connect",
-				"block": "SinkBuild",
-				"connection": "pullFrom"
+			"config" : {
+				"dir": "/Users/paul/Documents/skweltch/src",
+				"sleeptime": 500
 			}
 		},
-		"config" : {
-			"dir": "/Users/paul/Documents/test",
-			"sleeptime": 500
-		}
-	},
-	
-	"sink" : {
-		"name": "SinkBuild",
-// no exe means to not run the block.
-//		"exe": "dist/sinkbuild",
-		"node": "localhost",
-		"connections": {
-			"pullFrom": {
-				"direction": "from",
-				"mode":"bind",
-				"address": "*",
-				"port": 5559
-			}
-		},
-		"config" : {
-		}
-	},
-	
-	// these are all run in the background and remembered.
-	"background": [
 		{
 			"count": 1,
-			"name": "WorkB2",
-			"exe": "dist/workb2",
+			"name": "WorkBash",
+			"exe": "dist/workbash",
 			"node": "localhost",
 			"connections": {
 				"pullFrom": {
 					"direction": "from",
-					"mode":"connect",
+					"mode": "connect",
 					"block": "PollDir",
 					"connection": "pushTo"
 				},
@@ -66,20 +37,25 @@
 				}
 			},
 			"config" : {
-				"dir": "/Users/paul/Documents/test",
-				"cmd": "b2 -j2 toolset=darwin debug > build.log",
+				"dir": "/Users/paul/Documents/skweltch/src/unix",
+				"cmd": "echo \"hello\"",
 				"logfile": "build.log"
 			}
-		}
-	],
-	
-	// and this is what is used to reap.
-	"reap": {
-		"name": "GrimReaper",
-		"exe": "dist/grimreaper",
-		"config" : {
-			"totalTime": 300
-		}
-	}
-		
+		},
+		{
+			"name": "SinkBuild",
+			"exe": "dist/sinkbuild",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"bind",
+					"address": "*",
+					"port": 5559
+				}
+			},
+			"config" : {
+			}
+		}	
+	]		
 }

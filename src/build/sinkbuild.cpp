@@ -1,8 +1,8 @@
 #include "Ports.hpp"
 #include "Elapsed.hpp"
 #include "Interrupt.hpp"
-#include "Sink.hpp"
 #include "ISinkWorker.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -20,60 +20,14 @@
 using namespace std;
 using namespace boost;
 
-class SWorker : public ISinkWorker {
-
-private:
-	string status;
-	
-public:
-	
-	virtual void first(int id) {}
-	virtual void last(int id) {}
-	
-	virtual void process(int id, std::vector<std::string> *data);
-	virtual void results(int total_ms);
-	
-	virtual bool shouldQuit() {
-		return s_interrupted;
-	}
-
-};
-
-void SWorker::process(int id, std::vector<std::string> *data) {
-
-	status = (*data)[0];
-
-}
-
-void SWorker::results(int total_ms) {
-
-	// don't bother with the status if we are just working.
-	if (status == "working") {
-		return;
-	}
-	
-	JsonObject result;
-	result.add("elapsed", total_ms);
-	result.add("result", status);
-	
-	// write the results.
-	{
-		ofstream results("temp-results.json");
-		result.write(true, &results);
-	}
-	
-	// and then rename for others to find it.
-	filesystem::rename("temp-results.json", "results.json");
-}
-
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkbuild"));
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
  	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
 		return 1;
 	}
 	    
@@ -109,15 +63,27 @@ int main (int argc, char *argv[])
 
 	// turn on interrupts.
     s_catch_signals ();
-
-	// and do the sink.
-	Sink s(logger, &receiver);
-	SWorker w;
-	if (s.process(&w)) {
-		return 0;
-	}
-	else {
-		return 1;
+	while (1) {
+        
+		zmq::message_t message;
+		try {
+			receiver.recv(&message);
+		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger, "recv failed." << e.what())
+		}
+		
+		if (s_interrupted) {
+			LOG4CXX_INFO(logger, "interrupt received, killing server")
+			break;
+		}
+		
+		msgpack::unpacked msg;
+		msgpack::unpack(&msg, (const char *)message.data(), message.size());
+		msgpack::object obj = msg.get();
+		
+		LOG4CXX_INFO(logger, obj)
+		
 	}
 
 }

@@ -7,6 +7,14 @@ add_executable (send
 	send.cpp
 )
 
+add_executable (mockblock
+	mockblock.cpp
+)
+
+add_executable (blockinfo
+	blockinfo.cpp
+)
+
 include_directories (
     ${Skweltch_SOURCE_DIR}/config
     ${Skweltch_SOURCE_DIR}/core
@@ -36,6 +44,27 @@ target_link_libraries (send
 	msgpack
 	log4cxx)
 
-install(TARGETS listen send
+target_link_libraries (mockblock
+	configLib
+	coreLib
+	monitorLib
+	boost_program_options
+	boost_filesystem
+	boost_system
+	zmq
+	czmq
+	msgpack
+	log4cxx)
+
+target_link_libraries (blockinfo
+	configLib
+	coreLib
+	monitorLib
+	boost_program_options
+	boost_filesystem
+	boost_system
+	log4cxx)
+
+install(TARGETS listen send mockblock blockinfo
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

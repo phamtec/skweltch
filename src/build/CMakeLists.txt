@@ -16,8 +16,8 @@ add_executable (ventbuild
 	ventbuild.cpp
 )
 
-add_executable (workb2
-	workb2.cpp
+add_executable (workbash
+	workbash.cpp
 )
 
 include_directories (
@@ -70,7 +70,7 @@ target_link_libraries (ventbuild
 	msgpack
 	log4cxx)
 
-target_link_libraries (workb2
+target_link_libraries (workbash
 	configLib
 	coreLib
 	buildLib
@@ -82,3 +82,7 @@ target_link_libraries (workb2
 	log4cxx)
 
 add_subdirectory (test) 
+
+install(TARGETS buildLib polldir sinkbuild ventbuild workbash
+			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
+            LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

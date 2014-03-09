@@ -4,6 +4,7 @@
 #include "Vent.hpp"
 #include "IVentWorker.hpp"
 #include "IntMsg.hpp"
+#include "Logging.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -14,11 +15,13 @@
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 #include <msgpack.hpp>
+#include <boost/program_options.hpp>
 
 #define within(num) (int) ((float) num * random () / (RAND_MAX + 1.0))
 
 using namespace std;
 using namespace boost;
+namespace po = boost::program_options;
 
 class VWorker : public IVentWorker {
 
@@ -62,29 +65,48 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.ventrandomnum
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-	
- 	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
-		return 1;
-	}
+    setup_logging();
+    
+    po::positional_options_description pd;
+    pd.add("pipes", 1);
+    pd.add("config", 1);
+    pd.add("name", 1);
+    
+    po::options_description desc("options");
+    desc.add_options()
+    ("help", "produce help message")
+    ("pipes", po::value<string>(), "The JSON for pipes")
+    ("config", po::value<string>(), "The JSON for config")
+    ("name", po::value<string>(), "The name for this task")
+    ;
+    
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+              options(desc).positional(pd).run(), vm);
+    po::notify(vm);
+    
+    // minimal args
+    if (vm.count("help") || !vm.count("pipes") || !vm.count("config") || !vm.count("name")) {
+        LOG4CXX_ERROR(logger, desc);
+        return 0;
+    }
 	
 	{
 		stringstream outfn;
-		outfn << "org.skweltch." << argv[3];
+		outfn << "org.skweltch." << vm["name"].as<string>();
 		logger = log4cxx::Logger::getLogger(outfn.str());
 	}
 		
 	JsonObject pipes;
  	{
- 		stringstream ss(argv[1]);
+ 		stringstream ss(vm["pipes"].as<string>());
 		if (!pipes.read(logger, &ss)) {
 			return 1;
 		}
  	}
 	JsonObject root;
  	{
- 		stringstream ss(argv[2]);
+ 		stringstream ss(vm["config"].as<string>());
 		if (!root.read(logger, &ss)) {
 			return 1;
 		}

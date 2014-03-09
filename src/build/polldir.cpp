@@ -5,6 +5,7 @@
 #include "Poll.hpp"
 #include "StringMsg.hpp"
 #include "FileModChecker.hpp"
+#include "Logging.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +26,7 @@ class PWorker : public IPollWorker {
 
 private:
 	string dir;
-	int lastCrc;
+	long lastCrc;
 	int sleeptime;
 	
 public:
@@ -69,24 +70,36 @@ int PWorker::send(int msgid, Poll *poll) {
 	
 }
 
+/**
+ 
+ Example args:
+ 
+ "{'pushTo':{'mode':'bind','address':'*','port':5557}}"
+ 
+ "{'dir':'/Users/paul/Documents/test','sleeptime':500}"
+
+ "test"
+ 
+ Then test with:
+ 
+ ./listen connect tcp://localhost:5557
+ 
+*/
 int main (int argc, char *argv[])
 {
- 	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
 		return 1;
 	}
 	
-	{
+ 	{
 		stringstream outfn;
 		outfn << "org.skweltch." << argv[3];
 		logger = log4cxx::Logger::getLogger(outfn.str());
 	}
 		
-	// get the initial crc (we wait until this changes). Might as well do this straight away.
-	long crc = FileModChecker(logger).getCrc(".");
-
 	JsonObject pipes;
  	{
  		stringstream ss(argv[1]);
@@ -104,13 +117,9 @@ int main (int argc, char *argv[])
 
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
-	zmq::socket_t sink(context, ZMQ_PUSH);
 
  	Ports ports(logger);
     if (!ports.join(&sender, pipes, "pushTo")) {
-    	return 1;
-    }
-    if (!ports.join(&sink, pipes, "syncTo")) {
     	return 1;
     }
 
@@ -118,11 +127,14 @@ int main (int argc, char *argv[])
 	string dir = root.getString("dir");
 	int sleeptime = root.getInt("sleeptime", 1000);
 
+	// get the initial crc (we wait until this changes).
+	long crc = FileModChecker(logger).getCrc(dir);
+    
     //  Send count tasks
     s_catch_signals ();
 
 	// and do the vent.
-	Poll p(logger, &sink, &sender);
+	Poll p(logger, &sender);
 	PWorker w(dir, crc, sleeptime);
 	if (p.process(&w)) {
 		return 0;

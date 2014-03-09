@@ -3,6 +3,7 @@
 #include "Interrupt.hpp"
 #include "Sink.hpp"
 #include "ISinkWorker.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -100,10 +101,10 @@ void SWorker::results(int total_ms) {
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
  	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
 		return 1;
 	}
 	    

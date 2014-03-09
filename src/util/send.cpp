@@ -2,15 +2,16 @@
 #include <zmq.hpp>
 #include <msgpack.hpp>
 
+#include <iostream>
+#include "Logging.hpp"
+
 #include <log4cxx/logger.h>
-#include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace boost;
 using namespace log4cxx;
-using namespace log4cxx::helpers;
 
 void packval(msgpack::sbuffer *sbuf, const char *s);
 void packpair(msgpack::sbuffer *sbuf, const char *s1, const char *s2);
@@ -20,12 +21,11 @@ LoggerPtr logger(Logger::getLogger("org.skweltch.send"));
 
 int main (int argc, char *argv[])
 {
-	// Set up a simple configuration that logs on the console.
-	PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc < 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " bind|connect port msg [msg msg ...]")
-		LOG4CXX_ERROR(logger, "\tpacks a value, a pair, a tuple or a vector of strings and sends it.")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " bind|connect port msg [msg msg ...]")
+        LOG4CXX_ERROR(logger, "\tpacks a value, a pair, a tuple or a vector of strings and sends it.")
 		return 1;
 	}
 	
@@ -53,6 +53,7 @@ int main (int argc, char *argv[])
     }
     else {
  		LOG4CXX_ERROR(logger, "bind or connect. You choose.")
+        return 1;
    	}
     	
    	zmq::message_t message(2);
@@ -84,6 +85,8 @@ int main (int argc, char *argv[])
 	message.rebuild(sbuf.size());
 	memcpy(message.data(), sbuf.data(), sbuf.size());
     sender.send(message);
+
+    LOG4CXX_INFO(logger, "message sent.")
 
 	return 0;
 	

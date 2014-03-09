@@ -1,12 +1,13 @@
 
 #include "Interrupt.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
 #include <msgpack.hpp>
 
+#include <iostream>
 #include <log4cxx/logger.h>
-#include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 
 using namespace std;
@@ -17,15 +18,14 @@ LoggerPtr logger(Logger::getLogger("org.skweltch.listen"));
 
 int main (int argc, char *argv[])
 {
-	// Set up a simple configuration that logs on the console.
-	PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc != 3) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " bind|connect port")
-		LOG4CXX_ERROR(logger, "\tlistens on the port and unpacks any message that comes through.")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " bind|connect port");
+        LOG4CXX_ERROR(logger, "\tlistens on the port and unpacks any message that comes through.");
 		return 1;
 	}
-	
+    
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
@@ -67,7 +67,7 @@ int main (int argc, char *argv[])
 			LOG4CXX_INFO(logger, "interrupt received, killing server")
 			break;
 		}
-		
+        
 		msgpack::unpacked msg;
 		msgpack::unpack(&msg, (const char *)message.data(), message.size());
 		msgpack::object obj = msg.get();

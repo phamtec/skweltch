@@ -45,12 +45,8 @@ MOCK_BASE_CLASS( mock_poll_worker, IPollWorker )
 
 BOOST_AUTO_TEST_CASE( simpleTest )
 {
-	mock_socket sink;
 	mock_socket sender;
 	mock_poll_worker w;
-	
-	// once at the start and once at the end.
-	MOCK_EXPECT(sink.send).with(mock::any, 0).exactly(2).returns(true);
 	
 	// we don't send in the worker.
 	MOCK_EXPECT(sender.send).with(mock::any, 0).never();
@@ -64,7 +60,7 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 	// we quit straight away
 	MOCK_EXPECT(w.shouldQuit).once().returns(true);
 	
-	Poll p(log4cxx::Logger::getRootLogger(), &sink, &sender);
+	Poll p(log4cxx::Logger::getRootLogger(), &sender);
 	BOOST_CHECK(p.process(&w));
 }
 
@@ -101,32 +97,26 @@ public:
 
 BOOST_AUTO_TEST_CASE( twoEventsTest )
 {
-	mock_socket sink;
 	mock_socket sender;
 	MockWorker w(3);
-	
-	// once at the start and once at the end.
-	MOCK_EXPECT(sink.send).with(mock::any, 0).exactly(2).returns(true);
 	
 	// and we send 3 times.
 	MOCK_EXPECT(sender.send).with(mock::any, 0).exactly(3).returns(true);
 	
-	Poll p(log4cxx::Logger::getRootLogger(), &sink, &sender);
+	Poll p(log4cxx::Logger::getRootLogger(), &sender);
 	BOOST_CHECK(p.process(&w));
 }
 
 BOOST_AUTO_TEST_CASE( sendTest )
 {
-	mock_socket sink;
 	mock_socket sender;
 	mock_poll_worker w;
 	
-	MOCK_EXPECT(sink.send).with(mock::any, 0).never();
 	MOCK_EXPECT(sender.send).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(w.send).with(0, mock::any).never();
 	MOCK_EXPECT(w.shouldQuit).once().returns(false);
 	
-	Poll p(log4cxx::Logger::getRootLogger(), &sink, &sender);
+	Poll p(log4cxx::Logger::getRootLogger(), &sender);
 	
    	zmq::message_t message(2);
  	msgpack::type::tuple<int, int, int> wmsg(0, 1, 2);

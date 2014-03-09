@@ -1,5 +1,7 @@
 
 #include "Ports.hpp"
+#include "Logging.hpp"
+
 #include <zmq.hpp>
 #include <czmq.h>
 #include <zclock.h>
@@ -7,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 #include <log4cxx/logger.h>
-#include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 #include <msgpack.hpp>
 
@@ -18,10 +19,10 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.pipedump"));
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
  	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
 		return 1;
 	}
 	

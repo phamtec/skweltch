@@ -38,6 +38,7 @@ target_link_libraries (ventLib
 target_link_libraries (ventrandomnum
 	configLib
 	coreLib
+    boost_program_options
 	boost_filesystem
 	boost_system
 	zmq

@@ -8,6 +8,7 @@ add_library (coreLib SHARED
 	Sink.cpp
 	Vent.cpp
 	Work.cpp
+    Logging.cpp
 )
 
 include_directories (
@@ -21,7 +22,9 @@ target_link_libraries (coreLib
 	zmq
 	czmq
 	msgpack
-	log4cxx)
+	log4cxx
+    boost_filesystem
+    boost_system)
 
 add_subdirectory (test)
 

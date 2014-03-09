@@ -3,11 +3,11 @@
 #include "Interrupt.hpp"
 #include "MachineMsg.hpp"
 #include "JsonObject.hpp"
+#include "Logging.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <log4cxx/logger.h>
-#include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 #include <zmq.hpp>
 #include <msgpack.hpp>
@@ -22,26 +22,26 @@ bool stop(TaskMonitor *mon, JsonObject *r, const vector<int> &pids);
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+    setup_logging();
+    
+    po::options_description desc("options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("port", po::value<int>()->default_value(8000), "the port to bind to.")
+    ;
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+              options(desc).run(), vm);
+    po::notify(vm);
+
+    // minimal args
+    if (vm.count("help")) {
+        LOG4CXX_ERROR(logger, desc);
+        return 0;
+    }
 
     try {
-		po::options_description desc("options");
-		desc.add_options()
-			("help", "produce help message")
-			("port", po::value<int>()->default_value(8000), "the port to bind to.")
-		;
-
-		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).
-				  options(desc).run(), vm);
-		po::notify(vm);
-
-		// minimal args
-        if (vm.count("help")) {
-			LOG4CXX_ERROR(logger, desc)
-            return 0;
-        }
- 
      	//  Prepare our context and socket
     	zmq::context_t context(1);
     	zmq::socket_t receiver(context, ZMQ_PULL);

@@ -17,21 +17,6 @@ bool Poll::process(IPollWorker *worker) {
 	
 	LOG4CXX_INFO(logger, "starting...")
 
-	// let the sink know the first message.
-	{
-		SinkMsg msg;
-		msg.firstMsg(msgNum);
-		zmq::message_t message(2);
-		msg.set(&message);
-		try {
-			sink->send(message);
-		}
-		catch (zmq::error_t &e) {
-			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
-			return false;
-		}
-	}
-
 	while (worker->waitEvent()) {
 	
 		// send them all.
@@ -43,21 +28,6 @@ bool Poll::process(IPollWorker *worker) {
 			break;
 		}
 
-	}
-		   
-	// let the sink know the last message was just sent
-	{
-		SinkMsg msg;
-		msg.lastMsg(msgNum);
-		zmq::message_t message(2);
-		msg.set(&message);
-		try {
-			sink->send(message);
-		}
-		catch (zmq::error_t &e) {
-			LOG4CXX_ERROR(logger, "sink send failed." << e.what())
-			return false;
-		}
 	}
 	
 	LOG4CXX_INFO(logger, "finished (" << msgNum << ")")

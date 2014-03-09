@@ -22,12 +22,11 @@ class Poll {
 private:
 
 	log4cxx::LoggerPtr logger;
-    zmq::i_socket_t *sink;
     zmq::i_socket_t *sender;
     int count;
     
 public:
-	Poll(log4cxx::LoggerPtr l, zmq::i_socket_t *sk, zmq::i_socket_t *sn) : logger(l), sink(sk), sender(sn), count(0) {}
+	Poll(log4cxx::LoggerPtr l, zmq::i_socket_t *sn) : logger(l), sender(sn), count(0) {}
 	
 	bool process(IPollWorker *worker);
 	

@@ -3,6 +3,7 @@
 #include "JsonPath.hpp"
 #include "MachineRunner.hpp"
 #include "Interrupt.hpp"
+#include "Logging.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -21,10 +22,10 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.soak"));
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig count iterations")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " jsonConfig count iterations");
 		return 1;
 	}
 	

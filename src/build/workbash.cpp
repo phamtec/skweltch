@@ -7,6 +7,7 @@
 #include "SinkMsg.hpp"
 #include "ExeRunner.hpp"
 #include "BoostAnalyser.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -70,8 +71,8 @@ void WWorker::timeout(Work *work) {
 		::waitpid(pid, NULL, 0);	
 	
 		// analyse the log file.
-		ifstream f(logfile.c_str());
-		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+//		ifstream f(logfile.c_str());
+//		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
 	
 		// send an ignore for all but the last message.
 		for (size_t i=0; i<msgids.size()-1; i++) {
@@ -85,7 +86,8 @@ void WWorker::timeout(Work *work) {
 		// and set the sink msg.
 		SinkMsg smsg;
 		vector<string> v;
-		v.push_back((stat.success || !stat.workDone) ? "success": "fail");
+//		v.push_back((stat.success || !stat.workDone) ? "success": "fail");
+		v.push_back("done");
 		smsg.dataMsg(msgids[msgids.size()-1], v);
 		work->sendSink(smsg);
 		
@@ -96,10 +98,10 @@ void WWorker::timeout(Work *work) {
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
 		return 1;
 	}
 	

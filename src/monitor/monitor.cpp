@@ -2,6 +2,7 @@
 #include "TaskMonitor.hpp"
 
 #include "JsonObject.hpp"
+#include "Logging.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
@@ -17,33 +18,33 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.monitor"));
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
+    setup_logging();
+    
+    po::positional_options_description pd;
+    pd.add("jsonConfig", 1);
 
-    try {
-		po::positional_options_description pd;
-		pd.add("jsonConfig", 1);
+    po::options_description desc("options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("jsonConfig", po::value<string>(), "the config filename")
+        ("demonize", po::value<bool>()->default_value(false), "should we stay running?")
+        ("vent", po::value<bool>()->default_value(false), "do a vent.")
+        ("reap", po::value<bool>()->default_value(false), "do a reap.")
+        ("block", po::value<string>(), "the name of a block to focus on.")
+    ;
 
-		po::options_description desc("options");
-		desc.add_options()
-			("help", "produce help message")
-			("jsonConfig", po::value<string>(), "the config filename")
-			("demonize", po::value<bool>()->default_value(false), "should we stay running?")
-			("vent", po::value<bool>()->default_value(false), "do a vent.")
-			("reap", po::value<bool>()->default_value(false), "do a reap.")
-			("block", po::value<string>(), "the name of a block to focus on.")
-		;
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+              options(desc).positional(pd).run(), vm);
+    po::notify(vm);
 
-		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).
-				  options(desc).positional(pd).run(), vm);
-		po::notify(vm);
-
-		// minimal args
-        if (vm.count("help") || !vm.count("jsonConfig")) {
-			cerr << desc << endl;
-            return 0;
-        }
+    // minimal args
+    if (vm.count("help") || !vm.count("jsonConfig")) {
+        LOG4CXX_ERROR(logger, desc);
+        return 0;
+    }
         
+    try {
 		ifstream jsonfile(argv[1]);
 		JsonObject r;
 		if (!r.read(logger, &jsonfile)) {

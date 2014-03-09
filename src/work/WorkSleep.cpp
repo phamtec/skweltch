@@ -5,6 +5,7 @@
 #include "IWorkWorker.hpp"
 #include "IntMsg.hpp"
 #include "SinkMsg.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -49,13 +50,13 @@ bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 
 int main (int argc, char *argv[])
 {
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
 	if (argc != 4) {
-		LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name")
+        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
 		return 1;
 	}
-	
+    
 	{
 		stringstream outfn;
 		outfn << "org.skweltch." << argv[3];
