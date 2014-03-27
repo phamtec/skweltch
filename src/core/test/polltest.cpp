@@ -61,7 +61,9 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 	MOCK_EXPECT(w.shouldQuit).once().returns(true);
 	
 	Poll p(log4cxx::Logger::getRootLogger(), &sender);
-	BOOST_CHECK(p.process(&w));
+    
+    // poll returns false when quitting.
+	BOOST_CHECK(!p.process(&w));
 }
 
 class MockWorker: public IPollWorker {
@@ -104,7 +106,7 @@ BOOST_AUTO_TEST_CASE( twoEventsTest )
 	MOCK_EXPECT(sender.send).with(mock::any, 0).exactly(3).returns(true);
 	
 	Poll p(log4cxx::Logger::getRootLogger(), &sender);
-	BOOST_CHECK(p.process(&w));
+	BOOST_CHECK(!p.process(&w));
 }
 
 BOOST_AUTO_TEST_CASE( sendTest )

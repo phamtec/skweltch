@@ -18,7 +18,7 @@ namespace po = boost::program_options;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.machine"));
 
-bool stop(TaskMonitor *mon, JsonObject *r, const vector<int> &pids);
+bool stop(TaskMonitor *mon, JsonObject *r, vector<int> *pids);
 
 int main (int argc, char *argv[])
 {
@@ -87,16 +87,17 @@ int main (int argc, char *argv[])
 			case 1:
 				{
 					if (state == RUNNING) {
-						if (!stop(&mon, &r, pids)) {
+						if (!stop(&mon, &r, &pids)) {
 							return 1;
 						}
 						pids.clear();
 					}
-					ifstream jsonfile(msg.getData().c_str());
+                    string config = msg.getData();
+					ifstream jsonfile(config.c_str());
 					if (!r.read(logger, &jsonfile)) {
 						return 1;
 					}
-					if (!mon.start(&r, &pids, true)) {
+					if (!mon.start(&r, &pids)) {
 						return 1;
 					}
 					state = RUNNING;
@@ -119,13 +120,23 @@ int main (int argc, char *argv[])
 					LOG4CXX_ERROR(logger, "not running.")
 				}
 				else {
-					if (!stop(&mon, &r, pids)) {
+					if (!stop(&mon, &r, &pids)) {
 						return 1;
 					}
 					pids.clear();
 					state = IDLE;
 				}
 				break;
+                    
+            case 4:
+                if (state == RUNNING) {
+                    if (!stop(&mon, &r, &pids)) {
+                        return 1;
+                    }
+                }
+                LOG4CXX_INFO(logger, "quitting.");
+                return 0;
+                    
 			}
 		}
 	
@@ -134,17 +145,21 @@ int main (int argc, char *argv[])
 	catch (std::exception& e) {
 		LOG4CXX_ERROR(logger, e.what())
 	}
+    
+    return 0;
 	
 }
 
-bool stop(TaskMonitor *mon, JsonObject *r, const vector<int> &pids) {
+bool stop(TaskMonitor *mon, JsonObject *r, vector<int> *pids) {
 
-	if (!mon->doReap(r, 0)) {
+	if (!mon->doReap(r, pids)) {
 		return false;
 	}
 	
 	// wait till everything is gone.
-	mon->waitFinish(pids);
+	mon->waitFinish(*pids);
 	
+    pids->clear();
+    
 	return true;
 }

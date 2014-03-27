@@ -91,6 +91,17 @@ JsonObject JsonObject::getChild(const string &key) const {
 	
 }
 
+bool JsonObject::has(const json_spirit::Object &o, const std::string &key) {
+    
+	for (vector<Pair>::const_iterator i=o.begin(); i != o.end(); i++) {
+		if (key == i->name_) {
+			return true;
+		}
+	}
+    return false;
+    
+}
+
 Value JsonObject::get(const json_spirit::Object &o, const string &name) {
 
 	for (vector<Pair>::const_iterator i=o.begin(); i != o.end(); i++) {
@@ -101,6 +112,18 @@ Value JsonObject::get(const json_spirit::Object &o, const string &name) {
 	return Value();
 
 }
+
+bool JsonObject::has(const std::string &key) const {
+    
+	for (vector<Pair>::const_iterator i=_value.get_obj().begin(); i != _value.get_obj().end(); i++) {
+		if (key == i->name_) {
+			return true;
+		}
+	}
+    return false;
+    
+}
+
 
 void JsonObject::setString(const string &key, const string &s) {
 
@@ -123,7 +146,6 @@ void JsonObject::replace(const string &name, const JsonObject &o) {
 	set(&_value.get_obj(), name, o._value);
 
 }
-
 
 string JsonObject::getString(const string &key) const {
 

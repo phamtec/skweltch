@@ -27,7 +27,6 @@ int main (int argc, char *argv[])
     desc.add_options()
         ("help", "produce help message")
         ("jsonConfig", po::value<string>(), "the config filename")
-        ("demonize", po::value<bool>()->default_value(false), "should we stay running?")
         ("vent", po::value<bool>()->default_value(false), "do a vent.")
         ("reap", po::value<bool>()->default_value(false), "do a reap.")
         ("block", po::value<string>(), "the name of a block to focus on.")
@@ -72,7 +71,7 @@ int main (int argc, char *argv[])
 		}
 		else {
 			vector<int> pids;
-			if (!mon.start(&r, &pids, vm["demonize"].as<bool>())) {
+			if (!mon.start(&r, &pids)) {
 				return 1;
 			}
 			// wait till everything is gone.

@@ -1,13 +1,13 @@
 
 #include "Ports.hpp"
 #include "Interrupt.hpp"
-#include "Work.hpp"
-#include "IWorkWorker.hpp"
 #include "StringMsg.hpp"
-#include "SinkMsg.hpp"
+#include "Poller.hpp"
 #include "ExeRunner.hpp"
 #include "BoostAnalyser.hpp"
 #include "Logging.hpp"
+#include "Work.hpp"
+#include "IWorkWorker.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -24,77 +24,77 @@
 using namespace std;
 using namespace boost;
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount"));
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workbash"));
 
 class WWorker : public IWorkWorker {
-
+    
 private:
-	string cmd;
-	string logfile;
-	vector<int> msgids;
-	
+    string cmd;
+    int sleeptime;
+    zmq::i_socket_t *sender;
+	int msgid;
+    
 public:
-	WWorker(const string &c, const string &l) : cmd(c), logfile(l) {}
+	WWorker(const string &c, int sl, zmq::i_socket_t *s) : cmd(c), sleeptime(sl), sender(s), msgid(-1) {}
 	
-	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
-	virtual int getTimeout() { return 1000; }
+	virtual void processMsg(const zmq::message_t &message);
 	virtual void timeout(Work *work);
+	virtual int getTimeout() { return sleeptime; }
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
 	}
-
+    
 };
 
-bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+void WWorker::processMsg(const zmq::message_t &message) {
+    
+    // no messages for 1 second, go ahead and build if we received any.
+    StringMsg msg(message);
+    
+    LOG4CXX_TRACE(logger,  "msg " << msg.getId());
+    
+    // we will need to build, we need to make sure we send a sink for EVERY message we ignore.
+    msgid = msg.getId();
 
-	// no messages for 1 second, go ahead and build if we received any.
-	StringMsg msg(message);
-
-	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
-
-	// we will need to build, we need to make sure we send a sink for EVERY message we ignore.
-	msgids.push_back(msg.getId());
-	
-	// don't send any of the sink commands.
-	return false;
 }
 
 void WWorker::timeout(Work *work) {
-
-	if (msgids.size() > 0) {
-	
-		// run the cmd.
-		int pid = ExeRunner(logger).run(cmd);
-	
-		// and wait to die.
-		::waitpid(pid, NULL, 0);	
-	
-		// analyse the log file.
-//		ifstream f(logfile.c_str());
-//		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
-	
-		// send an ignore for all but the last message.
-		for (size_t i=0; i<msgids.size()-1; i++) {
-			SinkMsg smsg;
-			vector<string> v;
-			v.push_back("working");
-			smsg.dataMsg(i, v);
-			work->sendSink(smsg);
-		}
-		
-		// and set the sink msg.
-		SinkMsg smsg;
-		vector<string> v;
-//		v.push_back((stat.success || !stat.workDone) ? "success": "fail");
-		v.push_back("done");
-		smsg.dataMsg(msgids[msgids.size()-1], v);
-		work->sendSink(smsg);
-		
-		// done.
-		msgids.clear();
-	}
+    
+    if (msgid >= 0) {
+        
+        // there was a timeout, give the worker a chance to send on anyway.
+        
+        // run the cmd.
+        int pid = ExeRunner(logger).run(cmd);
+        
+        // and wait to die.
+        ::waitpid(pid, NULL, 0);
+        
+        // analyse the log file.
+        //		ifstream f(logfile.c_str());
+        //		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+        
+        // and set the sink msg.
+        StringMsg smsg(msgid, 0, "done");
+        
+        zmq::message_t message;
+        
+        // Send results to sink
+        smsg.set(&message);
+        try {
+            sender->send(message);
+        }
+        catch (zmq::error_t &e) {
+            if (string(e.what()) != "Interrupted system call") {
+                LOG4CXX_ERROR(logger, "send failed." << e.what())
+            }
+        }
+        
+        msgid = -1;
+    }
 }
+
 
 int main (int argc, char *argv[])
 {
@@ -129,10 +129,11 @@ int main (int argc, char *argv[])
 	// make sure we are rooted at the path.
 	string dir = root.getString("dir");
 	filesystem::current_path(dir);
-	
+
 	string cmd = root.getString("cmd");
 	string logfile = root.getString("logfile");
-
+    int sleeptime = root.getInt("sleeptime", 1000);
+    
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -149,9 +150,9 @@ int main (int argc, char *argv[])
 
 	// and do the work.
 	Poller p(logger);
-	Work v(logger, &p, &receiver, &sender);
-	WWorker w(cmd, logfile);
-	v.process(&w);
+    WWorker w(cmd, sleeptime, &sender);
+    Work v(logger, &p, &receiver);
+ 	v.process(&w);
 
     return 0;
 

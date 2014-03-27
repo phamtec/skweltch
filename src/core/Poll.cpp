@@ -18,14 +18,14 @@ bool Poll::process(IPollWorker *worker) {
 	LOG4CXX_INFO(logger, "starting...")
 
 	while (worker->waitEvent()) {
-	
+
 		// send them all.
 		msgNum = worker->send(msgNum, this);
-	
+
 		if (worker->shouldQuit()) {
 			LOG4CXX_INFO(logger, "interrupt received, finishing")
 			// quitting breaks.
-			break;
+			return false;
 		}
 
 	}

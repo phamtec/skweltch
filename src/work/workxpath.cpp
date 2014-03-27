@@ -6,6 +6,7 @@
 #include "StringMsg.hpp"
 #include "SinkMsg.hpp"
 #include "Logging.hpp"
+#include "Poller.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -28,11 +29,12 @@ class WWorker : public IWorkWorker {
 
 private:
 	string xpath;
+    zmq::i_socket_t *sender;
 	
 public:
-	WWorker(const string &xp) : xpath(xp) {}
+	WWorker(const string &xp, zmq::i_socket_t *s) : xpath(xp), sender(s) {}
 	
-	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
+	virtual void processMsg(const zmq::message_t &message);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -40,8 +42,9 @@ public:
 
 };
 
-bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
-
+void WWorker::processMsg(const zmq::message_t &message) {
+    
+    SinkMsg smsg;
 	StringMsg msg(message);
 
 	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
@@ -62,9 +65,22 @@ bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	}
 	
 	// just send it on.
-	smsg->dataMsg(msg.getId(), v);
+	smsg.dataMsg(msg.getId(), v);
 	
-	return true;
+	
+	zmq::message_t smessage;
+    
+    // Send results to sink
+	smsg.set(&smessage);
+	try {
+		sender->send(smessage);
+	}
+	catch (zmq::error_t &e) {
+		if (string(e.what()) != "Interrupted system call") {
+			LOG4CXX_ERROR(logger, "send failed." << e.what())
+		}
+	}
+    
 }
 
 int main (int argc, char *argv[])
@@ -115,8 +131,8 @@ int main (int argc, char *argv[])
 
 	// and do the work.
 	Poller p(logger);
-	Work v(logger, &p, &receiver, &sender);
-	WWorker w(xpath);
+	Work v(logger, &p, &receiver);
+	WWorker w(xpath, &sender);
 	v.process(&w);
 
     return 0;

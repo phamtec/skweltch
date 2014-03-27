@@ -15,9 +15,9 @@ class IWorkWorker {
 
 public:
 
-	virtual bool process(const zmq::message_t &message, SinkMsg *smsg) = 0;
-		// process the message, building a sinkmsg. If true is returned,the sinkmsg is sent on.
-		
+    virtual void processMsg(const zmq::message_t &message) = 0;
+        // process a message that was received.
+    
 	virtual bool shouldQuit() = 0;
 		// return true if it's all over.
 		

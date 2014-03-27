@@ -1,5 +1,6 @@
 
 #include "MachineMsg.hpp"
+#include "Logging.hpp"
 
 #include <zmq.hpp>
 #include <msgpack.hpp>
@@ -23,9 +24,8 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.machinecmd"))
 
 int main (int argc, char *argv[])
 {
-	// Set up a simple configuration that logs on the console.
-	log4cxx::PropertyConfigurator::configure("log4cxx.conf");
-
+    setup_logging();
+    
     try {
 		po::positional_options_description pd;
 		pd.add("cmd", 1);
@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 		desc.add_options()
 			("help", "produce help message")
 			("port", po::value<int>()->default_value(8000), "the port to connect to.")
-			("cmd", po::value<string>(), "the message to send. start, vent or stop.")			
+			("cmd", po::value<string>(), "the message to send. start, vent, stop or quit.")
 			("jsonConfig", po::value<string>(), "The filename for the config when starting.")			
 		;
 
@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
 		po::notify(vm);
 
 		// minimal args
-        if (vm.count("help") || vm.count("cmd") == 0) {
+        if (vm.count("help") || vm.count("cmd") == 0 || vm.count("jsonConfig") == 0) {
 			cerr << desc << endl;
             return 0;
         }
@@ -76,6 +76,9 @@ int main (int argc, char *argv[])
 		}
 		else if (vm["cmd"].as<string>() == "stop") {
 			msg.stopMsg();
+		}
+		else if (vm["cmd"].as<string>() == "quit") {
+			msg.quitMsg();
 		}
 		else {
 			cerr << "didn't understand command." << endl;

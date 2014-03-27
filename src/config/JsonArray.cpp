@@ -11,6 +11,12 @@ using namespace std;
 using namespace boost;
 using namespace json_spirit;
 
+bool JsonArray::has(iterator it, const string &name) const {
+    
+	return JsonObject::has(it->get_obj(), name);
+	
+}
+
 int JsonArray::getInt(iterator it, const string &name) const {
 
 	Value v = JsonObject::get(it->get_obj(), name);

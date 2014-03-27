@@ -65,8 +65,8 @@ int PWorker::send(int msgid, Poll *poll) {
 	msg.set(&message);
 	
 	poll->send(this, message, 0, 0);
-		
-	return msgid++;
+
+	return msgid+1;
 	
 }
 
@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
     
     //  Send count tasks
     s_catch_signals ();
-
+    
 	// and do the vent.
 	Poll p(logger, &sender);
 	PWorker w(dir, crc, sleeptime);

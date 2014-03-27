@@ -6,6 +6,7 @@
 #include "StringMsg.hpp"
 #include "SinkMsg.hpp"
 #include "Logging.hpp"
+#include "Poller.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -25,8 +26,13 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount
 
 class WWorker : public IWorkWorker {
 
+private:
+    zmq::i_socket_t *sender;
+    
 public:
-	virtual bool process(const zmq::message_t &message, SinkMsg *smsg);
+    WWorker(zmq::i_socket_t *s) : sender(s) {}
+    
+	virtual void processMsg(const zmq::message_t &message);
 	
 	virtual bool shouldQuit() {
 		return s_interrupted;
@@ -34,8 +40,9 @@ public:
 
 };
 
-bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
+void WWorker::processMsg(const zmq::message_t &message) {
 
+    SinkMsg smsg;
 	StringMsg msg(message);
 
 	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
@@ -46,9 +53,23 @@ bool WWorker::process(const zmq::message_t &message, SinkMsg *smsg) {
 	// and set the sink msg.
 	vector<string> v;
 	v.push_back(lexical_cast<string>(length));
-	smsg->dataMsg(msg.getId(), v);
-	
-	return true;
+	smsg.dataMsg(msg.getId(), v);
+
+	LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
+    
+	zmq::message_t smessage;
+    
+    // Send results to sink
+	smsg.set(&smessage);
+	try {
+		sender->send(smessage);
+	}
+	catch (zmq::error_t &e) {
+		if (string(e.what()) != "Interrupted system call") {
+			LOG4CXX_ERROR(logger, "send failed." << e.what())
+		}
+	}
+    
 }
 
 int main (int argc, char *argv[])
@@ -97,8 +118,8 @@ int main (int argc, char *argv[])
 
 	// and do the work.
 	Poller p(logger);
-	Work v(logger, &p, &receiver, &sender);
-	WWorker w;
+	Work v(logger, &p, &receiver);
+	WWorker w(&sender);
 	v.process(&w);
 
     return 0;

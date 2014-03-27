@@ -8,6 +8,7 @@ add_library (coreLib SHARED
 	Sink.cpp
 	Vent.cpp
 	Work.cpp
+	Poller.cpp
     Logging.cpp
 )
 

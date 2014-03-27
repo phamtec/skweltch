@@ -54,6 +54,7 @@ public:
 	void write(bool pp, std::ostream *ostream) const;
 	
 	// get different things from the object.
+    bool has(const std::string &key) const;
 	std::string getAsString(const std::string &key) const;
 	std::string getString(const std::string &key) const;
 	void setString(const std::string &key, const std::string &s);
@@ -81,6 +82,7 @@ public:
 	void replace(const std::string &name, const JsonObject &o);
 
 	// utility class.
+    static bool has(const json_spirit::Object &o, const std::string &key);
 	static json_spirit::Value get(const json_spirit::Object &o, const std::string &name);
 	static void set(json_spirit::Object *o, const std::string &name, json_spirit::Value v);
 

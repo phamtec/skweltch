@@ -48,58 +48,75 @@ int main (int argc, char *argv[])
         LOG4CXX_ERROR(logger, jsonConfig << " does not exist");
         return 1;
     }
-    string block = vm["block"].as<string>();
     
     try {
- 		ifstream jsonfile(jsonConfig);
-		JsonObject r;
-		if (!r.read(logger, &jsonfile)) {
-			return 1;
-		}
+        ifstream jsonfile(jsonConfig);
+        JsonObject r;
+        if (!r.read(logger, &jsonfile)) {
+            return 1;
+        }
         
         JsonArray blocks = r.getArray("blocks");
-        for (JsonArray::iterator i = blocks.begin(); i != blocks.end(); i++) {
-            JsonObject obj = blocks.getValue(i);
-            if (obj.getString("name") == block) {
-                cout << "exe: " << obj.getString("exe") << endl;
-                
-                JsonObject pipes = PipeBuilder(logger).collect(&r, obj);
-                
-                cout << "pipes: ";
-                pipes.write(false, &cout);
-                cout << endl;
-                cout << "config: " << obj.getChildAsString("config") << endl;
-                
-                cout << "test with: " << endl;
-                
-                for (JsonObject::iterator i = pipes.begin(); i != pipes.end(); i++) {
-                    
-                    JsonObject val = pipes.getValue(i);
-                    string name = pipes.getKey(i);
-                    
-                    string mode = val.getString("mode");
-                    cout << "./listen " << mode;
-                    if (mode == "bind") {
-                        cout << " tcp://" << val.getString("address");
-                    }
-                    else if (mode == "connect") {
-                        cout << " tcp://" << val.getString("node");
-                    }
-                    else {
-                        cout << "\t\tbad mode" << endl;
-                    }
-                    cout << ":" << val.getInt("port", -1) << endl;
-                }
-                
-                
-                // no more.
-                break;
+        
+        if (!vm.count("block")) {
+            // list all the blocks.
+            cout << "blocks: " << endl;
+            for (JsonArray::iterator i = blocks.begin(); i != blocks.end(); i++) {
+                JsonObject obj = blocks.getValue(i);
+                cout << obj.getString("name") << endl;
             }
         }
- 	}
-	catch (std::exception& e) {
-		LOG4CXX_ERROR(logger, e.what())
-	}
+        else {
+            string block = vm["block"].as<string>();
+        
+            bool found = false;
+            for (JsonArray::iterator i = blocks.begin(); i != blocks.end(); i++) {
+                JsonObject obj = blocks.getValue(i);
+                if (obj.getString("name") == block) {
+                    cout << "exe: " << obj.getString("exe") << endl;
+                    
+                    JsonObject pipes = PipeBuilder(logger).collect(&r, obj);
+                    
+                    cout << "pipes: ";
+                    pipes.write(false, &cout);
+                    cout << endl;
+                    cout << "config: " << obj.getChildAsString("config") << endl;
+                    
+                    cout << "test with: " << endl;
+                    
+                    for (JsonObject::iterator i = pipes.begin(); i != pipes.end(); i++) {
+                        
+                        JsonObject val = pipes.getValue(i);
+                        string name = pipes.getKey(i);
+                        
+                        string mode = val.getString("mode");
+                        cout << "./listen " << mode;
+                        if (mode == "bind") {
+                            cout << " tcp://" << val.getString("address");
+                        }
+                        else if (mode == "connect") {
+                            cout << " tcp://" << val.getString("node");
+                        }
+                        else {
+                            cout << "\t\tbad mode" << endl;
+                        }
+                        cout << ":" << val.getInt("port", -1) << endl;
+                    }
+                    
+                    
+                    // no more.
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                cout << "block " << block << " not found." << endl;
+            }
+        }
+    }
+    catch (std::exception& e) {
+        LOG4CXX_ERROR(logger, e.what())
+    }
     
     return 0;
 }

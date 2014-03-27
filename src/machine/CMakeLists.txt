@@ -25,6 +25,9 @@ target_link_libraries (machineLib
 add_executable (machine
 	machine.cpp)
 
+add_executable (machinecmd
+	machinecmd.cpp)
+
 target_link_libraries (machine
 	configLib
 	coreLib
@@ -36,6 +39,17 @@ target_link_libraries (machine
 	msgpack
 	log4cxx)
 
-install(TARGETS machineLib machine
+target_link_libraries (machinecmd
+	configLib
+	coreLib
+	monitorLib
+	machineLib
+	boost_program_options
+	zmq
+	czmq
+	msgpack
+	log4cxx)
+
+install(TARGETS machineLib machine machinecmd
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

@@ -5,6 +5,7 @@
 #include "../Work.hpp"
 #include "../IWorkWorker.hpp"
 #include "../Msg.hpp"
+#include "../Poller.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -39,7 +40,7 @@ MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
 
 MOCK_BASE_CLASS( mock_work_worker, IWorkWorker )
 {
-	MOCK_METHOD( process, 2 )
+	MOCK_METHOD( processMsg, 1 )
 	MOCK_METHOD( shouldQuit, 0 )
 };
 
@@ -57,18 +58,16 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 {
 
 	mock_socket receiver;
-	mock_socket sender;
 	mock_work_worker w;
 	mock_poller p;
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 2));
-	MOCK_EXPECT(w.process).with(mock::any, mock::any).once().returns(true);
-	MOCK_EXPECT(sender.send).with(mock::any, 0).once().returns(true);
+	MOCK_EXPECT(w.processMsg).with(mock::any).once();
 	MOCK_EXPECT(receiver.recv).with(mock::any, 0).once().returns(true);
 	MOCK_EXPECT(p.poll).with(mock::any, 1000).once().returns(true);
 
-	Work ww(log4cxx::Logger::getRootLogger(), &p, &receiver, &sender);
+	Work ww(log4cxx::Logger::getRootLogger(), &p, &receiver);
 	ww.process(&w);
 	
 }

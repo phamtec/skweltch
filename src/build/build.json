@@ -2,7 +2,7 @@
 	"blocks": [
 		{
 			"name": "PollDir",
-			"exe": "dist/polldir",
+			"exe": "./polldir",
 			"node": "localhost",
 			"connections": {
 				"pushTo": {
@@ -20,7 +20,7 @@
 		{
 			"count": 1,
 			"name": "WorkBash",
-			"exe": "dist/workbash",
+			"exe": "./workbash",
 			"node": "localhost",
 			"connections": {
 				"pullFrom": {
@@ -38,13 +38,15 @@
 			},
 			"config" : {
 				"dir": "/Users/paul/Documents/skweltch/src/unix",
-				"cmd": "echo \"hello\"",
+				"cmd": "make install",
+				"sleeptime": 2000,
 				"logfile": "build.log"
 			}
 		},
 		{
 			"name": "SinkBuild",
-			"exe": "dist/sinkbuild",
+// we need to run the notifer app first.
+//			"exe": "./Skweltch Notifier.app",
 			"node": "localhost",
 			"connections": {
 				"pullFrom": {
@@ -56,6 +58,6 @@
 			},
 			"config" : {
 			}
-		}	
+		}
 	]		
 }

@@ -32,7 +32,7 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 
 	// startup the machine.
 	vector<int> pids;
-	if (!mon.start(&r, &pids, true)) {
+	if (!mon.start(&r, &pids)) {
 		throw new runtime_error("couldn't run the machine.");
 	}
 	

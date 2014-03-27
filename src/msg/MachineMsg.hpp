@@ -26,6 +26,8 @@ public:
 		{ data.first = 2; }
 	void stopMsg() 
 		{ data.first = 3; }
+	void quitMsg()
+        { data.first = 4; }
 		
 };
 

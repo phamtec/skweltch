@@ -20,7 +20,7 @@ private:
 public:
 	TaskMonitor(log4cxx::LoggerPtr l) : logger(l) {}
 
-	bool start(JsonObject *root, std::vector<int> *pids, bool demonize = false);
+	bool start(JsonObject *root, std::vector<int> *pids);
 	void waitFinish(const std::vector<int> &pids);
 	bool doVent(JsonObject *root, std::vector<int> *pids);
 	void writePidFile(JsonObject *root, std::vector<int> *pids);
