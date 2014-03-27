@@ -4,7 +4,7 @@
 #include "StringMsg.hpp"
 #include "Poller.hpp"
 #include "ExeRunner.hpp"
-#include "BoostAnalyser.hpp"
+#include "MakeAnalyser.hpp"
 #include "Logging.hpp"
 #include "Work.hpp"
 #include "IWorkWorker.hpp"
@@ -30,12 +30,13 @@ class WWorker : public IWorkWorker {
     
 private:
     string cmd;
+    string logfile;
     int sleeptime;
     zmq::i_socket_t *sender;
 	int msgid;
     
 public:
-	WWorker(const string &c, int sl, zmq::i_socket_t *s) : cmd(c), sleeptime(sl), sender(s), msgid(-1) {}
+	WWorker(const string &c, const string &l, int sl, zmq::i_socket_t *s) : cmd(c), logfile(l), sleeptime(sl), sender(s), msgid(-1) {}
 	
 	virtual void processMsg(const zmq::message_t &message);
 	virtual void timeout(Work *work);
@@ -72,11 +73,12 @@ void WWorker::timeout(Work *work) {
         ::waitpid(pid, NULL, 0);
         
         // analyse the log file.
-        //		ifstream f(logfile.c_str());
-        //		BuildStatus stat = BoostAnalyser(logger).analyse(&f);
+        ifstream f(logfile.c_str());
+        BuildStatus stat = MakeAnalyser(logger).analyse(&f);
         
         // and set the sink msg.
-        StringMsg smsg(msgid, 0, "done");
+        StringMsg smsg(msgid, 0, (stat.workDone && stat.success) ? "success" : "failed");
+        
         
         zmq::message_t message;
         
@@ -150,7 +152,7 @@ int main (int argc, char *argv[])
 
 	// and do the work.
 	Poller p(logger);
-    WWorker w(cmd, sleeptime, &sender);
+    WWorker w(cmd, logfile, sleeptime, &sender);
     Work v(logger, &p, &receiver);
  	v.process(&w);
 

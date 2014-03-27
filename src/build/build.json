@@ -38,9 +38,9 @@
 			},
 			"config" : {
 				"dir": "/Users/paul/Documents/skweltch/src/unix",
-				"cmd": "make install",
+				"cmd": "make install > build.log 2>&1 && make test >> build.log",
 				"sleeptime": 2000,
-				"logfile": "build.log"
+				"logfile": "/Users/paul/Documents/skweltch/src/unix/build.log"
 			}
 		},
 		{

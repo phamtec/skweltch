@@ -1,7 +1,7 @@
 
 add_library (buildLib SHARED
 	FileModChecker.cpp
-	BoostAnalyser.cpp
+	MakeAnalyser.cpp
 )
 
 add_executable (polldir
@@ -10,10 +10,6 @@ add_executable (polldir
 
 add_executable (sinkbuild
 	sinkbuild.cpp
-)
-
-add_executable (ventbuild
-	ventbuild.cpp
 )
 
 add_executable (workbash
@@ -59,17 +55,6 @@ target_link_libraries (sinkbuild
 	czmq
 	msgpack
 	log4cxx)
-
-target_link_libraries (ventbuild
-	configLib
-	coreLib
-	boost_filesystem
-	boost_system
-	zmq
-	czmq
-	msgpack
-	log4cxx)
-
 target_link_libraries (workbash
 	configLib
 	coreLib
@@ -83,6 +68,6 @@ target_link_libraries (workbash
 
 add_subdirectory (test) 
 
-install(TARGETS buildLib polldir sinkbuild ventbuild workbash
+install(TARGETS buildLib polldir sinkbuild workbash
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)
