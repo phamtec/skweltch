@@ -10,6 +10,7 @@ add_library (coreLib SHARED
 	Work.cpp
 	Poller.cpp
     Logging.cpp
+    Main.cpp
 )
 
 include_directories (
@@ -24,6 +25,7 @@ target_link_libraries (coreLib
 	czmq
 	msgpack
 	log4cxx
+    boost_program_options
     boost_filesystem
     boost_system)
 

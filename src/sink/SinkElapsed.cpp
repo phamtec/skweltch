@@ -4,6 +4,7 @@
 #include "Sink.hpp"
 #include "ISinkWorker.hpp"
 #include "Logging.hpp"
+#include "Main.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -57,32 +58,12 @@ int main (int argc, char *argv[])
 {
 	setup_logging();
     
-    if (argc != 4) {
-        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
-		return 0;
-	}
-	
-	{
-		stringstream outfn;
-		outfn << "org.skweltch." << argv[3];
-		logger = log4cxx::Logger::getLogger(outfn.str());
-	}
-		
- 	JsonObject pipes;
- 	{
- 		stringstream ss(argv[1]);
-		if (!pipes.read(logger, &ss)) {
-			return 1;
-		}
- 	}
+	JsonObject pipes;
 	JsonObject root;
- 	{
- 		stringstream ss(argv[2]);
-		if (!root.read(logger, &ss)) {
-			return 1;
-		}
- 	}
- 	
+    if (!setup_main(argc, argv, &pipes, &root, &logger)) {
+        return 1;
+    }
+    
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);

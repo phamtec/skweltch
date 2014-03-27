@@ -7,6 +7,7 @@
 #include "SinkMsg.hpp"
 #include "Logging.hpp"
 #include "Poller.hpp"
+#include "Main.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -24,13 +25,10 @@ using namespace boost;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workcharcount"));
 
-class WWorker : public IWorkWorker {
+class WWorker : public SinkWorker {
 
-private:
-    zmq::i_socket_t *sender;
-    
 public:
-    WWorker(zmq::i_socket_t *s) : sender(s) {}
+    WWorker(log4cxx::LoggerPtr l, zmq::i_socket_t *s) : SinkWorker(l, s) {}
     
 	virtual void processMsg(const zmq::message_t &message);
 	
@@ -57,51 +55,20 @@ void WWorker::processMsg(const zmq::message_t &message) {
 
 	LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
     
-	zmq::message_t smessage;
-    
-    // Send results to sink
-	smsg.set(&smessage);
-	try {
-		sender->send(smessage);
-	}
-	catch (zmq::error_t &e) {
-		if (string(e.what()) != "Interrupted system call") {
-			LOG4CXX_ERROR(logger, "send failed." << e.what())
-		}
-	}
-    
+	sendSinkMsg(&smsg);
+
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     setup_logging();
     
-	if (argc != 4) {
-        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " pipes config name");
-		return 1;
-	}
-	
-	{
-		stringstream outfn;
-		outfn << "org.skweltch." << argv[3];
-		logger = log4cxx::Logger::getLogger(outfn.str());
-	}
-		
 	JsonObject pipes;
- 	{
- 		stringstream ss(argv[1]);
-		if (!pipes.read(logger, &ss)) {
-			return 1;
-		}
- 	}
 	JsonObject root;
- 	{
- 		stringstream ss(argv[2]);
-		if (!root.read(logger, &ss)) {
-			return 1;
-		}
- 	}
-
+    if (!setup_main(argc, argv, &pipes, &root, &logger)) {
+        return 1;
+    }
+    
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -119,7 +86,7 @@ int main (int argc, char *argv[])
 	// and do the work.
 	Poller p(logger);
 	Work v(logger, &p, &receiver);
-	WWorker w(&sender);
+	WWorker w(logger, &sender);
 	v.process(&w);
 
     return 0;

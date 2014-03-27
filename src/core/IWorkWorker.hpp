@@ -29,4 +29,17 @@ public:
 
 };
 
+class SinkWorker : public IWorkWorker {
+
+protected:
+    log4cxx::LoggerPtr logger;
+    zmq::i_socket_t *sender;
+    
+public:
+    SinkWorker(log4cxx::LoggerPtr l, zmq::i_socket_t *s) : logger(l), sender(s) {}
+   
+    void sendSinkMsg(SinkMsg *smsg);
+    
+};
+
 #endif // __IWORKWORKER_HPP_INCLUDED__

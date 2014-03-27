@@ -25,14 +25,13 @@ using namespace boost;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.workxpath"));
 
-class WWorker : public IWorkWorker {
+class WWorker : public SinkWorker {
 
 private:
 	string xpath;
-    zmq::i_socket_t *sender;
 	
 public:
-	WWorker(const string &xp, zmq::i_socket_t *s) : xpath(xp), sender(s) {}
+	WWorker(log4cxx::LoggerPtr l, zmq::i_socket_t *s, const string &xp) : SinkWorker(l, s), xpath(xp) {}
 	
 	virtual void processMsg(const zmq::message_t &message);
 	
@@ -67,19 +66,7 @@ void WWorker::processMsg(const zmq::message_t &message) {
 	// just send it on.
 	smsg.dataMsg(msg.getId(), v);
 	
-	
-	zmq::message_t smessage;
-    
-    // Send results to sink
-	smsg.set(&smessage);
-	try {
-		sender->send(smessage);
-	}
-	catch (zmq::error_t &e) {
-		if (string(e.what()) != "Interrupted system call") {
-			LOG4CXX_ERROR(logger, "send failed." << e.what())
-		}
-	}
+	sendSinkMsg(&smsg);
     
 }
 
@@ -132,7 +119,7 @@ int main (int argc, char *argv[])
 	// and do the work.
 	Poller p(logger);
 	Work v(logger, &p, &receiver);
-	WWorker w(xpath, &sender);
+	WWorker w(logger, &sender, xpath);
 	v.process(&w);
 
     return 0;

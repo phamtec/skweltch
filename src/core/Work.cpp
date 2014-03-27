@@ -58,3 +58,22 @@ void Work::process(IWorkWorker *worker) {
 	LOG4CXX_INFO(logger, "finished.")
 
 }
+
+void SinkWorker::sendSinkMsg(SinkMsg *smsg) {
+    
+	zmq::message_t smessage;
+    
+    // Send results to sink
+	smsg->set(&smessage);
+    
+	try {
+		sender->send(smessage);
+	}
+	catch (zmq::error_t &e) {
+		if (string(e.what()) != "Interrupted system call") {
+			LOG4CXX_ERROR(logger, "send failed." << e.what())
+		}
+	}
+    
+}
+

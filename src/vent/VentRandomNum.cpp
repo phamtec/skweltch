@@ -5,6 +5,7 @@
 #include "IVentWorker.hpp"
 #include "IntMsg.hpp"
 #include "Logging.hpp"
+#include "Main.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -67,51 +68,12 @@ int main (int argc, char *argv[])
 {
     setup_logging();
     
-    po::positional_options_description pd;
-    pd.add("pipes", 1);
-    pd.add("config", 1);
-    pd.add("name", 1);
-    
-    po::options_description desc("options");
-    desc.add_options()
-    ("help", "produce help message")
-    ("pipes", po::value<string>(), "The JSON for pipes")
-    ("config", po::value<string>(), "The JSON for config")
-    ("name", po::value<string>(), "The name for this task")
-    ;
-    
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).
-              options(desc).positional(pd).run(), vm);
-    po::notify(vm);
-    
-    // minimal args
-    if (vm.count("help") || !vm.count("pipes") || !vm.count("config") || !vm.count("name")) {
-        LOG4CXX_ERROR(logger, desc);
-        return 0;
-    }
-	
-	{
-		stringstream outfn;
-		outfn << "org.skweltch." << vm["name"].as<string>();
-		logger = log4cxx::Logger::getLogger(outfn.str());
-	}
-		
 	JsonObject pipes;
- 	{
- 		stringstream ss(vm["pipes"].as<string>());
-		if (!pipes.read(logger, &ss)) {
-			return 1;
-		}
- 	}
 	JsonObject root;
- 	{
- 		stringstream ss(vm["config"].as<string>());
-		if (!root.read(logger, &ss)) {
-			return 1;
-		}
- 	}
-
+    if (!setup_main(argc, argv, &pipes, &root, &logger)) {
+        return 1;
+    }
+    
 	int low = root.getInt("low", 1);
  	int high = root.getInt("high", 100);
 	
