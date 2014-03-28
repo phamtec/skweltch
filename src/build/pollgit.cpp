@@ -92,11 +92,10 @@ static int fetch_progress(const git_transfer_progress *stats, void *payload)
     return 0;
 }
 
+bool any_changes = false;
 static int progress_cb(const char *str, int len, void *data)
 {
-
-    cout << str << endl;
-
+    any_changes = true;
 	return 0;
 }
 
@@ -166,25 +165,30 @@ int main (int argc, char *argv[])
         }
         git_remote *remote;
         ret = git_remote_load(&remote, repo, "origin");
-        if (repos != remoteurl) {
+        if (ret != 0) {
             LOG4CXX_ERROR(logger, "git_remote_load error " << ret << ".");
             return ret;
         }
         git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
         remopts.progress = progress_cb;
         ret = git_remote_set_callbacks(remote, &remopts);
-        if (repos != remoteurl) {
+        if (ret != 0) {
             LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
             return ret;
         }
-        
         ret = git_remote_connect(remote, GIT_DIRECTION_FETCH);
-        if (repos != remoteurl) {
+        if (ret != 0) {
             LOG4CXX_ERROR(logger, "git_remote_connect error " << ret << ".");
             return ret;
         }
         ret = git_remote_fetch(remote, NULL, NULL);
-        
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_remote_fetch error " << ret << ".");
+            return ret;
+        }
+        if (any_changes) {
+            LOG4CXX_INFO(logger, "There were changes.");
+        }
         git_remote_free(remote);
 
     }
