@@ -2,6 +2,7 @@
 add_library (buildLib SHARED
 	FileModChecker.cpp
 	MakeAnalyser.cpp
+	Git.cpp
 )
 
 add_executable (polldir
@@ -34,6 +35,7 @@ target_link_libraries (buildLib
 	boost_filesystem
 	boost_system
 	boost_regex
+    git2
 	zmq
 	czmq
 	msgpack
@@ -54,9 +56,6 @@ target_link_libraries (pollgit
 	configLib
 	coreLib
 	buildLib
-	boost_filesystem
-	boost_system
-    git2
 	zmq
 	czmq
 	msgpack
