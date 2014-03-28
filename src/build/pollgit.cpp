@@ -92,6 +92,14 @@ static int fetch_progress(const git_transfer_progress *stats, void *payload)
     return 0;
 }
 
+static int progress_cb(const char *str, int len, void *data)
+{
+
+    cout << str << endl;
+
+	return 0;
+}
+
 /**
  
  Example args:
@@ -157,7 +165,7 @@ int main (int argc, char *argv[])
             return ret;
         }
         git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
-        remopts.transfer_progress = fetch_progress;
+        remopts.progress = progress_cb;
         ret = git_remote_init_callbacks(&remopts, GIT_REMOTE_CALLBACKS_VERSION);
         if (repos != remoteurl) {
             LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
