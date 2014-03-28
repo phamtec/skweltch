@@ -214,6 +214,7 @@ int main (int argc, char *argv[])
                 LOG4CXX_ERROR(logger, "git_merge error " << ret << ".");
                 return ret;
             }
+            
             git_merge_head_free(head);
            
         }
