@@ -21,6 +21,7 @@ cp ../bin/machine $INSTALL_DIR
 cp ../bin/machinecmd $INSTALL_DIR
 cp ../bin/mockblock $INSTALL_DIR
 cp ../bin/polldir $INSTALL_DIR
+cp ../bin/pollgit $INSTALL_DIR
 cp ../bin/send $INSTALL_DIR
 cp ../bin/sinkbuild $INSTALL_DIR
 cp ../bin/workbash $INSTALL_DIR
