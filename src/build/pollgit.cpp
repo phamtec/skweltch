@@ -87,6 +87,7 @@ static int fetch_progress(const git_transfer_progress *stats, void *payload)
         cout << fetch_percent << "% (" << kbytes << " kb, " << stats->received_objects << "/" << stats->total_objects << ")" << endl;
         last_pc = fetch_percent;
     }
+ 
     
     return 0;
 }
