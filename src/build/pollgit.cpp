@@ -19,6 +19,7 @@
 #include <msgpack.hpp>
 #include <git2/clone.h>
 #include <git2/config.h>
+#include <git2/remote.h>
 #include <boost/filesystem.hpp>
 
 using namespace std;
@@ -154,8 +155,15 @@ int main (int argc, char *argv[])
             LOG4CXX_ERROR(logger, "repos points to a different remote url.");
             return ret;
         }
+        git_remote *remote;
+        ret = git_remote_load(&remote, repo, NULL);
+        if (repos != remoteurl) {
+            LOG4CXX_ERROR(logger, "git_remote_load error " << ret << ".");
+            return ret;
+        }
         
-        // ok say work ou
+        git_remote_free(remote);
+
     }
     else {
         // clone with git.
