@@ -138,7 +138,7 @@ public:
 bool PWorker::waitEvent() {
     
 	while (!shouldQuit()) {
-        x
+        
         if (pollGit(folder, repos)) {
             return true;
         }
