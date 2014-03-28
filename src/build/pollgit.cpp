@@ -21,6 +21,7 @@
 #include <git2/config.h>
 #include <git2/remote.h>
 #include <git2/merge.h>
+#include <git2/commit.h>
 #include <boost/filesystem.hpp>
 
 using namespace std;
@@ -213,8 +214,21 @@ int main (int argc, char *argv[])
                 return ret;
             }
             git_merge_head_free(head);
+            
+            git_oid commitid;
+            ret = git_commit_create(&commitid, repo, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+            if (ret != 0) {
+                LOG4CXX_ERROR(logger, "git_commit_create error " << ret << ".");
+                return ret;
+            }
+            git_commit *commit;
+            ret = git_commit_lookup(&commit, repo, &commitid);
+            if (ret != 0) {
+                LOG4CXX_ERROR(logger, "git_commit_lookup error " << ret << ".");
+                return ret;
+            }
+            git_commit_free(commit);
         }
-
     }
     else {
         // clone with git.
