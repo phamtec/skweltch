@@ -101,6 +101,27 @@ static int progress_cb(const char *str, int len, void *data)
 	return 0;
 }
 
+bool shellPull(const string &folder) {
+    
+    filesystem::current_path(folder);
+    
+    FILE *in;
+    if (!(in = popen("git pull", "r"))){
+        LOG4CXX_ERROR(logger, "popen failed.");
+        return 1;
+    }
+    
+    char buff[512];
+    stringstream ss;
+    while (fgets(buff, sizeof(buff), in) != NULL) {
+        ss << buff;
+    }
+    pclose(in);
+    
+    return ss.str() != "Already up-to-date.\n";
+
+}
+
 /**
  
  Example args:
@@ -117,7 +138,7 @@ static int progress_cb(const char *str, int len, void *data)
  
 */
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     setup_logging();
     
@@ -168,20 +189,10 @@ int main (int argc, char *argv[])
         }
         git_repository_free(repo);
  
-        // ok we use the exerunner to pull because our attempt at using the api sucks.
-        filesystem::current_path(folder);
+        if (shellPull(folder)) {
+            LOG4CXX_INFO(logger, "changed found.");
+        }
         
-        FILE *in;
-        if (!(in = popen("git pull", "r"))){
-            LOG4CXX_ERROR(logger, "popen failed.");
-            return 1;
-        }
-        char buff[512];
-        while (fgets(buff, sizeof(buff), in) != NULL) {
-            cout << ": " << buff;
-        }
-        pclose(in);
-
     }
     else {
         // clone with git.
@@ -216,7 +227,7 @@ int main (int argc, char *argv[])
 */
 }
 
-int pull(git_repository *repo) {
+int nativePull(git_repository *repo) {
     
     git_remote *remote;
     int ret = git_remote_load(&remote, repo, "origin");
