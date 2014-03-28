@@ -8,6 +8,10 @@ add_executable (polldir
 	polldir.cpp
 )
 
+add_executable (pollgit
+	pollgit.cpp
+)
+
 add_executable (sinkbuild
 	sinkbuild.cpp
 )
@@ -46,6 +50,18 @@ target_link_libraries (polldir
 	msgpack
 	log4cxx)
 
+target_link_libraries (pollgit
+	configLib
+	coreLib
+	buildLib
+	boost_filesystem
+	boost_system
+    git2
+	zmq
+	czmq
+	msgpack
+	log4cxx)
+
 target_link_libraries (sinkbuild
 	configLib
 	coreLib
@@ -55,6 +71,7 @@ target_link_libraries (sinkbuild
 	czmq
 	msgpack
 	log4cxx)
+
 target_link_libraries (workbash
 	configLib
 	coreLib
@@ -68,6 +85,6 @@ target_link_libraries (workbash
 
 add_subdirectory (test) 
 
-install(TARGETS buildLib polldir sinkbuild workbash
+install(TARGETS buildLib polldir pollgit sinkbuild workbash
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

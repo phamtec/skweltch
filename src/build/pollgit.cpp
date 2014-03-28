@@ -17,11 +17,15 @@
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
 #include <msgpack.hpp>
+#include <git2/clone.h>
+#include <git2/config.h>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace boost;
+using namespace boost::filesystem;
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.polldir"));
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.pollgit"));
 
 class PWorker : public IPollWorker {
 
@@ -71,6 +75,21 @@ int PWorker::send(int msgid, Poll *poll) {
 	
 }
 
+int last_pc = 0;
+
+static int fetch_progress(const git_transfer_progress *stats, void *payload)
+{
+    int fetch_percent = (100 * stats->received_objects) / stats->total_objects;
+    
+    if (fetch_percent != last_pc) {
+        int kbytes = stats->received_bytes / 1024;
+        cout << fetch_percent << "% (" << kbytes << " kb, " << stats->received_objects << "/" << stats->total_objects << ")" << endl;
+        last_pc = fetch_percent;
+    }
+    
+    return 0;
+}
+
 /**
  
  Example args:
@@ -86,6 +105,7 @@ int PWorker::send(int msgid, Poll *poll) {
  ./listen connect tcp://localhost:5557
  
 */
+
 int main (int argc, char *argv[])
 {
     setup_logging();
@@ -103,7 +123,51 @@ int main (int argc, char *argv[])
     if (!ports.join(&sender, pipes, "pushTo")) {
     	return 1;
     }
-
+    
+    string folder = "/Users/paul/Documents/gittest";
+    string repos = "git://github.com/phamtec/skweltch.git";
+    
+    git_repository *repo = NULL;
+    
+    if (exists(folder)) {
+        // get the remote path
+        int ret = git_repository_open(&repo, folder.c_str());
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_repository_open error " << ret << ".");
+            return ret;
+        }
+        git_config *cfg = NULL;
+        ret = git_repository_config(&cfg, repo);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_repository_config error " << ret << ".");
+            return ret;
+        }
+        const char *remoteurl;
+        ret = git_config_get_string(&remoteurl, cfg, "remote.origin.url");
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_config_get_string error " << ret << ".");
+            return ret;
+        }
+        git_config_free(cfg);
+ 
+        if (repos != remoteurl) {
+            LOG4CXX_ERROR(logger, "repos points to a different remote url.");
+            return ret;
+        }
+        
+        // ok say work ou
+    }
+    else {
+        // clone with git.
+        git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
+        opts.remote_callbacks.transfer_progress = fetch_progress;
+        int ret = git_clone(&repo, repos.c_str(), folder.c_str(), &opts);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_clone error " << ret << ".");
+        }
+    }
+    git_repository_free(repo);
+/*
 	// the directory to watch.
 	string dir = root.getString("dir");
 	int sleeptime = root.getInt("sleeptime", 1000);
@@ -123,4 +187,5 @@ int main (int argc, char *argv[])
 	else {
 		return 1;
 	}
+*/
 }
