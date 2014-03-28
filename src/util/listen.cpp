@@ -5,43 +5,63 @@
 #include <zmq.hpp>
 #include <czmq.h>
 #include <msgpack.hpp>
-
+#include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <log4cxx/logger.h>
 #include <log4cxx/helpers/exception.h>
 
 using namespace std;
-using namespace log4cxx;
-using namespace log4cxx::helpers;
+using namespace boost;
+namespace po = boost::program_options;
 
-LoggerPtr logger(Logger::getLogger("org.skweltch.listen"));
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.listen"));
 
 int main (int argc, char *argv[])
 {
     setup_logging();
     
-	if (argc != 3) {
-        LOG4CXX_ERROR(logger, "usage: " << argv[0] << " bind|connect port");
-        LOG4CXX_ERROR(logger, "\tlistens on the port and unpacks any message that comes through.");
-		return 1;
-	}
+    po::positional_options_description pd;
+    pd.add("with", 1);
+    pd.add("port", 1);
+    
+    po::options_description desc("options");
+    desc.add_options()
+    ("help", "produce help message")
+    ("with", po::value<string>(), "bind or connect")
+    ("port", po::value<string>(), "The port.")
+    ;
+    
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+              options(desc).positional(pd).run(), vm);
+    po::notify(vm);
+    
+    // minimal args
+    if (vm.count("help") || !vm.count("with") || !vm.count("port")) {
+        LOG4CXX_ERROR(logger, desc);
+        return 0;
+    }
     
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
     
-    if (string(argv[1]) == "bind") {
+    string with = vm["with"].as<string>();
+    string port = vm["port"].as<string>();
+
+    if (with == "bind") {
  		try {
-			receiver.bind(argv[2]);
+			receiver.bind(port.c_str());
 		}
 		catch (zmq::error_t &e) {  	
 			LOG4CXX_ERROR(logger, "couldn't bind should be: tcp://*:port")
 			return 1;
 		}
     }
-    else if (string(argv[1]) == "connect") {
+    else if (with == "connect") {
  		try {
-			receiver.connect(argv[2]);
+			receiver.connect(port.c_str());
 		}
 		catch (zmq::error_t &e) {  	
 			LOG4CXX_ERROR(logger, "couldn't connect should be: tcp://localhost:port")
