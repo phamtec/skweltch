@@ -30,56 +30,7 @@ using namespace boost::filesystem;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.pollgit"));
 
-class PWorker : public IPollWorker {
-
-private:
-	string dir;
-	long lastCrc;
-	int sleeptime;
-	
-public:
-	PWorker(const string &d, int crc, int sl) : dir(d), lastCrc(crc), sleeptime(sl) {}
-	
-	virtual bool waitEvent();
-	virtual int send(int msgid, Poll *poll);
-	
-	virtual bool shouldQuit() {
-		return s_interrupted;
-	}
-	
-};
-
-bool PWorker::waitEvent() {
-
-	// what's the crc
-	long crc = FileModChecker(logger).getCrc(dir);
-	while (crc == lastCrc) {
-	
-		// sleep for a bit.
-		zclock_sleep(sleeptime);	
-		
-		// and try for the crc again.
-		crc = FileModChecker(logger).getCrc(dir);
-	}
-	lastCrc = crc;
-	
-	return true;
-}
-
-int PWorker::send(int msgid, Poll *poll) {
-
-	zmq::message_t message(2);
-	StringMsg msg(msgid, clock(), dir);
-	msg.set(&message);
-	
-	poll->send(this, message, 0, 0);
-
-	return msgid+1;
-	
-}
-
 int last_pc = 0;
-
 static int fetch_progress(const git_transfer_progress *stats, void *payload)
 {
     int fetch_percent = (100 * stats->received_objects) / stats->total_objects;
@@ -92,13 +43,6 @@ static int fetch_progress(const git_transfer_progress *stats, void *payload)
  
     
     return 0;
-}
-
-bool any_changes = false;
-static int progress_cb(const char *str, int len, void *data)
-{
-    any_changes = true;
-	return 0;
 }
 
 bool shellPull(const string &folder) {
@@ -120,6 +64,103 @@ bool shellPull(const string &folder) {
     
     return ss.str() != "Already up-to-date.\n";
 
+}
+
+bool pollGit(const string &folder, const string &repos) {
+    
+    git_repository *repo = NULL;
+    
+    if (exists(folder)) {
+        
+        // get the remote path
+        int ret = git_repository_open(&repo, folder.c_str());
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_repository_open error " << ret << ".");
+            return ret;
+        }
+        git_config *cfg = NULL;
+        ret = git_repository_config(&cfg, repo);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_repository_config error " << ret << ".");
+            return ret;
+        }
+        const char *remoteurl;
+        ret = git_config_get_string(&remoteurl, cfg, "remote.origin.url");
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_config_get_string error " << ret << ".");
+            return ret;
+        }
+        git_config_free(cfg);
+        
+        if (repos != remoteurl) {
+            LOG4CXX_ERROR(logger, "repos points to a different remote url.");
+            return ret;
+        }
+        git_repository_free(repo);
+        
+        return shellPull(folder);
+        
+    }
+    else {
+        // clone with git.
+        git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
+        opts.remote_callbacks.transfer_progress = fetch_progress;
+        int ret = git_clone(&repo, repos.c_str(), folder.c_str(), &opts);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_clone error " << ret << ".");
+        }
+        git_repository_free(repo);
+        
+        return true;
+    }
+
+}
+
+class PWorker : public IPollWorker {
+    
+private:
+	string folder;
+	string repos;
+	int sleeptime;
+	
+public:
+	PWorker(const string &f, const string &r, int sl) : folder(f), repos(r), sleeptime(sl) {}
+	
+	virtual bool waitEvent();
+	virtual int send(int msgid, Poll *poll);
+	
+	virtual bool shouldQuit() {
+		return s_interrupted;
+	}
+	
+};
+
+bool PWorker::waitEvent() {
+    
+	while (1) {
+        
+        if (pollGit(folder, repos)) {
+            return true;
+        }
+        
+		// sleep for a bit.
+		zclock_sleep(sleeptime);
+
+	}
+	
+	return true;
+}
+
+int PWorker::send(int msgid, Poll *poll) {
+    
+	zmq::message_t message(2);
+	StringMsg msg(msgid, clock(), folder);
+	msg.set(&message);
+	
+	poll->send(this, message, 0, 0);
+    
+	return msgid+1;
+	
 }
 
 /**
@@ -156,75 +197,31 @@ int main(int argc, char *argv[])
     	return 1;
     }
     
-    string folder = "/Users/paul/Documents/gittest";
-    string repos = "git://github.com/phamtec/skweltch.git";
-    
-    git_repository *repo = NULL;
-    
-    if (exists(folder)) {
-        
-        // get the remote path
-        int ret = git_repository_open(&repo, folder.c_str());
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_repository_open error " << ret << ".");
-            return ret;
-        }
-        git_config *cfg = NULL;
-        ret = git_repository_config(&cfg, repo);
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_repository_config error " << ret << ".");
-            return ret;
-        }
-        const char *remoteurl;
-        ret = git_config_get_string(&remoteurl, cfg, "remote.origin.url");
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_config_get_string error " << ret << ".");
-            return ret;
-        }
-        git_config_free(cfg);
- 
-        if (repos != remoteurl) {
-            LOG4CXX_ERROR(logger, "repos points to a different remote url.");
-            return ret;
-        }
-        git_repository_free(repo);
- 
-        if (shellPull(folder)) {
-            LOG4CXX_INFO(logger, "changed found.");
-        }
-        
-    }
-    else {
-        // clone with git.
-        git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
-        opts.remote_callbacks.transfer_progress = fetch_progress;
-        int ret = git_clone(&repo, repos.c_str(), folder.c_str(), &opts);
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_clone error " << ret << ".");
-        }
-        git_repository_free(repo);
-    }
-/*
 	// the directory to watch.
-	string dir = root.getString("dir");
+	string folder = root.getString("folder");
+	string repos = root.getString("repos");
 	int sleeptime = root.getInt("sleeptime", 1000);
 
-	// get the initial crc (we wait until this changes).
-	long crc = FileModChecker(logger).getCrc(dir);
-    
     //  Send count tasks
     s_catch_signals ();
     
 	// and do the vent.
 	Poll p(logger, &sender);
-	PWorker w(dir, crc, sleeptime);
+	PWorker w(folder, repos, sleeptime);
 	if (p.process(&w)) {
 		return 0;
 	}
 	else {
 		return 1;
 	}
-*/
+
+}
+
+bool any_changes = false;
+static int progress_cb(const char *str, int len, void *data)
+{
+    any_changes = true;
+	return 0;
 }
 
 int nativePull(git_repository *repo) {
