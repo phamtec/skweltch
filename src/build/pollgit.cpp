@@ -7,6 +7,7 @@
 #include "FileModChecker.hpp"
 #include "Logging.hpp"
 #include "Main.hpp"
+#include "ExeRunner.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -141,6 +142,7 @@ int main (int argc, char *argv[])
     git_repository *repo = NULL;
     
     if (exists(folder)) {
+        
         // get the remote path
         int ret = git_repository_open(&repo, folder.c_str());
         if (ret != 0) {
@@ -165,59 +167,13 @@ int main (int argc, char *argv[])
             LOG4CXX_ERROR(logger, "repos points to a different remote url.");
             return ret;
         }
-        git_remote *remote;
-        ret = git_remote_load(&remote, repo, "origin");
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_remote_load error " << ret << ".");
-            return ret;
-        }
-        git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
-        remopts.progress = progress_cb;
-        ret = git_remote_set_callbacks(remote, &remopts);
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
-            return ret;
-        }
-        ret = git_remote_connect(remote, GIT_DIRECTION_FETCH);
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_remote_connect error " << ret << ".");
-            return ret;
-        }
-        ret = git_remote_fetch(remote, NULL, NULL);
-        if (ret != 0) {
-            LOG4CXX_ERROR(logger, "git_remote_fetch error " << ret << ".");
-            return ret;
-        }
-        git_remote_free(remote);
+        git_repository_free(repo);
+ 
+        // ok we use the exerunner to pull because our attempt at using the api sucks.
+        filesystem::current_path(folder);
+        pid_t pid = ExeRunner(logger).run("git pull > pull.log");
+        ::waitpid(pid, NULL, 0);
         
-        if (any_changes) {
-            LOG4CXX_INFO(logger, "There were changes.");
-            
-            // merge the changes locally.
-            git_reference *headref = NULL;
-            ret = git_reference_lookup(&headref, repo, "FETCH_HEAD");
-            if (ret != 0) {
-                LOG4CXX_ERROR(logger, "git_reference_lookup error " << ret << ".");
-                return ret;
-            }
-            git_merge_head *head = NULL;
-            ret = git_merge_head_from_ref(&head, repo, headref);
-            if (ret != 0) {
-                LOG4CXX_ERROR(logger, "git_merge_head_from_ref error " << ret << ".");
-                return ret;
-            }
-            git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
-            checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
-            git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
-            ret = git_merge(repo, (const git_merge_head **)&head, 1, &merge_opts, &checkout_opts);
-            if (ret != 0) {
-                LOG4CXX_ERROR(logger, "git_merge error " << ret << ".");
-                return ret;
-            }
-            
-            git_merge_head_free(head);
-           
-        }
     }
     else {
         // clone with git.
@@ -227,8 +183,8 @@ int main (int argc, char *argv[])
         if (ret != 0) {
             LOG4CXX_ERROR(logger, "git_clone error " << ret << ".");
         }
+        git_repository_free(repo);
     }
-    git_repository_free(repo);
 /*
 	// the directory to watch.
 	string dir = root.getString("dir");
@@ -250,4 +206,63 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 */
+}
+
+int pull(git_repository *repo) {
+    
+    git_remote *remote;
+    int ret = git_remote_load(&remote, repo, "origin");
+    if (ret != 0) {
+        LOG4CXX_ERROR(logger, "git_remote_load error " << ret << ".");
+        return ret;
+    }
+    git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
+    remopts.progress = progress_cb;
+    ret = git_remote_set_callbacks(remote, &remopts);
+    if (ret != 0) {
+        LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
+        return ret;
+    }
+    ret = git_remote_connect(remote, GIT_DIRECTION_FETCH);
+    if (ret != 0) {
+        LOG4CXX_ERROR(logger, "git_remote_connect error " << ret << ".");
+        return ret;
+    }
+    ret = git_remote_fetch(remote, NULL, NULL);
+    if (ret != 0) {
+        LOG4CXX_ERROR(logger, "git_remote_fetch error " << ret << ".");
+        return ret;
+    }
+    git_remote_free(remote);
+    
+    if (any_changes) {
+        LOG4CXX_INFO(logger, "There were changes.");
+        
+        // merge the changes locally.
+        git_reference *headref = NULL;
+        ret = git_reference_lookup(&headref, repo, "FETCH_HEAD");
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_reference_lookup error " << ret << ".");
+            return ret;
+        }
+        git_merge_head *head = NULL;
+        ret = git_merge_head_from_ref(&head, repo, headref);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_merge_head_from_ref error " << ret << ".");
+            return ret;
+        }
+        git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
+        git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
+        ret = git_merge(repo, (const git_merge_head **)&head, 1, &merge_opts, &checkout_opts);
+        if (ret != 0) {
+            LOG4CXX_ERROR(logger, "git_merge error " << ret << ".");
+            return ret;
+        }
+        
+        git_merge_head_free(head);
+
+    }
+    
+    return 0;
 }
