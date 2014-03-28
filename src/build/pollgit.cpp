@@ -20,6 +20,7 @@
 #include <git2/clone.h>
 #include <git2/config.h>
 #include <git2/remote.h>
+#include <git2/merge.h>
 #include <boost/filesystem.hpp>
 
 using namespace std;
@@ -186,10 +187,33 @@ int main (int argc, char *argv[])
             LOG4CXX_ERROR(logger, "git_remote_fetch error " << ret << ".");
             return ret;
         }
+        git_remote_free(remote);
+        
         if (any_changes) {
             LOG4CXX_INFO(logger, "There were changes.");
+            
+            // merge the changes locally.
+            git_reference *headref = NULL;
+            ret = git_reference_lookup(&headref, repo, "FETCH_HEAD");
+            if (ret != 0) {
+                LOG4CXX_ERROR(logger, "git_reference_lookup error " << ret << ".");
+                return ret;
+            }
+            git_merge_head *head = NULL;
+            ret = git_merge_head_from_ref(&head, repo, headref);
+            if (ret != 0) {
+                LOG4CXX_ERROR(logger, "git_merge_head_from_ref error " << ret << ".");
+                return ret;
+            }
+            git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
+            git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
+            ret = git_merge(repo, (const git_merge_head **)&head, 1, &merge_opts, &checkout_opts);
+            if (ret != 0) {
+                LOG4CXX_ERROR(logger, "git_merge error " << ret << ".");
+                return ret;
+            }
+            git_merge_head_free(head);
         }
-        git_remote_free(remote);
 
     }
     else {
