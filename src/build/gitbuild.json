@@ -1,0 +1,64 @@
+{
+	"blocks": [
+		{
+			"name": "PollGit",
+			"exe": "./pollgit",
+			"node": "localhost",
+			"connections": {
+				"pushTo": {
+					"direction": "to",
+					"mode":"bind",
+					"address": "*",
+					"port": 5557
+				}
+			},
+			"config" : {
+				"folder": "/Users/paul/Documents/gittest",
+				"repos": "git://github.com/phamtec/skweltch.git",
+				"sleeptime": 10000
+			}
+		},
+		{
+			"count": 1,
+			"name": "WorkBash",
+			"exe": "./workbash",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode": "connect",
+					"block": "PollGit",
+					"connection": "pushTo"
+				},
+				"pushTo": {
+					"direction": "to",
+					"block": "SinkBuild",
+					"mode":"connect",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
+				"dir": "/Users/paul/Documents/skweltch/src/unix",
+				"cmd": "make install > build.log 2>&1 && make test >> build.log",
+				"sleeptime": 2000,
+				"logfile": "/Users/paul/Documents/skweltch/src/unix/build.log"
+			}
+		},
+		{
+			"name": "SinkBuild",
+// we need to run the notifer app first.
+//			"exe": "./Skweltch Notifier.app",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"bind",
+					"address": "*",
+					"port": 5559
+				}
+			},
+			"config" : {
+			}
+		}
+	]		
+}
