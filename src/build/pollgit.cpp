@@ -7,7 +7,6 @@
 #include "FileModChecker.hpp"
 #include "Logging.hpp"
 #include "Main.hpp"
-#include "ExeRunner.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -179,13 +178,10 @@ int main (int argc, char *argv[])
         }
         char buff[512];
         while (fgets(buff, sizeof(buff), in) != NULL) {
-            cout << buff;
+            cout << ": " << buff;
         }
         pclose(in);
 
-//        pid_t pid = ExeRunner(logger).run("git pull > pull.log");
-//        ::waitpid(pid, NULL, 0);
-        
     }
     else {
         // clone with git.
