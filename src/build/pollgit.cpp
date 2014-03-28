@@ -207,6 +207,7 @@ int main (int argc, char *argv[])
                 return ret;
             }
             git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
+            checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
             git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
             ret = git_merge(repo, (const git_merge_head **)&head, 1, &merge_opts, &checkout_opts);
             if (ret != 0) {
@@ -214,20 +215,6 @@ int main (int argc, char *argv[])
                 return ret;
             }
             git_merge_head_free(head);
-            
-            git_oid commitid;
-            ret = git_commit_create(&commitid, repo, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
-            if (ret != 0) {
-                LOG4CXX_ERROR(logger, "git_commit_create error " << ret << ".");
-                return ret;
-            }
-            git_commit *commit;
-            ret = git_commit_lookup(&commit, repo, &commitid);
-            if (ret != 0) {
-                LOG4CXX_ERROR(logger, "git_commit_lookup error " << ret << ".");
-                return ret;
-            }
-            git_commit_free(commit);
         }
     }
     else {
