@@ -164,20 +164,20 @@ int main (int argc, char *argv[])
             LOG4CXX_ERROR(logger, "repos points to a different remote url.");
             return ret;
         }
-        git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
-        remopts.progress = progress_cb;
-        ret = git_remote_init_callbacks(&remopts, GIT_REMOTE_CALLBACKS_VERSION);
-        if (repos != remoteurl) {
-            LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
-            return ret;
-        }
-        
         git_remote *remote;
         ret = git_remote_load(&remote, repo, "origin");
         if (repos != remoteurl) {
             LOG4CXX_ERROR(logger, "git_remote_load error " << ret << ".");
             return ret;
         }
+        git_remote_callbacks remopts = GIT_REMOTE_CALLBACKS_INIT;
+        remopts.progress = progress_cb;
+        ret = git_remote_set_callbacks(remote, &remopts);
+        if (repos != remoteurl) {
+            LOG4CXX_ERROR(logger, "git_remote_init_callbacks error " << ret << ".");
+            return ret;
+        }
+        
         ret = git_remote_connect(remote, GIT_DIRECTION_FETCH);
         if (repos != remoteurl) {
             LOG4CXX_ERROR(logger, "git_remote_connect error " << ret << ".");
