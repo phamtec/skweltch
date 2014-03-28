@@ -171,8 +171,20 @@ int main (int argc, char *argv[])
  
         // ok we use the exerunner to pull because our attempt at using the api sucks.
         filesystem::current_path(folder);
-        pid_t pid = ExeRunner(logger).run("git pull > pull.log");
-        ::waitpid(pid, NULL, 0);
+        
+        FILE *in;
+        if (!(in = popen("git pull", "r"))){
+            LOG4CXX_ERROR(logger, "popen failed.");
+            return 1;
+        }
+        char buff[512];
+        while (fgets(buff, sizeof(buff), in) != NULL) {
+            cout << buff;
+        }
+        pclose(in);
+
+//        pid_t pid = ExeRunner(logger).run("git pull > pull.log");
+//        ::waitpid(pid, NULL, 0);
         
     }
     else {
