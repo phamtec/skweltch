@@ -215,6 +215,7 @@ int main (int argc, char *argv[])
                 return ret;
             }
             git_merge_head_free(head);
+           
         }
     }
     else {
