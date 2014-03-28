@@ -105,6 +105,10 @@ static int progress_cb(const char *str, int len, void *data)
 	return 0;
 }
 
+/**
+    This doesn't work. There is one more step to be done which is to do a commit. That's why we run popen on the pull.
+*/
+
 int Git::nativePull(git_repository *repo) {
     
     git_remote *remote;
