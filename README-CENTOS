@@ -1,0 +1,39 @@
+
+sudo yum install -Y git gcc-c++ python-devel bzip2-devel apr-util apr-util-devel ruby automake libtool zlib-devel
+
+
+install the latest cmake
+install the latest boost
+install the 3.2.4 zmq
+install the latest czmq
+install the latest libgit2
+
+$ git clone https://github.com/libgit2/libgit2.git
+$ cd libgit2
+$ mkdir unix
+$ cd unix
+$ cmake ..
+$ make
+$ sudo make install
+
+$ git clone https://github.com/msgpack/msgpack-c.git
+$ cd msgpack-c
+$ ./bootstrap
+$ ./configure
+$ make
+$ sudo make install
+
+install the latest log4cxx
+
+patch -p1 -i cppFolder_stringInclude.patch
+patch -p1 -i exampleFolder_stringInclude.patch
+
+git clone https://github.com/phamtec/skweltch.git
+cd skweltch/src
+mkdir UNIX
+cd unix
+cmake .. -G "Unix Makefiles"
+
+export LD_LIBRARY_PATH=pwd`:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/usr/local/lib::${LD_LIBRARY_PATH}
+
