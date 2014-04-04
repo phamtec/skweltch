@@ -89,7 +89,7 @@ Skweltch/*
 
 apache-log4cxx/*
 
-gui/osx/*
+gui/*
 
 libgit2/*
 
@@ -120,3 +120,5 @@ README-AWS
 ssh-build-machine.sh
 
 ssh-repo.sh
+
+gui/osx/Skweltch Notifier/Skweltch Notifier.xcodeproj/project.xcworkspace/xcuserdata/paul.xcuserdatad/UserInterfaceState.xcuserstate
