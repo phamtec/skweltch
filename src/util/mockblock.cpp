@@ -55,11 +55,11 @@ int main (int argc, char *argv[])
     string block = vm["block"].as<string>();
     
     try {
- 		ifstream jsonfile(jsonConfig);
-		JsonObject r;
-		if (!r.read(logger, &jsonfile)) {
-			return 1;
-		}
+ 	ifstream jsonfile(jsonConfig.c_str());
+	JsonObject r;
+	if (!r.read(logger, &jsonfile)) {
+		return 1;
+	}
         
         JsonArray blocks = r.getArray("blocks");
         for (JsonArray::iterator i = blocks.begin(); i != blocks.end(); i++) {

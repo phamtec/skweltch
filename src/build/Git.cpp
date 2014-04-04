@@ -8,6 +8,8 @@
 #include <git2/merge.h>
 #include <git2/commit.h>
 
+#include <stdio.h>
+
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;

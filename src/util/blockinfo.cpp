@@ -50,7 +50,7 @@ int main (int argc, char *argv[])
     }
     
     try {
-        ifstream jsonfile(jsonConfig);
+        ifstream jsonfile(jsonConfig.c_str());
         JsonObject r;
         if (!r.read(logger, &jsonfile)) {
             return 1;
