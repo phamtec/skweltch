@@ -89,6 +89,10 @@ Skweltch/*
 
 apache-log4cxx/*
 
+gui/osx/*
+
+libgit2/*
+
 *.log
 
 arbor-v0.92/*
