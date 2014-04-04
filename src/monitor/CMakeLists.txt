@@ -20,19 +20,6 @@ target_link_libraries (monitorLib
 	msgpack
 	log4cxx)
 
-add_executable (monitor
-	monitor.cpp)
-
-target_link_libraries (monitor
-	coreLib
-	configLib
-	monitorLib
-	boost_program_options
-	zmq
-	czmq
-	msgpack
-	log4cxx)
-	
-install(TARGETS monitorLib monitor
+install(TARGETS monitorLib
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

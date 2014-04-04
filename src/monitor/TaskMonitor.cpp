@@ -24,20 +24,6 @@ bool TaskMonitor::start(JsonObject *root, vector<int> *pids) {
 	// now run up the workers.
 	try {
 		
-        if (root->has("sink")) {
-            // sink.
-            if (!runOne(root, root->findObj(JsonNamePredicate(root->getString("sink"))), pids)) {
-                return false;
-            }
-        }
-        
-        // vent
-        if (root->has("vent")) {
-            if (!doVent(root, pids)) {
-                return false;
-            }
-        }
-        
 		// allow the sockets to be created.
 		zclock_sleep(50);
 		
@@ -47,10 +33,7 @@ bool TaskMonitor::start(JsonObject *root, vector<int> *pids) {
 		
 			string name = bg.getString(i, "name");
 			
-            // skip over a sink or vent if there was one.
-            if (root->has("sink") && root->getString("sink") == name) {
-                continue;
-            }
+            // skip over a vent if there was one.
             if (root->has("vent") && root->getString("vent") == name) {
                 continue;
             }

@@ -34,6 +34,6 @@ mkdir UNIX
 cd unix
 cmake .. -G "Unix Makefiles"
 
-export LD_LIBRARY_PATH=pwd`:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=`pwd`:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=/usr/local/lib::${LD_LIBRARY_PATH}
 

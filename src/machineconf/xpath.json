@@ -1,0 +1,72 @@
+{
+	// this is what is used to feed the machine.
+	// always one of them.
+	"vent": "VentXML",
+	
+	"blocks" : [
+		{
+			"name": "VentXML",
+			"exe": "./ventxml",
+			"node": "localhost",
+			"connections": {
+				"pushTo": {
+					"direction": "to",
+					"mode":"bind",
+					"address": "*",
+					"port": 5557
+				},
+				"syncTo": {
+					"direction": "to",
+					"mode":"connect",
+					"block": "SinkStrings",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
+				"filename": "../data/books.xml",
+				"xpath": "catalog/book",
+				"sleep": 5,
+				"every": 2000
+			}
+		},
+		{
+			"name": "SinkStrings",
+			"exe": "./sinkstrings",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"bind",
+					"address": "*",
+					"port": 5558
+				}
+			},
+			"config" : {
+			}
+		},
+		{
+			"count": 3,
+			"name": "WorkXPath",
+			"exe": "./workxpath",
+			"node": "localhost",
+			"connections": {
+				"pullFrom": {
+					"direction": "from",
+					"mode":"connect",
+					"block": "VentXML",
+					"connection": "pushTo"
+				},
+				"pushTo": {
+					"direction": "to",
+					"block": "SinkStrings",
+					"mode":"connect",
+					"connection": "pullFrom"
+				}
+			},
+			"config" : {
+				"xpath": "book/title/text()"
+			}
+		}
+	]
+		
+}

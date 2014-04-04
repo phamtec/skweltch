@@ -102,8 +102,8 @@ int main(int argc, char *argv[])
     }
     
 	string filename = root.getString("filename");
-	
-	if (filename.find(".gz") > 0) {
+	int gz = filename.find(".gz");
+	if (gz > 0) {
 		ifstream fs(filename.c_str(), ios_base::in | ios_base::binary);    
 		if (!fs.is_open()) {
 			LOG4CXX_ERROR(logger, " no file " << filename)
