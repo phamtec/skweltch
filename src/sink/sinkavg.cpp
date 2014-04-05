@@ -5,6 +5,7 @@
 #include "ISinkWorker.hpp"
 #include "Logging.hpp"
 #include "Main.hpp"
+#include "StringMsg.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -27,9 +28,10 @@ class SWorker : public ISinkWorker {
 private:
 	int count;
 	int total;
+    zmq::socket_t *result;
 	
 public:
-	SWorker() : count(0), total(0) {}
+	SWorker(zmq::socket_t *r) : result(r), count(0), total(0) { }
 	
 	virtual void first(int id) {}
 	virtual void last(int id) {}
@@ -52,18 +54,18 @@ void SWorker::process(int id, std::vector<std::string> *data) {
 
 void SWorker::results(int total_ms) {
 
-	JsonObject result;
-	result.add("elapsed", total_ms);
-	result.add("average", ((double)total / (double)count));
+	JsonObject r;
+	r.add("elapsed", total_ms);
+	r.add("average", ((double)total / (double)count));
 	
-	// write the results.
-	{
-		ofstream results("temp-results.json");
-		result.write(true, &results);
-	}
-	
-	// and then rename for others to find it.
-	filesystem::rename("temp-results.json", "results.json");
+    stringstream ss;
+    r.write(true, &ss);
+
+    StringMsg msg(0, 0, ss.str());
+   	zmq::message_t message(2);
+    msg.set(&message);
+    result->send(message);
+
 }
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("org.skweltch.sinkavg"));
@@ -81,9 +83,13 @@ int main (int argc, char *argv[])
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
+    zmq::socket_t result(context, ZMQ_PUSH);
     
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pullFrom")) {
+    	return 1;
+    }
+    if (!ports.join(&result, pipes, "resultsTo")) {
     	return 1;
     }
 
@@ -92,7 +98,7 @@ int main (int argc, char *argv[])
 
 	// and do the sink.
 	Sink s(logger, &receiver);
-	SWorker w;
+	SWorker w(&result);
 	if (s.process(&w)) {
 		return 0;
 	}

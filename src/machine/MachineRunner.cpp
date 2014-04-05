@@ -58,14 +58,15 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		}
 		
 		// run everything.
-		vector<int> vpids;
-		if (!mon.doVent(&r, &vpids)) {
-			return false;
+		{
+			vector<int> vpids;
+			if (!mon.doVent(&r, &vpids)) {
+				return false;
+			}
+			// wait till vent is done.
+			mon.waitFinish(vpids);
 		}
-		
-		// wait till vent is done.
-		mon.waitFinish(vpids);
-		
+			
 		if (*interrupted) {
 			break;
 		}

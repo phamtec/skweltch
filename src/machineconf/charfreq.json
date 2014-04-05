@@ -24,7 +24,7 @@
 			},
 			"config" : {
 				"filename": "../data/words.txt",
-				"sleep": 5,
+				"sleep": 10,
 				"every": 2000
 			}
 		},
@@ -38,13 +38,19 @@
 					"mode":"bind",
 					"address": "*",
 					"port": 5558
+				},
+				"resultsTo": {
+					"direction": "to",
+					"mode":"bind",
+					"address": "*",
+					"port": 6666
 				}
 			},
 			"config" : {
 			}
 		},
 		{
-			"count": 3,
+			"count": 14,
 			"name": "WorkCharFreq",
 			"exe": "./workcharfreq",
 			"node": "localhost",

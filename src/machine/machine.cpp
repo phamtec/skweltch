@@ -109,9 +109,11 @@ int main (int argc, char *argv[])
 					LOG4CXX_ERROR(logger, "not running.")
 				}
 				else {
-					if (!mon.doVent(&r, 0)) {
+					vector<int> pids;
+					if (!mon.doVent(&r, &pids)) {
 						return 1;
 					}
+					mon.waitFinish(pids);
 				}
 				break;
 				

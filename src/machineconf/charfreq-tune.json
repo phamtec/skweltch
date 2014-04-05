@@ -1,6 +1,6 @@
 {
-	"mutations": 200,
-	"iterations": 300,
+	"mutations": 50,
+	"iterations": 20,
 	"groups": 1,
 	"success": {
 		"a" : 2098,

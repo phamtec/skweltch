@@ -41,6 +41,12 @@
 					"mode":"bind",
 					"address": "*",
 					"port": 5558
+				},
+				"resultsTo": {
+					"direction": "to",
+					"mode":"bind",
+					"address": "*",
+					"port": 6666
 				}
 			},
 			"config" : {

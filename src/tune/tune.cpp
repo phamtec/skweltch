@@ -92,7 +92,8 @@ int main (int argc, char *argv[])
     ofstream resultsFile("tune.txt");    
     StreamResults results(&resultsFile);
  	MachineTuner tuner(logger, &config, &tuneconfig, &s_interrupted);
- 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 120);
+ 	// the last two numbers will need to be configurable.
+ 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10);
 
    	// tune it.
    	try {
