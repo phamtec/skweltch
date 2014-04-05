@@ -4,6 +4,8 @@
 #include "JsonObject.hpp"
 #include "JsonPath.hpp"
 #include "TaskMonitor.hpp"
+#include "Interrupt.hpp"
+#include "Results.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -36,18 +38,26 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		throw new runtime_error("couldn't run the machine.");
 	}
 	
-	for (int i=0; i<iterations; i++) {
+    // write the pids out so tools can kill if something goes wrong.
+    {
+        ofstream pidfile("task.pids");
+        for (vector<int>::iterator i=pids.begin(); i != pids.end(); i++) {
+            pidfile << *i << endl;
+        }
+    }
+    
+	for (int i=0; !s_interrupted && i<iterations; i++) {
 	
  		LOG4CXX_INFO(logger, "runner start run.")
  		
- 		//if it's already gone then no probs.
+ 		// if it's already gone then no probs.
  		try {
 			filesystem::remove("results.json");
 		}
 		catch (...) {
 		}
 		
-		// try to kill it all.
+		// run everything.
 		vector<int> vpids;
 		if (!mon.doVent(&r, &vpids)) {
 			return false;
@@ -66,13 +76,13 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		for (; retries<resultsSleepCount; retries++) {
 			ifstream s("results.json");
 			if (s.is_open()) {
-				LOG4CXX_DEBUG(logger, "results ready.")
+				LOG4CXX_INFO(logger, "results ready.")
 				results.read(logger, &s);
 				break;
 			}
 			
 			// allow the file to be written.
-			LOG4CXX_DEBUG(logger, "results not ready, waiting...")
+			LOG4CXX_INFO(logger, "results not ready, waiting...")
 			zclock_sleep(resultsSleep);
 		}
 		
@@ -141,15 +151,7 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 	// wait till everything is gone.
 	mon.waitFinish(pids);
 
-	if (filesystem::exists("tasks.pid")) {
-		throw new runtime_error("reap didn't do it's thing.");
-	}
-	
-	double avg = (double)sum / (double)iterations;
-	double med = (double)(high - low) / 2.0;
-
-	cout << group << "\t" << iter << "\t" << vars << "\t" << iterations << "\t" << low << "\t" << high << 
-		"\t" << fail << "\t" << avg << "\t" << med << endl;
+	results->write(group, iter, vars, iterations, low, high, fail, sum);
 
 	return fail == 0;
 

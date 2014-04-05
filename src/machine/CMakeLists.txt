@@ -1,6 +1,6 @@
 
 add_library (machineLib SHARED
-	MachineRunner.cpp
+	MachineRunner.cpp Results.cpp
 )
 
 include_directories (

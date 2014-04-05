@@ -95,9 +95,7 @@ bool TaskMonitor::doVent(JsonObject *root, vector<int> *pids) {
 
 bool TaskMonitor::doReap(JsonObject *root, vector<int> *pids) {
 
-   	ExeRunner er(logger);
-
-	for (vector<int>::iterator i=pids->begin(); i != pids->end(); i++) {
+    for (vector<int>::iterator i=pids->begin(); i != pids->end(); i++) {
         ::kill(*i, SIGTERM);
         zclock_sleep(20);
         ::kill(*i, SIGKILL);

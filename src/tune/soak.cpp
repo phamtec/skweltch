@@ -4,6 +4,7 @@
 #include "MachineRunner.hpp"
 #include "Interrupt.hpp"
 #include "Logging.hpp"
+#include "Results.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -33,7 +34,9 @@ int main (int argc, char *argv[])
 	int iterations = lexical_cast<int>(argv[3]);
 		
     s_catch_signals ();
- 	MachineRunner runner(logger, &s_interrupted, 1000, 120);
+    ofstream resultsFile("soak.txt");
+    StreamResults results(&resultsFile);
+ 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 120);
 	cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
 //	runner.setFail(true);
  	for (int i=0; i<count; i++) {

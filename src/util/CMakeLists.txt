@@ -15,6 +15,10 @@ add_executable (blockinfo
 	blockinfo.cpp
 )
 
+add_executable (killall
+	killall.cpp
+)
+
 include_directories (
     ${Skweltch_SOURCE_DIR}/config
     ${Skweltch_SOURCE_DIR}/core
@@ -65,6 +69,14 @@ target_link_libraries (blockinfo
 	boost_system
 	log4cxx)
 
-install(TARGETS listen send mockblock blockinfo
+target_link_libraries (killall
+	configLib
+	coreLib
+	boost_program_options
+	boost_filesystem
+	boost_system
+	log4cxx)
+
+install(TARGETS listen send mockblock blockinfo killall
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

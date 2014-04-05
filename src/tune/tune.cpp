@@ -6,6 +6,7 @@
 #include "MachineRunner.hpp"
 #include "Interrupt.hpp"
 #include "Logging.hpp"
+#include "Results.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -88,8 +89,10 @@ int main (int argc, char *argv[])
     
     s_catch_signals ();
 
+    ofstream resultsFile("tune.txt");    
+    StreamResults results(&resultsFile);
  	MachineTuner tuner(logger, &config, &tuneconfig, &s_interrupted);
- 	MachineRunner runner(logger, &s_interrupted, 1000, 120);
+ 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 120);
 
    	// tune it.
    	try {
@@ -101,11 +104,11 @@ int main (int argc, char *argv[])
 			// draw the header.
   			int varcount = tuner.varCount(i);
   			if (varcount > 0) {
-				cout << "group\ti\t";
+				resultsFile << "group\ti\t";
 				for (int j=0; j<varcount; j++) {
-					cout << "v" << j+1 << "\t";
+					resultsFile << "v" << j+1 << "\t";
 				}
-				cout << "n\tlow\thigh\tfail\tavg\tmed" << endl;
+				resultsFile << "n\tlow\thigh\tfail\tavg\tmed" << endl;
 			}
 						
 			for (int j=0; !s_interrupted && j<mutations; j++) {
