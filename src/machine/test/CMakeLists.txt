@@ -8,10 +8,9 @@ add_executable (tunerTest
 )
 
 target_link_libraries (tunerTest 
-	tuneLib
 	coreLib
 	configLib
-	monitorLib
+	machineLib
 	zmq
 	log4cxx
 	boost_unit_test_framework

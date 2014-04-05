@@ -10,7 +10,6 @@ add_executable (sinkfreqTest
 target_link_libraries (sinkfreqTest 
 	coreLib
 	configLib
-	monitorLib
 	zmq
 	log4cxx
 	boost_unit_test_framework

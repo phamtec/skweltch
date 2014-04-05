@@ -51,7 +51,7 @@ target_link_libraries (send
 target_link_libraries (mockblock
 	configLib
 	coreLib
-	monitorLib
+	machineLib
 	boost_program_options
 	boost_filesystem
 	boost_system
@@ -63,7 +63,7 @@ target_link_libraries (mockblock
 target_link_libraries (blockinfo
 	configLib
 	coreLib
-	monitorLib
+	machineLib
 	boost_program_options
 	boost_filesystem
 	boost_system
