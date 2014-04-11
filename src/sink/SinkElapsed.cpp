@@ -6,6 +6,7 @@
 #include "Logging.hpp"
 #include "Main.hpp"
 #include "StringMsg.hpp"
+#include "Poller.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -85,7 +86,8 @@ int main (int argc, char *argv[])
     s_catch_signals ();
 
 	// and do the sink.
-	Sink s(logger, &receiver);
+    Poller p(logger);
+	Sink s(logger, &p, &receiver);
 	SWorker w(&result);
 	if (s.process(&w)) {
 		return 0;

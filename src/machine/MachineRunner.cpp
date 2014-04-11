@@ -6,6 +6,7 @@
 #include "TaskMonitor.hpp"
 #include "Interrupt.hpp"
 #include "Results.hpp"
+#include "StringMsg.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -14,6 +15,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <czmq.h>
+#include <zmq.hpp>
 
 using namespace std;
 using namespace boost;
@@ -32,6 +34,10 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 	int high = -1;
 	int sum = 0;
 
+    zmq::context_t context(1);
+    zmq::socket_t rsocket(context, ZMQ_PULL);
+    rsocket.connect("tcp://localhost:6666");
+    
 	// startup the machine.
 	vector<int> pids;
 	if (!mon.start(&r, &pids)) {
@@ -46,18 +52,17 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
         }
     }
     
+    // ok we need to pause here for a little bit to make sure all of the workers have started before
+    // we start venting. We should really use messaging for this...
+    LOG4CXX_INFO(logger, "settling...")
+    zclock_sleep(settleTime);
+    
+    // ok now we go for it.
 	for (int i=0; !s_interrupted && i<iterations; i++) {
 	
  		LOG4CXX_INFO(logger, "runner start run.")
  		
- 		// if it's already gone then no probs.
- 		try {
-			filesystem::remove("results.json");
-		}
-		catch (...) {
-		}
-		
-		// run everything.
+        // do the vent
 		{
 			vector<int> vpids;
 			if (!mon.doVent(&r, &vpids)) {
@@ -67,30 +72,26 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 			mon.waitFinish(vpids);
 		}
 			
+        // and wait for the message to come.
+		zmq::message_t message;
+		try {
+			rsocket.recv(&message);
+		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger, "recv failed." << e.what())
+		}
+    
 		if (*interrupted) {
 			break;
 		}
 		
-		// try to open the results file.
-		JsonObject results;
-		int retries = 0;
-		for (; retries<resultsSleepCount; retries++) {
-			ifstream s("results.json");
-			if (s.is_open()) {
-				LOG4CXX_INFO(logger, "results ready.")
-				results.read(logger, &s);
-				break;
-			}
-			
-			// allow the file to be written.
-			LOG4CXX_INFO(logger, "results not ready, waiting...")
-			zclock_sleep(resultsSleep);
-		}
-		
-		if (retries >= resultsSleepCount) {
-			LOG4CXX_ERROR(logger, "still no results after " << (resultsSleep * resultsSleepCount) << " ms.")
-		}
-		
+ 		JsonObject results;
+        {
+            StringMsg rmsg(message);
+            stringstream ss(rmsg.getPayload());
+            results.read(logger, &ss);
+        }
+        
 		if (!results.empty()) {
 		
 			// compare the results against the success condition.

@@ -26,12 +26,14 @@ private:
 public:
 	MsgTracker(log4cxx::LoggerPtr l) : logger(l), first(-1), last(-1) {}
 	
-	void setFirst(int f) { first = f; }
+	void setFirst(int f);
 	void setLast(int l);
 	
 	void track(int n);
 	bool complete();
 	void reset();
+    void dump();
+    
 };
 
 #endif // __MSGTRACKER_HPP_INCLUDED__

@@ -6,6 +6,7 @@
 #include "Logging.hpp"
 #include "Main.hpp"
 #include "StringMsg.hpp"
+#include "Poller.hpp"
 
 #include <zmq.hpp>
 #include <czmq.h>
@@ -59,7 +60,7 @@ void SWorker::init() {
 
 void SWorker::process(int id, std::vector<std::string> *data) {
 
-	LOG4CXX_DEBUG(logger, id << ", " << data)
+	LOG4CXX_TRACE(logger, id << ", " << data)
 
 	if ((*data)[0].length() > 26) {
 		throw runtime_error("ony handle up to 26 letters.");
@@ -128,7 +129,8 @@ int main (int argc, char *argv[])
     s_catch_signals ();
 
 	// and do the sink.
-	Sink s(logger, &receiver);
+    Poller p(logger);
+	Sink s(logger, &p, &receiver);
 	SWorker w(&result);
 	if (s.process(&w)) {
 		return 0;

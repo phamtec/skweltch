@@ -27,11 +27,9 @@ class VWorker : public IVentWorker {
 
 private:
 	istream *input;
-	int sleeptime;
-	int sleepevery;
 	
 public:
-	VWorker(istream *is, int slp, int ev) : input(is), sleeptime(slp), sleepevery(ev) {}
+	VWorker(istream *is) : input(is) {}
 	
 	virtual int sendAll(Vent *vent);
 	
@@ -47,11 +45,9 @@ private:
 	Vent *vent;
 	IVentWorker *worker;
 	int id;
-	int sleeptime;
-	int sleepevery;
 	
 public:
-	SendWord(Vent *v, IVentWorker *w, int slp, int ev) : vent(v), worker(w), id(0), sleeptime(slp), sleepevery(ev) {}
+	SendWord(Vent *v, IVentWorker *w) : vent(v), worker(w), id(0) {}
 	
 	virtual bool word(const std::string &s);
 	
@@ -66,13 +62,13 @@ bool SendWord::word(const std::string &s) {
 	StringMsg msg(id++, clock(), s);
 	msg.set(&message);
 	
-	return vent->sendOne(worker, message, sleeptime, sleepevery);
+	return vent->sendOne(worker, message, 0, 0);
 
 }
 
 int VWorker::sendAll(Vent *vent) {
 
-	SendWord w(vent, this, sleeptime, sleepevery);
+	SendWord w(vent, this);
 	WordSplitter splitter(input);
 	splitter.process(&w);
 	return w.getId()-1;
@@ -90,11 +86,6 @@ int main (int argc, char *argv[])
     }
     
 	string filename = root.getString("filename");
-	
- 	int sleeptime = root.getInt("sleep", 0);
-	int sleepevery = root.getInt("every", 0);
-	
-	LOG4CXX_DEBUG(logger, "sleeping " << sleeptime << " every " << sleepevery)
 	
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
@@ -119,7 +110,7 @@ int main (int argc, char *argv[])
 
 	// and do the vent.
 	Vent v(logger, &sink, &sender);
-	VWorker w(&f, sleeptime, sleepevery);
+	VWorker w(&f);
 	if (v.process(&w)) {
 		return 0;
 	}

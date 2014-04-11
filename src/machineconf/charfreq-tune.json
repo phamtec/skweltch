@@ -1,6 +1,6 @@
 {
 	"mutations": 50,
-	"iterations": 20,
+	"iterations": 200,
 	"groups": 1,
 	"success": {
 		"a" : 2098,
@@ -30,26 +30,6 @@
 		"y" : 0,
 		"z" : 0
     },
-	"blocks[0].config" : {
-		"group": 1,
-		"var": "sleep",
-		"type": "int",
-		"select": "random",
-		"low": 0,
-		"high": 50,
-		"enabled": true,
-		"fail": false
-	},
-	"blocks[0].config" : {
-		"group": 1,
-		"var": "every",
-		"type": "int",
-		"select": "random",
-		"low": 500,
-		"high": 2000,
-		"enabled": true,
-		"fail": false
-	},
 	"blocks[2]" : {
 		"group": 1,
 		"var": "count",

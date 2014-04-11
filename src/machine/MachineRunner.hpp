@@ -21,11 +21,12 @@ class MachineRunner {
 	int *interrupted;
 	int resultsSleep;
 	int resultsSleepCount;
+    int settleTime;
 	Results *results;
     
 public:
-	MachineRunner(log4cxx::LoggerPtr l, Results *r, int *i, int rs=50, int rsc=1000) :
-		failonerror(false), logger(l), results(r), interrupted(i), resultsSleep(rs), resultsSleepCount(rsc) {};
+	MachineRunner(log4cxx::LoggerPtr l, Results *r, int *i, int rs, int rsc, int st) :
+		failonerror(false), logger(l), results(r), interrupted(i), resultsSleep(rs), resultsSleepCount(rsc), settleTime(st) {};
 	
 	void setFail(bool f) { failonerror = f; }
 	bool runOne(const std::string &machine, int iterations, int group, int i, const std::string &vars, const JsonObject &success);

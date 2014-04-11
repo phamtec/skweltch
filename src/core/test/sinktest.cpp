@@ -5,6 +5,7 @@
 #include "../Sink.hpp"
 #include "../SinkMsg.hpp"
 #include "../ISinkWorker.hpp"
+#include "../Poller.hpp"
 
 #include <turtle/mock.hpp>
 #include <iostream>
@@ -36,6 +37,11 @@ MOCK_BASE_CLASS( mock_sink_worker, ISinkWorker )
 	MOCK_METHOD( results, 1 )
 	MOCK_METHOD( shouldQuit, 0 )
 	
+};
+
+MOCK_BASE_CLASS( mock_poller, IPoller )
+{
+	MOCK_METHOD( poll, 2 )
 };
 
 class MockReceiver: public zmq::i_socket_t {
@@ -102,6 +108,7 @@ int shouldQuitAfterTimes( int *i, int first, int last )
 BOOST_AUTO_TEST_CASE( oneMsgTest )
 {
 	mock_sink_worker w;
+	mock_poller p;
 	
 	MOCK_EXPECT(w.first).with(20).once();
 	MOCK_EXPECT(w.last).with(20).once();
@@ -109,12 +116,13 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	MOCK_EXPECT(w.results).with(mock::any).once();
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 20));
+	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
 	MockReceiver receiver(20, 20, -1, -1, v);
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
 	BOOST_CHECK(s.process(&w));
 
 }
@@ -123,6 +131,7 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 BOOST_AUTO_TEST_CASE( tenMsgTest )
 {
 	mock_sink_worker w;
+	mock_poller p;
 	
 	MOCK_EXPECT(w.first).with(20).once();
 	MOCK_EXPECT(w.last).with(29).once();
@@ -133,12 +142,13 @@ BOOST_AUTO_TEST_CASE( tenMsgTest )
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 29));
+	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
 	MockReceiver receiver(20, 29, -1, -1, v);
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
 	BOOST_CHECK(s.process(&w));
 
 }
@@ -151,6 +161,7 @@ int shouldQuitAfter2Times( int *i, int first, int last )
 BOOST_AUTO_TEST_CASE( restartTest )
 {
 	mock_sink_worker w;
+	mock_poller p;
 	
 	MOCK_EXPECT(w.first).with(20).once();
 	MOCK_EXPECT(w.first).with(24).once();
@@ -160,6 +171,7 @@ BOOST_AUTO_TEST_CASE( restartTest )
 		MOCK_EXPECT(w.process).with(i, mock::any).once();
 	}
 	MOCK_EXPECT(w.results).with(mock::any).exactly(2);
+	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfter2Times, &c, 20, 26));
@@ -168,7 +180,7 @@ BOOST_AUTO_TEST_CASE( restartTest )
 	v.push_back("100");
 	MockReceiver receiver(20, 23, 24, 26, v);
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
 	BOOST_CHECK(s.process(&w));
 
 }

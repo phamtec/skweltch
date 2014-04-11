@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
     StreamResults results(&resultsFile);
  	MachineTuner tuner(logger, &config, &tuneconfig, &s_interrupted);
  	// the last two numbers will need to be configurable.
- 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10);
+ 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10, 5000);
 
    	// tune it.
    	try {

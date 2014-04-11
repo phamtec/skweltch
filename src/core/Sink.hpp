@@ -7,6 +7,7 @@
 #include <log4cxx/logger.h>
 
 class ISinkWorker;
+class IPoller;
 
 namespace zmq {
 	class i_socket_t;
@@ -36,9 +37,10 @@ private:
 
 	log4cxx::LoggerPtr logger;
     zmq::i_socket_t *receiver;
+	IPoller *poller;
     
 public:
-	Sink(log4cxx::LoggerPtr l, zmq::i_socket_t *r) : logger(l), receiver(r) {}
+	Sink(log4cxx::LoggerPtr l, IPoller *p, zmq::i_socket_t *r) : logger(l), poller(p), receiver(r) {}
 	
 	bool process(ISinkWorker *worker);
 	

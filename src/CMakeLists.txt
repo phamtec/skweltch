@@ -31,3 +31,5 @@ add_subdirectory (vent)
 add_subdirectory (work) 
 add_subdirectory (build) 
 add_subdirectory (pugixml-1.2/scripts) 
+
+include (CTest)
