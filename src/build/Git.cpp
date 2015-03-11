@@ -8,7 +8,7 @@
 #include <git2/merge.h>
 #include <git2/commit.h>
 
-#include <stdio.h>
+#include <iostream>
 
 using namespace std;
 using namespace boost;

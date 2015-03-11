@@ -16,14 +16,14 @@ add_executable (workxpath
 )
 
 add_library (pugiXML SHARED
-	${Skweltch_SOURCE_DIR}/pugixml-1.2/src/pugixml.cpp
+	${Skweltch_SOURCE_DIR}/pugixml/src/pugixml.cpp
 )
 
 include_directories (
     ${Skweltch_SOURCE_DIR}/config
     ${Skweltch_SOURCE_DIR}/core
     ${Skweltch_SOURCE_DIR}/msg
-    ${Skweltch_SOURCE_DIR}/pugixml-1.2/src
+    ${Skweltch_SOURCE_DIR}/pugixml/src
 	${Skweltch_SOURCE_DIR}/json_spirit_v4.06/json_spirit
     ${Skweltch_SOURCE_DIR}/cppzmq-master
 	)

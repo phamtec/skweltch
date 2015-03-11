@@ -1,7 +1,6 @@
 
 sudo yum install -Y git gcc-c++ python-devel bzip2-devel apr-util apr-util-devel ruby automake libtool zlib-devel
 
-
 install the latest cmake
 install the latest boost
 install the 3.2.4 zmq

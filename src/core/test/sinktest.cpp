@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	MOCK_EXPECT(w.results).with(mock::any).once();
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 20));
-	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
@@ -126,7 +126,6 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	BOOST_CHECK(s.process(&w));
 
 }
-
 
 BOOST_AUTO_TEST_CASE( tenMsgTest )
 {
@@ -142,7 +141,7 @@ BOOST_AUTO_TEST_CASE( tenMsgTest )
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 29));
-	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
@@ -171,7 +170,7 @@ BOOST_AUTO_TEST_CASE( restartTest )
 		MOCK_EXPECT(w.process).with(i, mock::any).once();
 	}
 	MOCK_EXPECT(w.results).with(mock::any).exactly(2);
-	MOCK_EXPECT(p.poll).with(mock::any, 2000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfter2Times, &c, 20, 26));
