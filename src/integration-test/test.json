@@ -4,7 +4,7 @@
 	// this is what is used to feed the machine. 100 at a time.
 	"vent" : {
 		"name": "VentRandomNum",
-		"exe": "dist/ventrandomnum",
+		"exe": "bin/ventrandomnum",
 		"node": "localhost",
 		"connections": {
 			"pushTo": {
@@ -30,7 +30,7 @@
 
 	"sink" : {
 		"name": "SinkElapsed",
-		"exe": "dist/sinkelapsed",
+		"exe": "bin/sinkelapsed",
 		"node": "localhost",
 		"connections": {
 			"pullFrom": {
@@ -49,7 +49,7 @@
 		{
 			"count": 3,
 			"name": "WorkSleep",
-			"exe": "dist/worksleep",
+			"exe": "bin/worksleep",
 			"node": "localhost",
 			"connections": {
 				"pullFrom": {
@@ -73,7 +73,7 @@
 	// and this is what is used to reap.
 	"reap": {
 		"name": "GrimReaper",
-		"exe": "dist/grimreaper",
+		"exe": "bin/grimreaper",
 		"config" : {
 			"totalTime": 400
 		}

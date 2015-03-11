@@ -42,6 +42,11 @@ int main (int argc, char *argv[])
     }
 
     try {
+        // help with the ZMQ version.
+        int major, minor, patch;
+        zmq_version(&major, &minor, &patch);
+        LOG4CXX_INFO(logger, "using ZMQ " << major << "." << minor << "." << patch)
+
      	//  Prepare our context and socket
     	zmq::context_t context(1);
     	zmq::socket_t receiver(context, ZMQ_PULL);

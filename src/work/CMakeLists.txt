@@ -15,7 +15,7 @@ add_executable (workxpath
 	workxpath.cpp
 )
 
-add_library (pugiXML SHARED
+add_library (pugiXML STATIC
 	${Skweltch_SOURCE_DIR}/pugixml/src/pugixml.cpp
 )
 

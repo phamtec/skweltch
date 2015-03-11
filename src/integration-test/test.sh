@@ -2,7 +2,7 @@
 
 rm -rf log/*.log
 rm -rf results.json
-dist/monitor integration-test/test.json
+bin/monitor integration-test/test.json
 sleep 1
 
 # sink finds everything
