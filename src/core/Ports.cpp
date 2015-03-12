@@ -40,17 +40,9 @@ bool Ports::join(zmq::i_socket_t *socket, const JsonObject &ports, const string 
 	int port = pipe.getInt("port", -1);
 	string mode = pipe.getString("mode");
 	if (mode == "bind") {
-		string address = pipe.getString("address");
-		stringstream ss;
-		ss << "tcp://" << address << ":" << port;
- 		try {
-			socket->bind(ss.str().c_str());
-		}
-		catch (zmq::error_t &e) {  	
-			LOG4CXX_ERROR(logger, "couldn't bind should be: tcp://address:port")
+		if (!bind(&logger, socket, pipe.getString("address"), port, name)) {
 			return false;
 		}
-		LOG4CXX_INFO(logger, name << " bound to " << ss.str())
 	}
 	else if (mode == "connect") {
 		string node = pipe.getString("node");
@@ -80,5 +72,19 @@ bool Ports::join(zmq::i_socket_t *socket, const JsonObject &ports, const string 
 		return false;
 	}  
  
+	return true;
+}
+
+bool Ports::bind(log4cxx::LoggerPtr *logger, zmq::i_socket_t *socket, const string &address, int port, const string &name) {
+	stringstream ss;
+	ss << "tcp://" << address << ":" << port;
+	try {
+		socket->bind(ss.str().c_str());
+	}
+	catch (zmq::error_t &e) {  	
+		LOG4CXX_ERROR((*logger), "couldn't bind should be: tcp://address:port")
+		return false;
+	}
+	LOG4CXX_INFO((*logger), name << " bound to " << ss.str())
 	return true;
 }

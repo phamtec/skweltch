@@ -37,10 +37,12 @@ private:
 
 	log4cxx::LoggerPtr logger;
     zmq::i_socket_t *receiver;
+    zmq::i_socket_t *control;
 	IPoller *poller;
     
 public:
-	Sink(log4cxx::LoggerPtr l, IPoller *p, zmq::i_socket_t *r) : logger(l), poller(p), receiver(r) {}
+	Sink(log4cxx::LoggerPtr l, IPoller *p, zmq::i_socket_t *r, zmq::i_socket_t *ctrl) : 
+		logger(l), poller(p), receiver(r), control(ctrl) {}
 	
 	bool process(ISinkWorker *worker);
 	

@@ -6,6 +6,7 @@
 #include "JsonNamePredicate.hpp"
 #include "ExeRunner.hpp"
 #include "PipeBuilder.hpp"
+#include "PipeBuilder.hpp"
 
 #include <sys/wait.h>
 #include <czmq.h>
@@ -44,7 +45,7 @@ bool TaskMonitor::start(JsonObject *root, vector<int> *pids) {
                 string exe = bg.getString(i, "exe");
 
                 // build pipes for this node.
-                JsonObject pipesjson = PipeBuilder(logger).collect(root, bg.getValue(i));
+                JsonObject pipesjson = PipeBuilder(logger).collect(root, bg.getValue(i), control);
                 stringstream pipes;
                 pipesjson.write(false, &pipes);
                 
@@ -93,18 +94,6 @@ bool TaskMonitor::doVent(JsonObject *root, vector<int> *pids) {
 	
 }
 
-bool TaskMonitor::doReap(JsonObject *root, vector<int> *pids) {
-
-    for (vector<int>::iterator i=pids->begin(); i != pids->end(); i++) {
-        ::kill(*i, SIGTERM);
-        zclock_sleep(20);
-        ::kill(*i, SIGKILL);
-	}
-
-	return true;
-	
-}
-
 bool TaskMonitor::doBlock(JsonObject *root, std::vector<int> *pids, const std::string &block) {
 
  	return runOne(root, root->findObj(JsonNamePredicate(block)), pids);
@@ -126,7 +115,7 @@ bool TaskMonitor::runOne(JsonObject *root, const JsonObject &obj, vector<int> *p
    	ExeRunner er(logger);
 
 	// build pipes for this node.
-	JsonObject pipesjson = PipeBuilder(logger).collect(root, obj);
+	JsonObject pipesjson = PipeBuilder(logger).collect(root, obj, control);
 	stringstream pipes;
 	pipesjson.write(false, &pipes);
 

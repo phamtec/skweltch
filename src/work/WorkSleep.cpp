@@ -66,12 +66,17 @@ int main (int argc, char *argv[])
     
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
+    zmq::socket_t control(context, ZMQ_SUB);
     zmq::socket_t sender(context, ZMQ_PUSH);
     
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pullFrom")) {
     	return 1;
     }
+    if (!ports.join(&control, pipes, "control")) {
+    	return 1;
+    }
+	control.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     if (!ports.join(&sender, pipes, "pushTo")) {
     	return 1;
     }
@@ -80,7 +85,7 @@ int main (int argc, char *argv[])
 
 	// and do the work.
 	Poller p(logger);
-	Work v(logger, &p, &receiver);
+	Work v(logger, &p, &receiver, &control);
 	WWorker w(logger, &sender);
 	v.process(&w);
 

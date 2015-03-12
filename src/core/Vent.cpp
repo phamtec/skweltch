@@ -28,8 +28,6 @@ bool Vent::process(IVentWorker *worker) {
 		}
 	}
 	
-	LOG4CXX_INFO(logger, "starting... ")
-
 	// send them all.
 	int last = worker->sendAll(this);
     

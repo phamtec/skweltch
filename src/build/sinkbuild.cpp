@@ -55,9 +55,13 @@ int main (int argc, char *argv[])
     //  Prepare our context and socket
     zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
+    zmq::socket_t control(context, ZMQ_SUB);
     
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pullFrom")) {
+    	return 1;
+    }
+    if (!ports.join(&control, pipes, "control")) {
     	return 1;
     }
 

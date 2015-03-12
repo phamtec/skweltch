@@ -5,7 +5,7 @@
 	"success": {
     	"average" : 5.608
     },
-	"vent.config" : {
+	"blocks[0].config" : {
 		"group": 1,
 		"var": "sleep",
 		"type": "int",
@@ -15,7 +15,7 @@
 		"enabled": true,
 		"fail": false
 	},
-	"vent.config" : {
+	"blocks[0].config" : {
 		"group": 1,
 		"var": "every",
 		"type": "int",
@@ -25,7 +25,7 @@
 		"enabled": true,
 		"fail": false
 	},
-	"background[0]" : {
+	"blocks[2]" : {
 		"group": 1,
 		"var": "count",
 		"type": "int",

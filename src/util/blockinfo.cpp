@@ -75,7 +75,7 @@ int main (int argc, char *argv[])
                 if (obj.getString("name") == block) {
                     cout << "exe: " << obj.getString("exe") << endl;
                     
-                    JsonObject pipes = PipeBuilder(logger).collect(&r, obj);
+                    JsonObject pipes = PipeBuilder(logger).collect(&r, obj, -1);
                     
                     cout << "pipes: ";
                     pipes.write(false, &cout);

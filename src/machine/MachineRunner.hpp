@@ -29,7 +29,7 @@ public:
 		failonerror(false), logger(l), results(r), interrupted(i), resultsSleep(rs), resultsSleepCount(rsc), settleTime(st) {};
 	
 	void setFail(bool f) { failonerror = f; }
-	bool runOne(const std::string &machine, int iterations, int group, int i, const std::string &vars, const JsonObject &success);
+	bool runOne(const std::string &machine, int control, int iterations, int group, int i, const std::string &vars, const JsonObject &success);
 
 };
 

@@ -46,13 +46,14 @@ BOOST_AUTO_TEST_CASE( simpleTest )
 {
 	mock_socket sink;
 	mock_socket sender;
+	mock_socket control;
 	mock_vent_worker w;
 	
 	MOCK_EXPECT(sink.send).with(mock::any, 0).exactly(2).returns(true);
 	MOCK_EXPECT(sender.send).with(mock::any, 0).never();
 	MOCK_EXPECT(w.sendAll).with(mock::any).once().returns(true);
 	
-	Vent v(log4cxx::Logger::getRootLogger(), &sink, &sender);
+	Vent v(log4cxx::Logger::getRootLogger(), &sink, &sender, &control);
 	BOOST_CHECK(v.process(&w));
 }
 
@@ -60,6 +61,7 @@ BOOST_AUTO_TEST_CASE( sendTest )
 {
 	mock_socket sink;
 	mock_socket sender;
+	mock_socket control;
 	mock_vent_worker w;
 	
 	MOCK_EXPECT(sink.send).with(mock::any, 0).never();
@@ -67,7 +69,7 @@ BOOST_AUTO_TEST_CASE( sendTest )
 	MOCK_EXPECT(w.sendAll).with(mock::any).never();
 	MOCK_EXPECT(w.shouldQuit).once().returns(false);
 	
-	Vent v(log4cxx::Logger::getRootLogger(), &sink, &sender);
+	Vent v(log4cxx::Logger::getRootLogger(), &sink, &sender, &control);
 	
    	zmq::message_t message(2);
  	msgpack::type::tuple<int, int, int> wmsg(0, 1, 2);

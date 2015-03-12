@@ -46,7 +46,7 @@ using namespace boost;
 	
 */
 
-JsonObject PipeBuilder::collect(JsonObject *config, const JsonObject &block) {
+JsonObject PipeBuilder::collect(JsonObject *config, const JsonObject &block, int control) {
 
 	JsonObject pipes;
 	
@@ -99,6 +99,15 @@ JsonObject PipeBuilder::collect(JsonObject *config, const JsonObject &block) {
 		pipes.add(name, pipe);
 	}
 	
+	// add the control pipe.
+	if (control > 0) {
+		JsonObject pipe;
+		pipe.add("mode", "connect");
+		pipe.add("node", "localhost");
+		pipe.add("port", control);
+		pipes.add("control", pipe);
+	}
+		
 	return pipes;
 	
 }

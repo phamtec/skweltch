@@ -95,8 +95,6 @@ int main (int argc, char *argv[])
 		LOG4CXX_INFO(logger, obj)
 		
 	}
-    
-	LOG4CXX_INFO(logger, "finished.")
    
     return 0;
 }

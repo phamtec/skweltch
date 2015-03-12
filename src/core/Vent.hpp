@@ -24,10 +24,12 @@ private:
 	log4cxx::LoggerPtr logger;
     zmq::i_socket_t *sink;
     zmq::i_socket_t *sender;
+    zmq::i_socket_t *control;
     int count;
     
 public:
-	Vent(log4cxx::LoggerPtr l, zmq::i_socket_t *sk, zmq::i_socket_t *sn) : logger(l), sink(sk), sender(sn), count(0) {}
+	Vent(log4cxx::LoggerPtr l, zmq::i_socket_t *sk, zmq::i_socket_t *sn, zmq::i_socket_t *ctrl) : 
+		logger(l), sink(sk), sender(sn), control(ctrl), count(0) {}
 	
 	bool process(IVentWorker *worker);
 	

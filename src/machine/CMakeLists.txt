@@ -59,6 +59,10 @@ add_executable (tune
 	tune.cpp
 )
 
+add_executable (run
+	run.cpp
+)
+
 target_link_libraries (soak
 	configLib
 	coreLib
@@ -81,8 +85,19 @@ target_link_libraries (tune
 	msgpack
 	log4cxx)
 
+target_link_libraries (run
+	configLib
+	coreLib
+	machineLib
+	boost_filesystem
+	boost_system
+	zmq
+	czmq
+	msgpack
+	log4cxx)
+
 add_subdirectory (test) 
 
-install(TARGETS machineLib machine machinecmd soak tune
+install(TARGETS machineLib machine machinecmd soak tune run
 			RUNTIME DESTINATION ${Skweltch_SOURCE_DIR}/bin
             LIBRARY DESTINATION ${Skweltch_SOURCE_DIR}/bin)

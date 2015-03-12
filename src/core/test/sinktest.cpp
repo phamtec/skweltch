@@ -41,7 +41,7 @@ MOCK_BASE_CLASS( mock_sink_worker, ISinkWorker )
 
 MOCK_BASE_CLASS( mock_poller, IPoller )
 {
-	MOCK_METHOD( poll, 2 )
+	MOCK_METHOD( poll, 3 )
 };
 
 class MockReceiver: public zmq::i_socket_t {
@@ -100,6 +100,15 @@ public:
 	
 };
 
+MOCK_BASE_CLASS( mock_socket, zmq::i_socket_t )
+{
+	MOCK_METHOD( send, 2 )
+	MOCK_METHOD( recv, 2 )
+	MOCK_METHOD( bind, 1 )
+	MOCK_METHOD( connect, 1 )
+	MOCK_METHOD( setsockopt, 3 )
+};
+
 int shouldQuitAfterTimes( int *i, int first, int last )
 {
     return (*i)++ > ((last-first+1)*2 + 3);
@@ -116,13 +125,14 @@ BOOST_AUTO_TEST_CASE( oneMsgTest )
 	MOCK_EXPECT(w.results).with(mock::any).once();
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 20));
-	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, mock::any, 5000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
 	MockReceiver receiver(20, 20, -1, -1, v);
+	mock_socket control;
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver, &control);
 	BOOST_CHECK(s.process(&w));
 
 }
@@ -141,13 +151,14 @@ BOOST_AUTO_TEST_CASE( tenMsgTest )
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfterTimes, &c, 20, 29));
-	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, mock::any, 5000).returns(true);
 
 	vector<string> v;
 	v.push_back("100");
 	MockReceiver receiver(20, 29, -1, -1, v);
+	mock_socket control;
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver, &control);
 	BOOST_CHECK(s.process(&w));
 
 }
@@ -170,7 +181,7 @@ BOOST_AUTO_TEST_CASE( restartTest )
 		MOCK_EXPECT(w.process).with(i, mock::any).once();
 	}
 	MOCK_EXPECT(w.results).with(mock::any).exactly(2);
-	MOCK_EXPECT(p.poll).with(mock::any, 5000).returns(true);
+	MOCK_EXPECT(p.poll).with(mock::any, mock::any, 5000).returns(true);
 
 	int c=0;
 	MOCK_EXPECT(w.shouldQuit).calls(boost::bind(&shouldQuitAfter2Times, &c, 20, 26));
@@ -178,8 +189,9 @@ BOOST_AUTO_TEST_CASE( restartTest )
 	vector<string> v;
 	v.push_back("100");
 	MockReceiver receiver(20, 23, 24, 26, v);
+	mock_socket control;
 	
-	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver);
+	Sink s(log4cxx::Logger::getRootLogger(), &p, &receiver, &control);
 	BOOST_CHECK(s.process(&w));
 
 }

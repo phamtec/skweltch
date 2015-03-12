@@ -134,12 +134,17 @@ int doWork(JsonObject *pipes, JsonObject *root, istream *f) {
 
 	zmq::context_t context(1);
     zmq::socket_t sender(context, ZMQ_PUSH);
+    zmq::socket_t control(context, ZMQ_SUB);
 	zmq::socket_t sink(context, ZMQ_PUSH);
 
  	Ports ports(logger);
     if (!ports.join(&sender, *pipes, "pushTo")) {
     	return 1;
     }
+    if (!ports.join(&control, *pipes, "control")) {
+    	return 1;
+    }
+	control.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     if (!ports.join(&sink, *pipes, "syncTo")) {
     	return 1;
     }
@@ -154,7 +159,7 @@ int doWork(JsonObject *pipes, JsonObject *root, istream *f) {
 	s_catch_signals ();
 
 	// and do the vent.
-	Vent v(logger, &sink, &sender);
+	Vent v(logger, &sink, &sender, &control);
 	VWorker w(f, xpath, sleeptime, sleepevery);
 	if (v.process(&w)) {
 		return 0;

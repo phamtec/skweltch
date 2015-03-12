@@ -13,7 +13,7 @@ namespace zmq {
 class IPoller {
 
 public:
-	virtual bool poll(zmq::i_socket_t *socket, int timeout) = 0;
+	virtual int poll(zmq::i_socket_t *socket, zmq::i_socket_t *control, int timeout) = 0;
 	
 };
 
@@ -25,7 +25,11 @@ private:
 public:
 	Poller(log4cxx::LoggerPtr l) : logger(l) {}
 
-	virtual bool poll(zmq::i_socket_t *socket, int timeout);
+	virtual int poll(zmq::i_socket_t *socket, zmq::i_socket_t *control, int timeout);
+	
+	static const int NONE = 0;
+	static const int MSG = 1;
+	static const int CONTROL = 2;
 	
 };
 

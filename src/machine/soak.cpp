@@ -36,8 +36,9 @@ int main (int argc, char *argv[])
     desc.add_options()
     ("help", "produce help message")
     ("jsonConfig", po::value<string>(), "config to use.")
-    ("count", po::value<int>(), "The count")
-    ("iterations", po::value<int>(), "The number of iterations")
+    ("control", po::value<int>()->default_value(7000), "The control port (bound)")
+    ("count", po::value<int>()->default_value(5), "The count")
+    ("iterations", po::value<int>()->default_value(1), "The number of iterations")
     ;
     
     po::variables_map vm;
@@ -60,21 +61,21 @@ int main (int argc, char *argv[])
  	// the last two numbers will need to be configurable.
  	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10, 5000);
  	
-	cout << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
-//	runner.setFail(true);
+	resultsFile << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
+	runner.setFail(true);
  	for (int i=0; i<count; i++) {
- 		LOG4CXX_INFO(logger, "soak start run.")
+ 		LOG4CXX_INFO(logger, "soak run { " << i)
 		try {
-			if (!runner.runOne(vm["jsonConfig"].as<string>(), iterations, 0, 0, "", JsonObject())) {
-//				LOG4CXX_ERROR(logger, "failed, returning")
-//				break;
+			if (!runner.runOne(vm["jsonConfig"].as<string>(), vm["control"].as<int>(), iterations, 0, 0, "", JsonObject())) {
+				LOG4CXX_ERROR(logger, "failed, returning")
+				break;
 			}
 		}
 		catch (runtime_error &e) {
 			LOG4CXX_ERROR(logger, e.what())
 			return 1;
 		}
- 		LOG4CXX_INFO(logger, "soak end run.")
+ 		LOG4CXX_INFO(logger, "} " << i)
 		if (s_interrupted) {
 			break;
 		}

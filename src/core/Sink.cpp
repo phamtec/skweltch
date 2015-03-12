@@ -4,6 +4,7 @@
 #include "ISinkWorker.hpp"
 #include "Elapsed.hpp"
 #include "SinkMsg.hpp"
+#include "KillMsg.hpp"
 #include "MsgTracker.hpp"
 #include "Poller.hpp"
 
@@ -19,11 +20,13 @@ bool Sink::process(ISinkWorker *worker) {
  	Elapsed elapsed;
 	MsgTracker tracker(logger);
     int retries = 0;
+    int timeout = 20000;
+    int maxretries = 5;
  	while (!worker->shouldQuit()) {
 	
- 		bool recved = false;
+ 		int recved = Poller::NONE;
 		try {
-			recved = poller->poll(receiver, 5000);
+			recved = poller->poll(receiver, control, timeout);
 		}
 		catch (zmq::error_t &e) {
 			if (string(e.what()) != "Interrupted system call") {
@@ -31,7 +34,7 @@ bool Sink::process(ISinkWorker *worker) {
 			}
 		}
 		
-        if (recved) {
+        if (recved == Poller::MSG) {
             retries = 0;
             zmq::message_t message;
             try {
@@ -81,25 +84,43 @@ bool Sink::process(ISinkWorker *worker) {
             
             if (tracker.complete()) {
             
-                LOG4CXX_INFO(logger, "Finished.")
-
                  //  Calculate and report duration of batch
                 int total_msec = elapsed.getTotal();
 
                 // get results.
                 worker->results(total_msec);
-                LOG4CXX_INFO(logger, "Results written.")
             
                 // start tracking from the start.
                 tracker.reset();
-            }
+           	}
         }
-        else {
-            LOG4CXX_INFO(logger, "No messages after 5s.")
+        else if (recved == Poller::CONTROL) {
+        	
+        	zmq::message_t message;
+			try {
+	       		control->recv(&message);
+	       		KillMsg kill(message);
+	       		if (kill.value() == 0) {
+					if (!tracker.complete()) {
+						LOG4CXX_ERROR(logger, "Didn't get all the messages.")
+					}
+					return true;
+	       		}
+			}
+			catch (zmq::error_t &e) {
+				if (string(e.what()) != "Interrupted system call") {
+					LOG4CXX_ERROR(logger, "recv failed." << e.what())
+				}
+			}
+			
+        }
+        else
+        {
+            LOG4CXX_INFO(logger, "No messages after " << timeout << " seconds.")
             tracker.dump();
-            if (retries > 5) {
+            if (retries > maxretries) {
                 
-                LOG4CXX_ERROR(logger, "Waited for long enough, (25s) for anything to come through")
+                LOG4CXX_ERROR(logger, "Waited for long enough, (" << (timeout * maxretries) << " for anything to come through")
                 
                 worker->results(elapsed.getTotal());
                 LOG4CXX_INFO(logger, "Results written (probably incomplete).")
@@ -117,8 +138,7 @@ bool Sink::process(ISinkWorker *worker) {
 	if (!tracker.complete()) {
    		LOG4CXX_ERROR(logger, "Didn't get all the messages.")
 	}
-	
-   	LOG4CXX_INFO(logger, "finished.")
+
 	return true;
 	
 }

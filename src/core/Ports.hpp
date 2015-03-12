@@ -23,6 +23,8 @@ public:
 
 	bool join(zmq::i_socket_t *socket, const JsonObject &ports, const std::string &name);
 
+	static bool bind(log4cxx::LoggerPtr *logger, zmq::i_socket_t *socket, const std::string &address, int port, const std::string &name);
+	
 };
 
 #endif // __PORTS_HPP_INCLUDED__

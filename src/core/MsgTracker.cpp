@@ -26,10 +26,10 @@ void MsgTracker::grow(int n) {
 
 	int k = n - bits.size();
 	if (k > 0) {
-		LOG4CXX_DEBUG(logger, "growing by " << k << " buckets.")
 		for (int i=0; i<k; i++) {
 			bits.push_back(bitset<SIZE>());
 		}
+		LOG4CXX_DEBUG(logger, "grew by " << k << " to " << bits.size() << " buckets.")
 	}
 	
 }

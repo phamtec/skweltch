@@ -6,17 +6,25 @@
 
 using namespace std;
 
-bool Poller::poll(zmq::i_socket_t *socket, int timeout) {
+int Poller::poll(zmq::i_socket_t *socket, zmq::i_socket_t *control, int timeout) {
 
-	void *addr = *socket;
-	LOG4CXX_TRACE(logger, addr)
+	void *saddr = *socket;
+	void *caddr = *control;
 	
-	zmq::pollitem_t items[] = { { addr, 0, ZMQ_POLLIN, 0 } };
- 	zmq::poll (&items[0], 1, timeout);
+	zmq::pollitem_t items[] = { 
+		{ saddr, 0, ZMQ_POLLIN, 0 }, 
+		{ caddr, 0, ZMQ_POLLIN, 0 } 
+	};
+ 	zmq::poll (&items[0], 2, timeout);
  	
-	LOG4CXX_TRACE(logger, "events: " << items[0].events)
-	LOG4CXX_TRACE(logger, "revents: " << items[0].revents)
- 	
- 	return items[0].revents & ZMQ_POLLIN;
- 	
+ 	if (items[0].revents & ZMQ_POLLIN) {
+ 		return MSG;
+ 	}
+ 	else if (items[1].revents & ZMQ_POLLIN) {
+ 		return CONTROL;
+ 	}
+ 	else {
+ 		return NONE;
+ 	}
+
 }

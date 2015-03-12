@@ -3,6 +3,7 @@
 
 #include "IWorkWorker.hpp"
 #include "SinkMsg.hpp"
+#include "KillMsg.hpp"
 #include "Poller.hpp"
 
 #include <zmq.hpp>
@@ -15,9 +16,9 @@ void Work::process(IWorkWorker *worker) {
    	//  Process tasks forever
     while (!worker->shouldQuit()) {
 
-		bool recved = false;
+		int recved = Poller::NONE;
 		try {
-			recved = poller->poll(receiver, worker->getTimeout());
+			recved = poller->poll(receiver, control, worker->getTimeout());
 		}
 		catch (zmq::error_t &e) {
 			if (string(e.what()) != "Interrupted system call") {
@@ -30,7 +31,7 @@ void Work::process(IWorkWorker *worker) {
 			break;
 		}
 
-		if (recved) {
+        if (recved == Poller::MSG) {
 		
        		zmq::message_t message;
 			try {
@@ -44,6 +45,23 @@ void Work::process(IWorkWorker *worker) {
 			
             worker->processMsg(message);
 		}
+        else if (recved == Poller::CONTROL) {
+        	
+        	zmq::message_t message;
+			try {
+	       		control->recv(&message);
+	       		KillMsg kill(message);
+	       		if (kill.value() == 0) {	       		
+					return;
+	       		}
+			}
+			catch (zmq::error_t &e) {
+				if (string(e.what()) != "Interrupted system call") {
+					LOG4CXX_ERROR(logger, "recv failed." << e.what())
+				}
+			}
+			
+        }
 		else {
 			// there was a timeout, give the worker a chance to send on anyway.
 			worker->timeout(this);
@@ -54,9 +72,6 @@ void Work::process(IWorkWorker *worker) {
  			break;
 		}
     }
-    
-	LOG4CXX_INFO(logger, "finished.")
-
 }
 
 void SinkWorker::sendSinkMsg(SinkMsg *smsg) {

@@ -51,10 +51,14 @@ int main (int argc, char *argv[])
 
 	zmq::context_t context(1);
     zmq::socket_t receiver(context, ZMQ_PULL);
+    zmq::socket_t control(context, ZMQ_SUB);
     zmq::socket_t sender(context, ZMQ_PUSH);
 
  	Ports ports(logger);
     if (!ports.join(&receiver, pipes, "pipeFrom")) {
+    	return 1;
+    }
+    if (!ports.join(&control, pipes, "control")) {
     	return 1;
     }
     if (!ports.join(&sender, pipes, "pipeTo")) {

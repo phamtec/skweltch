@@ -7,6 +7,8 @@
 #include "Interrupt.hpp"
 #include "Results.hpp"
 #include "StringMsg.hpp"
+#include "KillMsg.hpp"
+#include "Ports.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -20,7 +22,7 @@
 using namespace std;
 using namespace boost;
 
-bool MachineRunner::runOne(const string &machine, int iterations, int group, int iter, const string &vars, const JsonObject &success) {
+bool MachineRunner::runOne(const string &machine, int control, int iterations, int group, int iter, const string &vars, const JsonObject &success) {
 
 	ifstream jsonfile(machine.c_str());
 	JsonObject r;
@@ -28,7 +30,7 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 		return false;
 	}
 
-	TaskMonitor mon(logger);
+	TaskMonitor mon(logger, control);
 	int fail = 0;
 	int low = -1;
 	int high = -1;
@@ -38,6 +40,12 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
     zmq::socket_t rsocket(context, ZMQ_PULL);
     rsocket.connect("tcp://localhost:6666");
     
+    // create a control socket.
+    zmq::socket_t csocket(context, ZMQ_PUB);
+	if (!Ports::bind(&logger, &csocket, "*", control, "control")) {
+		return false;
+	}
+
 	// startup the machine.
 	vector<int> pids;
 	if (!mon.start(&r, &pids)) {
@@ -54,22 +62,24 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
     
     // ok we need to pause here for a little bit to make sure all of the workers have started before
     // we start venting. We should really use messaging for this...
-    LOG4CXX_INFO(logger, "settling...")
-    zclock_sleep(settleTime);
+//    LOG4CXX_INFO(logger, "settling...")
+//    zclock_sleep(settleTime);
     
     // ok now we go for it.
 	for (int i=0; !s_interrupted && i<iterations; i++) {
 	
- 		LOG4CXX_INFO(logger, "runner start run.")
+ 		LOG4CXX_INFO(logger, "run " << i << " [")
  		
         // do the vent
 		{
+ 			LOG4CXX_INFO(logger, "venting.")
 			vector<int> vpids;
 			if (!mon.doVent(&r, &vpids)) {
 				return false;
 			}
 			// wait till vent is done.
 			mon.waitFinish(vpids);
+ 			LOG4CXX_INFO(logger, "vent done.")
 		}
 			
         // and wait for the message to come.
@@ -142,14 +152,23 @@ bool MachineRunner::runOne(const string &machine, int iterations, int group, int
 				break;
 			}
 		}
-		LOG4CXX_INFO(logger, "runner end run.")
+		LOG4CXX_INFO(logger, "] " << i)
 	}
 	
-	// try to kill it all.
-	if (!mon.doReap(&r, &pids)) {
-		return false;
+	// send a kill message on the control socket.
+ 	{
+ 		KillMsg msg;
+		zmq::message_t message;
+ 		msg.set(&message);
+		try {
+			csocket.send(message);
+		}
+		catch (zmq::error_t &e) {
+			LOG4CXX_ERROR(logger, "control send failed." << e.what())
+			return false;
+		}
 	}
-
+		
 	// wait till everything is gone.
 	mon.waitFinish(pids);
 

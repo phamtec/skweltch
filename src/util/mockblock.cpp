@@ -33,6 +33,7 @@ int main (int argc, char *argv[])
     desc.add_options()
     ("help", "produce help message")
     ("jsonConfig", po::value<string>(), "the machine config filename")
+    ("control", po::value<int>()->default_value(7000), "The control port (bound)")
     ("block", po::value<string>(), "the name of a block to give info about.")
     ;
     
@@ -55,11 +56,11 @@ int main (int argc, char *argv[])
     string block = vm["block"].as<string>();
     
     try {
- 	ifstream jsonfile(jsonConfig.c_str());
-	JsonObject r;
-	if (!r.read(logger, &jsonfile)) {
-		return 1;
-	}
+        ifstream jsonfile(jsonConfig.c_str());
+        JsonObject r;
+        if (!r.read(logger, &jsonfile)) {
+            return 1;
+        }
         
         JsonArray blocks = r.getArray("blocks");
         for (JsonArray::iterator i = blocks.begin(); i != blocks.end(); i++) {
@@ -69,7 +70,7 @@ int main (int argc, char *argv[])
                 //  Prepare our context and socket
                 zmq::context_t context(1);
                 
-                JsonObject pipes = PipeBuilder(logger).collect(&r, obj);
+                JsonObject pipes = PipeBuilder(logger).collect(&r, obj, vm["control"].as<int>());
                 
                 vector<boost::shared_ptr<zmq::socket_t> > sockets;
                 vector<string> blocknames;
@@ -84,7 +85,7 @@ int main (int argc, char *argv[])
                     boost::shared_ptr<zmq::socket_t> socket(new zmq::socket_t(context, ZMQ_PULL));
                     
                     int port = val.getInt("port", -1);
-                    cout << "Listing with " << mode;
+                    cout << "Listening with " << mode;
                     
                     if (mode == "bind") {
                         stringstream ss;

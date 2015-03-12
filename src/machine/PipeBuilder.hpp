@@ -13,7 +13,7 @@ class PipeBuilder {
 public:
 	PipeBuilder(log4cxx::LoggerPtr l) : logger(l) {}
 
-	JsonObject collect(JsonObject *config, const JsonObject &block);
+	JsonObject collect(JsonObject *config, const JsonObject &block, int control);
 
 };
 

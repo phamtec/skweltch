@@ -22,9 +22,11 @@ private:
 	log4cxx::LoggerPtr logger;
 	IPoller *poller;
     zmq::i_socket_t *receiver;
+    zmq::i_socket_t *control;
     
 public:
-	Work(log4cxx::LoggerPtr l, IPoller *p, zmq::i_socket_t *r) : logger(l), poller(p), receiver(r) {}
+	Work(log4cxx::LoggerPtr l, IPoller *p, zmq::i_socket_t *r, zmq::i_socket_t *ctrl) : 
+		logger(l), poller(p), receiver(r), control(ctrl) {}
 	
 	void process(IWorkWorker *worker);
 	
