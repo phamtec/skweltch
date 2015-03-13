@@ -37,6 +37,7 @@ int main (int argc, char *argv[])
 			("port", po::value<int>()->default_value(8000), "the port to connect to.")
 			("cmd", po::value<string>(), "the message to send. start, vent, stop or quit.")
 			("jsonConfig", po::value<string>(), "The filename for the config when starting.")			
+			("machineID", po::value<string>(), "Id of the machine in MongoDB")			
 		;
 
 		po::variables_map vm;
@@ -45,7 +46,7 @@ int main (int argc, char *argv[])
 		po::notify(vm);
 
 		// minimal args
-        if (vm.count("help") || vm.count("cmd") == 0 || vm.count("jsonConfig") == 0) {
+        if (vm.count("help") || vm.count("cmd") == 0) {
 			cerr << desc << endl;
             return 0;
         }
@@ -66,10 +67,15 @@ int main (int argc, char *argv[])
 
 		MachineMsg msg;
 		if (vm["cmd"].as<string>() == "start") {
-			if (vm.count("jsonConfig") == 0) {
+			if (vm.count("jsonConfig") == 1) {
+				msg.startMsg(vm["jsonConfig"].as<string>());
+			}
+			else if (vm.count("machineID") == 1) {
+				msg.startMsg(vm["machineID"].as<string>());
+			}
+			else {
 				cerr << "Didn't specify a config to start." << endl;
 			}
-			msg.startMsg(vm["jsonConfig"].as<string>());
 		}
 		else if (vm["cmd"].as<string>() == "vent") {
 			msg.ventMsg();

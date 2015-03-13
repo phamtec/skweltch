@@ -36,6 +36,7 @@ int main (int argc, char *argv[])
     desc.add_options()
     ("help", "produce help message")
     ("jsonConfig", po::value<string>(), "config to use.")
+	("results", po::value<string>()->default_value("tcp://localhost:6666"), "The results port.")
     ("control", po::value<int>()->default_value(7000), "The control port (bound)")
     ("count", po::value<int>()->default_value(5), "The count")
     ("iterations", po::value<int>()->default_value(1), "The number of iterations")
@@ -66,7 +67,7 @@ int main (int argc, char *argv[])
  	for (int i=0; i<count; i++) {
  		LOG4CXX_INFO(logger, "soak run { " << i)
 		try {
-			if (!runner.runOne(vm["jsonConfig"].as<string>(), vm["control"].as<int>(), iterations, 0, 0, "", JsonObject())) {
+			if (!runner.runOne(vm["jsonConfig"].as<string>(), vm["results"].as<string>(), vm["control"].as<int>(), iterations, 0, 0, "", JsonObject())) {
 				LOG4CXX_ERROR(logger, "failed, returning")
 				break;
 			}

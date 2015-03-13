@@ -38,6 +38,7 @@ int main (int argc, char *argv[])
     desc.add_options()
     ("help", "produce help message")
     ("jsonConfig", po::value<string>(), "config to use.")
+	("results", po::value<string>()->default_value("tcp://localhost:6666"), "The results port.")
     ("control", po::value<int>()->default_value(7000), "The control port (bound)")
     ;
     
@@ -64,7 +65,7 @@ int main (int argc, char *argv[])
 
     zmq::context_t context(1);
     zmq::socket_t rsocket(context, ZMQ_PULL);
-    rsocket.connect("tcp://localhost:6666");
+    rsocket.connect(vm["results"].as<string>().c_str());
     
     // create a control socket.
     zmq::socket_t csocket(context, ZMQ_PUB);

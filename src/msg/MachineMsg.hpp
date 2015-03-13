@@ -22,12 +22,14 @@ public:
 	// factories.
 	void startMsg(const std::string &config) 
 		{ data.first = 1; data.second = config; }
+	void startMachineIdMsg(const std::string &id) 
+		{ data.first = 2; data.second = id; }
 	void ventMsg() 
-		{ data.first = 2; }
-	void stopMsg() 
 		{ data.first = 3; }
+	void stopMsg() 
+		{ data.first = 4; }
 	void quitMsg()
-        { data.first = 4; }
+        { data.first = 5; }
 		
 };
 

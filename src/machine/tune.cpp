@@ -37,6 +37,7 @@ int main (int argc, char *argv[])
     desc.add_options()
     ("help", "produce help message")
     ("control", po::value<int>()->default_value(7000), "The control port (bound)")
+	("results", po::value<string>()->default_value("tcp://localhost:6666"), "The results port.")
     ("jsonConfig", po::value<string>(), "config to use.")
     ("jsonTuneConfig", po::value<string>(), "Tuning config to use.")
     ;
@@ -128,7 +129,7 @@ int main (int argc, char *argv[])
 					of.close();
 				}
 				runner.setFail(tuner.failOnError());
-				if (!runner.runOne(newconfig.str(), vm["control"].as<int>(), iterations, i, j, vars, success)) {
+				if (!runner.runOne(newconfig.str(), vm["results"].as<string>(), vm["control"].as<int>(), iterations, i, j, vars, success)) {
 					if (tuner.failOnError()) {
 						break; // next group.
 					}

@@ -1,0 +1,23 @@
+
+test:
+  sessions:
+    default:
+      database: skweltchtest
+      hosts:
+        - localhost:27017
+
+
+development:
+  sessions:
+    default:
+      database: skweltchdev
+      hosts:
+        - localhost:27017
+
+
+production:
+  sessions:
+    default:
+      database: skweltch
+      hosts:
+        - localhost:27017

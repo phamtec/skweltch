@@ -13,6 +13,7 @@
 #include <log4cxx/helpers/exception.h>
 #include <zmq.hpp>
 #include <msgpack.hpp>
+#include <mongo/client/dbclient.h>
 
 using namespace std;
 using namespace boost;
@@ -30,7 +31,10 @@ int main (int argc, char *argv[])
     desc.add_options()
         ("help", "produce help message")
         ("port", po::value<int>()->default_value(8000), "the port to bind to.")
+		("results", po::value<string>()->default_value("tcp://localhost:6666"), "The results port.")
         ("control", po::value<int>()->default_value(7000), "the control port to bind to.")
+        ("dbHost", po::value<string>()->default_value("localhost"), "the control port to bind to.")
+        ("machineTable", po::value<string>(), "the database table where we can find machines.")
     ;
 
     po::variables_map vm;
@@ -38,12 +42,15 @@ int main (int argc, char *argv[])
               options(desc).run(), vm);
     po::notify(vm);
 
-    // minimal args
-    if (vm.count("help")) {
+	if (vm.count("help") || !vm.count("machineTable")) {
         LOG4CXX_ERROR(logger, desc);
         return 0;
-    }
-
+	}
+	
+	mongo::client::initialize();
+	mongo::DBClientConnection c;
+	c.connect(vm["dbHost"].as<string>());
+	
     try {
         // help with the ZMQ version.
         int major, minor, patch;
@@ -53,23 +60,14 @@ int main (int argc, char *argv[])
      	//  Prepare our context and socket
     	zmq::context_t context(1);
     	zmq::socket_t receiver(context, ZMQ_PULL);
-    	
-		// create a control socket.
+		if (!Ports::bind(&logger, &receiver, "*", vm["port"].as<int>(), "command")) {
+        	return 0;
+		}    	
 		zmq::socket_t csocket(context, ZMQ_PUB);
 		if (!Ports::bind(&logger, &csocket, "*", vm["control"].as<int>(), "control")) {
         	return 0;
 		}
 
- 		try {
- 			stringstream ss;
- 			ss << "tcp://*:" << vm["port"].as<int>();
-			receiver.bind(ss.str().c_str());
-		}
-		catch (zmq::error_t &e) {  	
-			LOG4CXX_ERROR(logger, "couldn't bind should be: tcp://*:port")
-			return 1;
-		}
-		
 		enum {
 			IDLE = 0,
 			RUNNING = 1
@@ -99,6 +97,7 @@ int main (int argc, char *argv[])
 		
 			switch (msg.getCode()) {
 			case 1:
+			case 2:
 				{
 					if (state == RUNNING) {
 						if (!stop(&mon, &r, &pids, &csocket)) {
@@ -106,10 +105,27 @@ int main (int argc, char *argv[])
 						}
 						pids.clear();
 					}
-                    string config = msg.getData();
-					ifstream jsonfile(config.c_str());
-					if (!r.read(logger, &jsonfile)) {
-						return 1;
+                    if (msg.getCode() == 1) {
+                    	string id = msg.getData();
+						auto_ptr<mongo::DBClientCursor> cursor = c.query(vm["machineTable"].as<string>(), 
+							MONGO_QUERY("_id" << mongo::OID(id)));
+						if (!cursor->more()) {
+							LOG4CXX_ERROR(logger, "could not find machine in DB.")
+						}
+						else {
+							stringstream ss;
+							ss << cursor->next()["text"].valuestrsafe();
+							if (!r.read(logger, &ss)) {
+								continue;
+							}
+						}
+                    }
+                    else {
+						string config = msg.getData();
+						ifstream jsonfile(config.c_str());
+						if (!r.read(logger, &jsonfile)) {
+							continue;
+						}
 					}
 					if (!mon.start(&r, &pids)) {
 						return 1;
@@ -118,7 +134,7 @@ int main (int argc, char *argv[])
 				}
 				break;
 				
-			case 2:
+			case 3:
 				if (state != RUNNING) {
 					LOG4CXX_ERROR(logger, "not running.")
 				}
@@ -131,7 +147,7 @@ int main (int argc, char *argv[])
 				}
 				break;
 				
-			case 3:
+			case 4:
 				if (state != RUNNING) {
 					LOG4CXX_ERROR(logger, "not running.")
 				}
@@ -144,7 +160,7 @@ int main (int argc, char *argv[])
 				}
 				break;
                     
-            case 4:
+            case 5:
                 if (state == RUNNING) {
                     if (!stop(&mon, &r, &pids, &csocket)) {
                         return 1;

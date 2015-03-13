@@ -16,7 +16,9 @@ include_directories( ${Boost_INCLUDE_DIR} )
 link_directories( ${Boost_LIBRARY_DIR} )
 
 include_directories( /usr/local/include )
+include_directories( /usr/local/mongo/include )
 link_directories( /usr/local/lib )
+link_directories( /usr/local/mongo/lib )
 
 enable_testing()
 

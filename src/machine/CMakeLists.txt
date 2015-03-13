@@ -36,10 +36,13 @@ target_link_libraries (machine
 	coreLib
 	machineLib
 	boost_program_options
+	boost_regex
+	boost_thread
 	zmq
 	czmq
 	msgpack
-	log4cxx)
+	log4cxx
+	mongoclient)
 
 target_link_libraries (machinecmd
 	configLib

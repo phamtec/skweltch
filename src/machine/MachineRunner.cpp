@@ -22,7 +22,7 @@
 using namespace std;
 using namespace boost;
 
-bool MachineRunner::runOne(const string &machine, int control, int iterations, int group, int iter, const string &vars, const JsonObject &success) {
+bool MachineRunner::runOne(const string &machine, const string &resaddr, int control, int iterations, int group, int iter, const string &vars, const JsonObject &success) {
 
 	ifstream jsonfile(machine.c_str());
 	JsonObject r;
@@ -38,7 +38,7 @@ bool MachineRunner::runOne(const string &machine, int control, int iterations, i
 
     zmq::context_t context(1);
     zmq::socket_t rsocket(context, ZMQ_PULL);
-    rsocket.connect("tcp://localhost:6666");
+    rsocket.connect(resaddr.c_str());
     
     // create a control socket.
     zmq::socket_t csocket(context, ZMQ_PUB);
