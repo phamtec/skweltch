@@ -62,7 +62,8 @@ void Work::process(IWorkWorker *worker) {
 			}
 			
         }
-		else {
+        else if (recved == Poller::NONE) {
+            LOG4CXX_INFO(logger, "No messages after " << worker->getTimeout() << " seconds.")
 			// there was a timeout, give the worker a chance to send on anyway.
 			worker->timeout(this);
 		}

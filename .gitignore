@@ -124,3 +124,5 @@ ssh-build-machine.sh
 ssh-repo.sh
 
 gui/osx/Skweltch Notifier/Skweltch Notifier.xcodeproj/project.xcworkspace/xcuserdata/paul.xcuserdatad/UserInterfaceState.xcuserstate
+
+skweltchdb/*

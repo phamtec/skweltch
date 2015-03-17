@@ -107,14 +107,15 @@ int main (int argc, char *argv[])
 					}
                     if (msg.getCode() == 1) {
                     	string id = msg.getData();
-						auto_ptr<mongo::DBClientCursor> cursor = c.query(vm["machineTable"].as<string>(), 
-							MONGO_QUERY("_id" << mongo::OID(id)));
+                        mongo::BSONObj fields = BSON("_id" << 0);
+						auto_ptr<mongo::DBClientCursor> cursor = c.query(vm["machineTable"].as<string>(),
+							MONGO_QUERY("_id" << mongo::OID(id)), 0, 0, &fields);
 						if (!cursor->more()) {
 							LOG4CXX_ERROR(logger, "could not find machine in DB.")
 						}
 						else {
 							stringstream ss;
-							ss << cursor->next()["text"].valuestrsafe();
+							ss << cursor->next().jsonString();
 							if (!r.read(logger, &ss)) {
 								continue;
 							}

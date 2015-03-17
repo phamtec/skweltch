@@ -19,6 +19,10 @@ add_executable (trackTest
 	tracktest.cpp
 )
 
+add_executable (trackBigTest
+	trackbigtest.cpp
+)
+
 add_executable (ventTest
 	venttest.cpp
 )
@@ -57,6 +61,13 @@ target_link_libraries (trackTest
 	boost_unit_test_framework
 	boost_test_exec_monitor)
 	
+target_link_libraries (trackBigTest 
+	coreLib
+	configLib
+	log4cxx
+	boost_unit_test_framework
+	boost_test_exec_monitor)
+	
 target_link_libraries (ventTest 
 	coreLib
 	configLib
@@ -76,5 +87,6 @@ add_test(pollTest pollTest)
 add_test(portsTest portsTest)
 add_test(sinkTest sinkTest)
 add_test(trackTest trackTest)
+add_test(trackBigTest trackBigTest)
 add_test(ventTest ventTest)
 add_test(workTest workTest)

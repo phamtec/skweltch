@@ -1,6 +1,6 @@
 {
-	// this is what is used to feed the machine.
-	// always one of them.
+	"name": "avgwordsize",
+	
 	"vent": "VentWords",
 	
 	"blocks": [

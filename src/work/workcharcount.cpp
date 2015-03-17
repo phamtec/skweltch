@@ -43,7 +43,7 @@ void WWorker::processMsg(const zmq::message_t &message) {
     SinkMsg smsg;
 	StringMsg msg(message);
 
-	LOG4CXX_TRACE(logger,  "msg " << msg.getId());
+	LOG4CXX_TRACE(logger,  "working on msg: " << msg.getId());
 
 	// the work.
 	int length = msg.getPayload().length();
@@ -53,7 +53,7 @@ void WWorker::processMsg(const zmq::message_t &message) {
 	v.push_back(lexical_cast<string>(length));
 	smsg.dataMsg(msg.getId(), v);
 
-	LOG4CXX_TRACE(logger,  "sending msg: " << smsg.getId())
+	LOG4CXX_TRACE(logger,  "sending sink msg: " << smsg.getId())
     
 	sendSinkMsg(&smsg);
 

@@ -62,8 +62,8 @@ bool MachineRunner::runOne(const string &machine, const string &resaddr, int con
     
     // ok we need to pause here for a little bit to make sure all of the workers have started before
     // we start venting. We should really use messaging for this...
-//    LOG4CXX_INFO(logger, "settling...")
-//    zclock_sleep(settleTime);
+    LOG4CXX_INFO(logger, "settling...")
+    zclock_sleep(settleTime);
     
     // ok now we go for it.
 	for (int i=0; !s_interrupted && i<iterations; i++) {

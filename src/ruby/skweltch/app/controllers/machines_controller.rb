@@ -58,7 +58,7 @@ class MachinesController < ApplicationController
    private
 
    def machine_params
-      params.require(:machine).permit(:name, :text)
+      params.require(:machine).permit(:name)
    end
    
 end

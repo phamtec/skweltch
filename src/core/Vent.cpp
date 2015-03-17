@@ -46,7 +46,7 @@ bool Vent::process(IVentWorker *worker) {
 		}
 	}
 	   
-	LOG4CXX_INFO(logger, "finished (" << last << ")")
+	LOG4CXX_INFO(logger, "vent finished (" << last << ")")
 	return true;
 	
 }

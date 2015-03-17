@@ -60,7 +60,7 @@ int main (int argc, char *argv[])
     ofstream resultsFile("soak.txt");
     StreamResults results(&resultsFile);
  	// the last two numbers will need to be configurable.
- 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10, 5000);
+ 	MachineRunner runner(logger, &results, &s_interrupted, 1000, 10, 1000);
  	
 	resultsFile << "group\ti\tvars\tn\tlow\thigh\tfail\tavg\tmed" << endl;
 	runner.setFail(true);

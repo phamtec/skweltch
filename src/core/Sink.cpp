@@ -20,7 +20,7 @@ bool Sink::process(ISinkWorker *worker) {
  	Elapsed elapsed;
 	MsgTracker tracker(logger);
     int retries = 0;
-    int timeout = 20000;
+    int timeout = 5000;
     int maxretries = 5;
  	while (!worker->shouldQuit()) {
 	
@@ -54,7 +54,7 @@ bool Sink::process(ISinkWorker *worker) {
             SinkMsg sinkmsg(message);
             switch (sinkmsg.getCode()) {
             case 1:
-                LOG4CXX_DEBUG(logger, "got first: " << sinkmsg.getId())
+                LOG4CXX_DEBUG(logger, "sink got first: " << sinkmsg.getId())
                 worker->first(sinkmsg.getId());
                 tracker.setFirst(sinkmsg.getId());
                 elapsed.start();
@@ -67,12 +67,12 @@ bool Sink::process(ISinkWorker *worker) {
                 // mark this message off.
                 tracker.track(sinkmsg.getId());
                 
-                LOG4CXX_TRACE(logger, "msg: " << sinkmsg.getId())
+                LOG4CXX_TRACE(logger, "sink got msg: " << sinkmsg.getId())
                 break;
                 
             case 3:
                 // this one usually comes from a vent.
-                LOG4CXX_DEBUG(logger, "got last: " << sinkmsg.getId())
+                LOG4CXX_DEBUG(logger, "sink got last: " << sinkmsg.getId())
                 worker->last(sinkmsg.getId());
                 tracker.setLast(sinkmsg.getId());
                 break;
@@ -114,7 +114,7 @@ bool Sink::process(ISinkWorker *worker) {
 			}
 			
         }
-        else
+        else if (recved == Poller::NONE)
         {
             LOG4CXX_INFO(logger, "No messages after " << timeout << " seconds.")
             tracker.dump();
